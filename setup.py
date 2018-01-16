@@ -3,11 +3,11 @@ from setuptools import find_packages, setup
 setup(
     name='sunpyviewer',
     version='0.1',
-    description='The SunPy Graphical User Interface (GUI)',
+    description='',
     author='Robert Jarolim',
     packages=find_packages(),
     provides=find_packages(),
-    install_requires=['sunpy==0.8.2', 'wxpython', 'pywavelets', 'scikit-image'],
+    install_requires=['sunpy==0.8.2', 'wxpython==4.0.0b2', 'pywavelets', 'scikit-image'],
     python_requires='>=3',
     package_data={'sunpyviewer.resources': ['*.png', '*.txt', '*.pkl']},
     entry_points={
