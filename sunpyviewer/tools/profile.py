@@ -12,6 +12,7 @@ from sunpyviewer.tools import EVT_PROFILE_MODE_CHANGE, EVT_PROFILE_RESET
 from sunpyviewer.tools.default_tool import ToolController
 from sunpyviewer.util.wxmatplot import PlotPanel
 from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED
+from sunpyviewer.viewer.content import MapTab
 
 
 class ProfileModel:
@@ -70,10 +71,13 @@ class ProfileController(ToolController):
         self.resetFreeLine()
 
     def onTabChange(self, tab):
-        self._removeCursor()
         if not self.view:
             return
+        self._removeCursor()
         self.resetFreeLine()
+        if not isinstance(tab, MapTab):
+            tab = None
+            self.model.mode = Mode.NONE
         self.model.setTab(tab)
         self.view.initMode(self.model.enabled)
         if self.model.enabled:
@@ -225,6 +229,9 @@ class ProfilePanel(ScrolledPanel):
         self.h_radio.Enable(enabled)
         self.v_radio.Enable(enabled)
         self.fl_radio.Enable(enabled)
+
+        if not enabled:
+            self.none_radio.SetValue(True)
 
         self.clearViewPanel()
 

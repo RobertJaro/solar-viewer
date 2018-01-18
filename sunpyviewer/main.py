@@ -12,5 +12,4 @@ def startApplication():
 
 
 if __name__ == '__main__':
-    wx.version()
     startApplication()
