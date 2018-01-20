@@ -12,7 +12,7 @@ from wx.lib.pubsub import pub
 from wx.lib.scrolledpanel import ScrolledPanel
 
 from sunpyviewer.tools import QueryType, EVT_QUERY_RESULT, EVT_QUERY_ERROR, EVT_QUERY_STARTED
-from sunpyviewer.tools.fido import TimeRangeComponent
+from sunpyviewer.tools.download import TimeRangeComponent
 
 
 class HEKListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):

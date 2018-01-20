@@ -3,7 +3,7 @@ import wx
 from sunpyviewer.viewer.mainframe import MainFrame
 
 
-def startApplication():
+def main():
     app = wx.App(False)
     frame = MainFrame()
     frame.Show(True)
@@ -12,4 +12,4 @@ def startApplication():
 
 
 if __name__ == '__main__':
-    startApplication()
+    main()

@@ -18,9 +18,9 @@ from sunpyviewer.dialogs.rotate import RotateDialog
 from sunpyviewer.tools import EVT_QUERY_STARTED, EVT_QUERY_RESULT
 from sunpyviewer.tools.contrast import ContrastPanel, ContrastController
 from sunpyviewer.tools.data_viewer import DataViewer
+from sunpyviewer.tools.download import QueryPanel, QueryResultNotebook
+from sunpyviewer.tools.event_download import HEKPanel
 from sunpyviewer.tools.fft import FFTPanel, FFTController
-from sunpyviewer.tools.fido import QueryPanel, QueryResultNotebook
-from sunpyviewer.tools.hek import HEKPanel
 from sunpyviewer.tools.profile import ProfilePanel, ProfileController
 from sunpyviewer.tools.selection import SelectionPanel, SelectionController
 from sunpyviewer.tools.value_adjustment import ValueAdjustmentPanel, ValueAdjustmentController

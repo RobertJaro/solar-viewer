@@ -32,3 +32,4 @@ Usage
 ------------
 
 Start the application either by using the executable in the scripts folder or execute main.py in the root directory.
+Mac OS users need to use pythonw to start the GUI from an anaconda distribution.
