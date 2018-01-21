@@ -405,8 +405,7 @@ class MainFrame(wx.Frame):
 
     def onHEK(self, event):
         hek = HEKPanel(self)
-        self.manager.AddPane(hek, wx.LEFT, "HEK Download")
-        self.manager.Update()
+        self._addToolPane(hek, "HEK Download")
         pub.subscribe(self.onQueryStarted, EVT_QUERY_STARTED)
         pub.subscribe(self.onQueryResult, EVT_QUERY_RESULT)
 
