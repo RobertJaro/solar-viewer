@@ -52,7 +52,6 @@ class ProfileController(ToolController):
     def closeView(self):
         self.removeLine(False)
         self._removeCursor()
-        self.view.Destroy()
         self.view = None
         self.model = ProfileModel()
 

@@ -65,7 +65,6 @@ class SelectionController(ToolController):
     def closeView(self):
         self._removeCursor()
         self.onClear()
-        self.view.Destroy()
         self.view = None
 
     def onFigureClick(self, event):

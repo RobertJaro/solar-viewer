@@ -14,7 +14,6 @@ class ValueAdjustmentController(ToolController):
         return self.view
 
     def closeView(self, *args):
-        self.view.Destroy()
         self.view = None
 
 

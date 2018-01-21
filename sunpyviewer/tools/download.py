@@ -192,7 +192,7 @@ class QueryTab(wx.Panel):
 
     def loadQueryResult(self, result):
         self.result = result
-        self._refreshList()
+        wx.CallAfter(self._refreshList)
 
     def _refreshList(self):
         self.list.DeleteAllItems()

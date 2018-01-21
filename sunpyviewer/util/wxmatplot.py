@@ -61,9 +61,9 @@ class PlotPanel(wx.Panel):
         self.canvas.SetSize(pixels)
         self.figure.set_size_inches(float(pixels[0]) / self.figure.get_dpi(),
                                     float(pixels[1]) / self.figure.get_dpi())
-        self.canvas.draw()
-        self.canvas.Show()
-        self.progress.Hide()
+        wx.CallAfter(self.canvas.draw)
+        self.canvas.Show(True)
+        self.progress.Show(False)
 
     def redraw(self):
         self.canvas.Hide()

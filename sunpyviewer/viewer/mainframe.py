@@ -43,8 +43,8 @@ class MainFrame(wx.Frame):
         self.setIcon()
         self.createMenuBar()
 
-        self.content_ctrl = ContentController(self)
         self.toolbar_ctrl = ToolbarController(self)
+        self.content_ctrl = ContentController(self)
         self.profile_ctrl = ProfileController()
         self.selection_ctrl = SelectionController()
         self.contrast_ctrl = ContrastController()
@@ -222,22 +222,22 @@ class MainFrame(wx.Frame):
 
     def onPaneClose(self, event):
         if isinstance(event.Pane.window, ProfilePanel):
-            self.onToggleProfile()
+            self.profile_ctrl.closeView()
             self.profile_item.Check(False)
         if isinstance(event.Pane.window, SelectionPanel):
-            self.onToggleSelection()
+            self.selection_ctrl.closeView()
             self.selection_item.Check(False)
         if isinstance(event.Pane.window, FFTPanel):
-            self.onToggleFFT()
+            self.fft_ctrl.closeView()
             self.fft_item.Check(False)
         if isinstance(event.Pane.window, ContrastPanel):
-            self.onToggleContrast()
+            self.contrast_ctrl.closeView()
             self.contrast_item.Check(False)
         if isinstance(event.Pane.window, ValueAdjustmentPanel):
-            self.onToggleValueAdjust()
+            self.value_ctrl.closeView()
             self.value_item.Check(False)
         if isinstance(event.Pane.window, WaveletPanel):
-            self.onToggleWavelet()
+            self.wavelet_ctrl.closeView()
             self.wavelet_item.Check(False)
 
     def onUpdateStatusBar(self, x, y):
@@ -339,6 +339,7 @@ class MainFrame(wx.Frame):
     def _removeToolPane(self, tool):
         self.manager.GetPane(tool).Show(False)
         self.manager.DetachPane(tool)
+        tool.Destroy()
         self.manager.Update()
 
     def _addToolPane(self, panel, name):
@@ -379,9 +380,7 @@ class MainFrame(wx.Frame):
 
     def onStartDownloader(self, *args):
         query = QueryPanel(self)
-        self.manager.AddPane(query,
-                             aui.AuiPaneInfo().DestroyOnClose(True).MinSize((500, -1)).Name("Data Download").Left())
-        self.manager.Update()
+        self._addToolPane(query, "Data Download")
         pub.subscribe(self.onQueryStarted, EVT_QUERY_STARTED)
         pub.subscribe(self.onQueryResult, EVT_QUERY_RESULT)
 

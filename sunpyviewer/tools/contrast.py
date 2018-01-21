@@ -15,7 +15,6 @@ class ContrastController(ToolController):
         return self.view
 
     def closeView(self, *args):
-        self.view.Destroy()
         self.view = None
 
 
@@ -46,8 +45,6 @@ class ContrastPanel(MapToolPanel):
         self.max_line = None
         MapToolPanel.__init__(self, parent, content_ctrl)
         self.hist_panel.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self._onCollapse)
-        if self.selected_id:
-            self._onSelectionChanged()
 
     def initContent(self):
         return [self._initHistPane(), self._initSettingsBox()]
@@ -130,12 +127,12 @@ class ContrastPanel(MapToolPanel):
 
     def _drawMaxLine(self, *args):
         if self.max_line is not None:
-            self.max_line.remove()
+            wx.CallAfter(self.max_line.remove)
         self.max_line = self.contrast_hist.plotLine(x=self.max_spin.GetValue())
 
     def _drawMinLine(self, *args):
         if self.min_line is not None:
-            self.min_line.remove()
+            wx.CallAfter(self.min_line.remove)
         self.min_line = self.contrast_hist.plotLine(x=self.min_spin.GetValue())
 
     def _onAdjustMinMax(self, event):
