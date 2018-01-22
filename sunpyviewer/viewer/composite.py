@@ -39,7 +39,7 @@ class CompositeDialog(DefaultDialog):
         maps = self.composite_map._maps
         for i, map in enumerate(maps):
             order_input = wx.SpinCtrl(panel, min=1, max=len(maps), value=str(i + 1))
-            alpha_input = wx.SpinCtrlDouble(panel, min=0, max=1, inc=0.1, value=str(map.alpha))
+            alpha_input = wx.SpinCtrlDouble(panel, min=0, max=1, inc=0.01, value=str(map.alpha))
             image_panel = _ImagePanel(panel, map)
             image_panel.SetMinSize((100, 100))
             content_sizer.Add(order_input, 0, wx.ALIGN_CENTER)

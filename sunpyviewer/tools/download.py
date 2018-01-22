@@ -462,10 +462,10 @@ class _WaveRangeComponent(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self.wavemin_picker = wx.SpinCtrlDouble(self, max=100000)
+        self.wavemin_picker = wx.SpinCtrlDouble(self, max=100000, inc=0.01)
         wave_to_text = wx.StaticText(self)
         wave_to_text.SetLabel(" - ")
-        self.wavemax_picker = wx.SpinCtrlDouble(self, max=100000)
+        self.wavemax_picker = wx.SpinCtrlDouble(self, max=100000, inc=0.01)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.AddMany([self.wavemin_picker, wave_to_text, self.wavemax_picker])
         self.SetSizer(sizer)
@@ -479,7 +479,7 @@ class _WaveComponent(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self.wave_picker = wx.SpinCtrlDouble(self, max=100000)
+        self.wave_picker = wx.SpinCtrlDouble(self, max=100000, inc=0.01)
         choices = [str(u.AA), str(u.kHz), str(u.GHz), str(u.keV)]
         self.unit_picker = wx.Choice(self, choices=choices)
         self.unit_picker.SetSelection(0)

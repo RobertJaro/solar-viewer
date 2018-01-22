@@ -16,7 +16,7 @@ class TVDenoiseDialog(DefaultDialog):
         content_sizer = wx.FlexGridSizer(2, 5, 5)
 
         weight_label = wx.StaticText(panel, label="Weight: ")
-        self.weight_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1")
+        self.weight_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1", inc=0.01)
 
         content_sizer.AddMany([weight_label, self.weight_spin])
 
@@ -45,9 +45,9 @@ class BilateralDenoiseDialog(DefaultDialog):
         content_sizer = wx.FlexGridSizer(2, 5, 5)
 
         color_label = wx.StaticText(panel, label="Sigma Color: ")
-        self.color_spin = wx.SpinCtrlDouble(panel, min=0, value="0.05")
+        self.color_spin = wx.SpinCtrlDouble(panel, min=0, value="0.05", inc=0.01)
         spatial_label = wx.StaticText(panel, label="Spatial Color: ")
-        self.spatial_spin = wx.SpinCtrlDouble(panel, min=0, value="15")
+        self.spatial_spin = wx.SpinCtrlDouble(panel, min=0, value="15", inc=0.01)
 
         content_sizer.AddMany([color_label, self.color_spin, spatial_label, self.spatial_spin])
 
@@ -83,7 +83,7 @@ class WaveletDenoiseDialog(DefaultDialog):
         wavelet_label = wx.StaticText(panel, label="Wavelet: ")
         self.wavelet_text = wx.TextCtrl(panel, value="db1")
         sigma_label = wx.StaticText(panel, label="Sigma: ")
-        self.sigma_spin = wx.SpinCtrlDouble(panel, value=str(estimated_sigma))
+        self.sigma_spin = wx.SpinCtrlDouble(panel, value=str(estimated_sigma), inc=0.01)
         level_label = wx.StaticText(panel, label="Level(0 for auto): ")
         self.level_spin = wx.SpinCtrl(panel, value="0")
 

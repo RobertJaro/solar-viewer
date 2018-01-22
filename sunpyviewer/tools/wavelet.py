@@ -60,7 +60,7 @@ class WaveletPanel(MapToolPanel):
         box.Add(grid)
 
         sigma_text = wx.StaticText(panel, label="Sigma: ")
-        self.sigma_spin = wx.SpinCtrlDouble(panel)
+        self.sigma_spin = wx.SpinCtrlDouble(panel, inc=0.0001)
         grid.AddMany([sigma_text, self.sigma_spin])
 
         return panel

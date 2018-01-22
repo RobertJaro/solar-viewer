@@ -72,12 +72,12 @@ class NormDialog(DefaultDialog):
             self.stretch_combo.SetStringSelection(Stretch.convertToString(self.map.plot_settings["norm"].stretch))
 
         self.stretch_a_label = wx.StaticText(panel, label="a:")
-        self.stretch_a_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1")
+        self.stretch_a_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1", inc=0.01)
         if self.stretch_combo.GetStringSelection() == Stretch.SINH.value or self.stretch_combo.GetStringSelection() == Stretch.ASINH.value:
             self.stretch_a_spin.SetValue(self.map.plot_settings["norm"].stretch.a)
 
         self.stretch_power_label = wx.StaticText(panel, label="power:")
-        self.stretch_power_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1")
+        self.stretch_power_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1", inc=0.01)
         if self.stretch_combo.GetStringSelection() == Stretch.POWER.value:
             self.stretch_power_spin.SetValue(self.map.plot_settings["norm"].stretch.power)
 

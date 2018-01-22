@@ -75,9 +75,9 @@ class ContrastPanel(MapToolPanel):
         grid_sizer = wx.FlexGridSizer(2, 10, 15)
 
         min_label = wx.StaticText(panel, label="Min:")
-        self.min_spin = wx.SpinCtrlDouble(panel, name="min")
+        self.min_spin = wx.SpinCtrlDouble(panel, name="min", inc=0.01)
         max_label = wx.StaticText(panel, label="Max:")
-        self.max_spin = wx.SpinCtrlDouble(panel, name="max")
+        self.max_spin = wx.SpinCtrlDouble(panel, name="max", inc=0.01)
 
         min_max_button = wx.Button(panel, label="Adjust Min/Max")
         avg_button = wx.Button(panel, label="Adjust Average")

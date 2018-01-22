@@ -16,7 +16,7 @@ class RotateDialog(DefaultDialog):
         content_sizer = wx.FlexGridSizer(2, 5, 5)
 
         angle_label = wx.StaticText(panel, label="Angle:")
-        self.angle_spin = wx.SpinCtrlDouble(panel, min=0, max=360)
+        self.angle_spin = wx.SpinCtrlDouble(panel, min=0, max=360, inc=0.01)
 
         content_sizer.AddMany([angle_label, self.angle_spin])
 

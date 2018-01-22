@@ -37,10 +37,10 @@ class ValueAdjustmentPanel(MapToolPanel):
         range_sizer = wx.FlexGridSizer(3, 10, 10)
         range_box.Add(range_sizer, flag=wx.ALL | wx.EXPAND, border=2)
 
-        self.min_range = wx.SpinCtrlDouble(panel)
+        self.min_range = wx.SpinCtrlDouble(panel, inc=0.01)
         self.min_range.Enable(False)
         range_label = wx.StaticText(panel, label=" - ")
-        self.max_range = wx.SpinCtrlDouble(panel)
+        self.max_range = wx.SpinCtrlDouble(panel, inc=0.01)
         self.max_range.Enable(False)
         range_sizer.AddMany([self.min_range, range_label, self.max_range])
 
