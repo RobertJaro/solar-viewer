@@ -54,18 +54,20 @@ class MainFrame(wx.Frame):
         self.createStatusBar()
         self.manager = self.initManager()
         self.history = History()
+        wx.CallLater(100, self.addContentPane)  # Workaround
+
+    def addContentPane(self):
+        screen_w, screen_h = wx.DisplaySize()
+        self.manager.AddPane(self.content_ctrl.getView(),
+                             aui.AuiPaneInfo().CloseButton(False).Floatable(True).MaximizeButton(True).Center())
+        self.manager.AddPane(self.toolbar_ctrl.getView(),
+                             aui.AuiPaneInfo().FloatingPosition(screen_w - 100, 100).CloseButton(False).Dockable(
+                                 False).Resizable(
+                                 False).Float())
+        self.manager.Update()
 
     def initManager(self):
-        screen_w, screen_h = wx.DisplaySize()
-
         manager = aui.AuiManager(self)
-        manager.AddPane(self.content_ctrl.getView(),
-                        aui.AuiPaneInfo().CloseButton(False).Floatable(True).MaximizeButton(True).Center())
-        manager.AddPane(self.toolbar_ctrl.getView(),
-                        aui.AuiPaneInfo().FloatingPosition(screen_w - 100, 100).CloseButton(False).Dockable(
-                            False).Resizable(
-                            False).Float())
-        manager.Update()
         manager.Bind(aui.EVT_AUI_PANE_CLOSE, self.onPaneClose)
         return manager
 
@@ -394,7 +396,7 @@ class MainFrame(wx.Frame):
         pub.subscribe(self.onQueryStarted, EVT_QUERY_STARTED)
         pub.subscribe(self.onQueryResult, EVT_QUERY_RESULT)
 
-    def onToggleToolbar(self, event):
+    def onToggleToolbar(self, *args):
         pane = self.manager.GetPane(self.toolbar_ctrl.getView())
         pane.Show(not pane.IsShown())
         self.manager.Update()
