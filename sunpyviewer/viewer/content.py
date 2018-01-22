@@ -6,7 +6,6 @@ from enum import Enum
 import sunpy.map
 import sunpy.timeseries
 from astropy import units as u
-from sunpy.spectra.sources import CallistoSpectrogram
 from wx import aui
 from wx.lib.pubsub import pub
 
@@ -117,12 +116,6 @@ class ContentController:
         series_tab = TimeSeriesTab(self.parent, series)
         name = "{} ({:%Y-%m-%d %H:%M:%S})".format(series.source.upper(), series.time_range.start)
         self.openPanel(name, series_tab)
-
-    def openCallistoSpectra(self, path):
-        spectra = CallistoSpectrogram.read(path)
-        spectra.path = path
-        tab = SpectraTab(self.parent, spectra)
-        self.openPanel("Callisto", tab)
 
     def openPanel(self, name, tab):
         self.view.AddPage(tab, name, True)
@@ -284,17 +277,3 @@ class TimeSeriesTab(AbstractTab):
         ax = self.figure.gca()
         self.series.plot(axes=ax)
 
-
-class SpectraTab(AbstractTab):
-    def __init__(self, parent, spectra):
-        self.spectra = spectra
-        PlotPanel.__init__(self, parent)
-
-    def getContent(self):
-        return self.spectra
-
-    def setContent(self, data):
-        self.spectra = data
-
-    def draw(self):
-        self.spectra.plot(figure=self.figure)

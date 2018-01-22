@@ -69,7 +69,7 @@ class MapToolPanel(ScrolledPanel):
 
         box_sizer = wx.StaticBoxSizer(wx.VERTICAL, panel, "Map Selection")
         self.map_choice = wx.Choice(panel)
-        self._refreshMapChoice()
+        wx.CallAfter(self._refreshMapChoice)
         box_sizer.Add(self.map_choice, flag=wx.ALL | wx.EXPAND, border=2)
         panel.SetSizerAndFit(box_sizer)
 
@@ -149,12 +149,12 @@ class MapToolPanel(ScrolledPanel):
         self.FitInside()
 
     def onMapAdded(self, tab_id, data):
-        self._refreshMapChoice()
+        wx.CallAfter(self._refreshMapChoice)
 
     def onMapRemoved(self, tab_id):
         if tab_id is self.selected_id:
             self.selected_id = None
-        self._refreshMapChoice()
+        wx.CallAfter(self._refreshMapChoice)
 
     def onMapChanged(self, tab_id, data):
         if tab_id == self.selected_id:

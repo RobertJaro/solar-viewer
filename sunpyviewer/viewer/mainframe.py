@@ -28,8 +28,7 @@ from sunpyviewer.tools.wavelet import WaveletPanel, WaveletController
 from sunpyviewer.util.data import resources_dir
 from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE
 from sunpyviewer.viewer.composite import CompositeDialog
-from sunpyviewer.viewer.content import MapTab, CompositeMapTab, TimeSeriesTab, SpectraTab, \
-    ContentController
+from sunpyviewer.viewer.content import MapTab, CompositeMapTab, TimeSeriesTab, ContentController
 from sunpyviewer.viewer.history import History
 from sunpyviewer.viewer.settings import DBDialog
 from sunpyviewer.viewer.toolbar import ToolbarController
@@ -86,7 +85,6 @@ class MainFrame(wx.Frame):
         open_maps_item = file_menu.Append(wx.ID_ANY, "Open Map")
         open_composite_item = file_menu.Append(wx.ID_ANY, "Open Composite Map")
         open_series_item = file_menu.Append(wx.ID_ANY, "Open Series")
-        open_spectra_item = file_menu.Append(wx.ID_ANY, "Open Callisto Spectra")
         save_image_item = file_menu.Append(wx.ID_ANY, "Save Image")
         save_fits_item = file_menu.Append(wx.ID_ANY, "Save as fits")
         file_menu.AppendSeparator()
@@ -138,8 +136,7 @@ class MainFrame(wx.Frame):
         help_menu = wx.Menu()
         snr_item = help_menu.Append(wx.ID_ANY, "Calculate Signal to Noise Ratio")
 
-        self.general_items = [open_maps_item, open_composite_item, open_series_item, open_spectra_item,
-                              data_item,
+        self.general_items = [open_maps_item, open_composite_item, open_series_item, data_item,
                               fido_item, hek_item,
                               db_settings_item, exit_item, self.toolbar_item, undo_item, colorbar_item]
         self.map_items = [save_image_item, save_fits_item, cmap_item, norm_item, tv_item, bilateral_item,
@@ -148,7 +145,6 @@ class MainFrame(wx.Frame):
         self.map_tool_items = [self.contrast_item, self.value_item, self.profile_item, self.selection_item,
                                self.fft_item, self.wavelet_item]
         self.series_items = [save_image_item, save_fits_item]
-        self.spectra_items = [save_image_item, save_fits_item]
 
         menubar = wx.MenuBar()
         menubar.Append(file_menu, "&File")
@@ -160,7 +156,6 @@ class MainFrame(wx.Frame):
         menubar.Bind(wx.EVT_MENU, self.onOpenMaps, open_maps_item)
         menubar.Bind(wx.EVT_MENU, self.onOpenComposite, open_composite_item)
         menubar.Bind(wx.EVT_MENU, self.onOpenSeries, open_series_item)
-        menubar.Bind(wx.EVT_MENU, self.openCallistoSpectra, open_spectra_item)
         menubar.Bind(wx.EVT_MENU, self.onSaveImage, save_image_item)
         menubar.Bind(wx.EVT_MENU, self.onSaveFits, save_fits_item)
         menubar.Bind(wx.EVT_MENU, self.onExit, exit_item)
@@ -208,8 +203,6 @@ class MainFrame(wx.Frame):
             enable.extend(self.map_items)
         if isinstance(tab, TimeSeriesTab):
             enable.extend(self.series_items)
-        if isinstance(tab, SpectraTab):
-            enable.extend(self.spectra_items)
         if isinstance(tab, CompositeMapTab):
             enable.extend(self.map_cube_items)
 
@@ -217,7 +210,7 @@ class MainFrame(wx.Frame):
             item.Enable(True)
 
     def disableAllMenuItems(self):
-        for item in (self.map_items + self.series_items + self.spectra_items + self.map_cube_items):
+        for item in (self.map_items + self.series_items + self.map_cube_items):
             item.Enable(False)
 
     def onPaneClose(self, event):
@@ -270,14 +263,6 @@ class MainFrame(wx.Frame):
             return
         path = dialog.GetPath()
         self.content_ctrl.openTimeSeries(path)
-
-    def openCallistoSpectra(self, event):
-        dialog = wx.FileDialog(self, "Open Fits file", "", "",
-                               "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-        if dialog.ShowModal() == wx.ID_CANCEL:
-            return
-        path = dialog.GetPath()
-        self.content_ctrl.openCallistoSpectra(path)
 
     def onSaveImage(self, event):
         self.content_ctrl.saveImage()
@@ -405,8 +390,7 @@ class MainFrame(wx.Frame):
 
     def onHEK(self, event):
         hek = HEKPanel(self)
-        self.manager.AddPane(hek, wx.LEFT, "HEK Download")
-        self.manager.Update()
+        self._addToolPane(hek, "HEK Download")
         pub.subscribe(self.onQueryStarted, EVT_QUERY_STARTED)
         pub.subscribe(self.onQueryResult, EVT_QUERY_RESULT)
 
