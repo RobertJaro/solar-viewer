@@ -5,6 +5,7 @@ from enum import Enum
 
 import sunpy.map
 import sunpy.timeseries
+import wx
 from astropy import units as u
 from wx import aui
 from wx.lib.pubsub import pub
@@ -95,27 +96,41 @@ class ContentController:
             pub.sendMessage(EVT_STATUS_BAR_UPDATE, x=coord.Tx, y=coord.Ty)
 
     def openMap(self, path):
-        map = sunpy.map.Map(path)
-        map.path = path
-        map_tab = MapTab(self.parent, map, self.model.plot_preferences)
-        self.openPanel(map.name, map_tab)
-        # add coordinates of mouse courser to status bar
-        map_tab.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
+        try:
+            map = sunpy.map.Map(path)
+            map.path = path
+            map_tab = MapTab(self.parent, map, self.model.plot_preferences)
+            self.openPanel(map.name, map_tab)
+            # add coordinates of mouse courser to status bar
+            map_tab.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
+        except Exception as ex:
+            self.handleFileOpenError(ex, path)
 
     def openCompositeMap(self, paths):
-        comp_map = sunpy.map.Map(paths, composite=True)
-        a = 0.5
-        for i in range(len(paths)):
-            comp_map.set_alpha(i, a)
-        map_tab = CompositeMapTab(self.parent, comp_map)
-        self.openPanel("Composite Map", map_tab)
+        try:
+            comp_map = sunpy.map.Map(paths, composite=True)
+            a = 0.5
+            for i in range(len(paths)):
+                comp_map.set_alpha(i, a)
+            map_tab = CompositeMapTab(self.parent, comp_map)
+            self.openPanel("Composite Map", map_tab)
+        except Exception as ex:
+            self.handleFileOpenError(ex, paths)
 
     def openTimeSeries(self, path):
-        series = sunpy.timeseries.TimeSeries(path)
-        series.path = path
-        series_tab = TimeSeriesTab(self.parent, series)
-        name = "{} ({:%Y-%m-%d %H:%M:%S})".format(series.source.upper(), series.time_range.start)
-        self.openPanel(name, series_tab)
+        try:
+            series = sunpy.timeseries.TimeSeries(path)
+            series.path = path
+            series_tab = TimeSeriesTab(self.parent, series)
+            name = "{} ({:%Y-%m-%d %H:%M:%S})".format(series.source.upper(), series.time_range.start)
+            self.openPanel(name, series_tab)
+        except Exception as ex:
+            self.handleFileOpenError(ex, path)
+
+    def handleFileOpenError(self, ex, path):
+        error_msg = "Error during opening: {} \nCaused by: {}".format(path, str(ex))
+        dlg = wx.MessageDialog(self.parent, error_msg, style=wx.ICON_ERROR)
+        dlg.ShowModal()
 
     def openPanel(self, name, tab):
         self.view.AddPage(tab, name, True)
@@ -276,4 +291,3 @@ class TimeSeriesTab(AbstractTab):
     def draw(self):
         ax = self.figure.gca()
         self.series.plot(axes=ax)
-
