@@ -11,7 +11,7 @@ from sunpyviewer.conversion.coordinate import extractCoordinates
 from sunpyviewer.tools import EVT_PROFILE_MODE_CHANGE, EVT_PROFILE_RESET
 from sunpyviewer.tools.default_tool import ToolController
 from sunpyviewer.util.wxmatplot import PlotPanel
-from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED
+from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED, EVT_DISABLE_TOOLBAR_ITEMS
 from sunpyviewer.viewer.content import MapTab
 
 
@@ -68,6 +68,7 @@ class ProfileController(ToolController):
         self.cursor.vertOn = mode is Mode.VERTICAL
         self.model.mode = mode
         self.resetFreeLine()
+        pub.sendMessage(EVT_DISABLE_TOOLBAR_ITEMS)
 
     def onTabChange(self, tab):
         if not self.view:

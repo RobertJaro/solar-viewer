@@ -25,7 +25,8 @@ from sunpyviewer.tools.selection import SelectionPanel, SelectionController
 from sunpyviewer.tools.value_adjustment import ValueAdjustmentPanel, ValueAdjustmentController
 from sunpyviewer.tools.wavelet import WaveletPanel, WaveletController
 from sunpyviewer.util.data import resources_dir
-from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE
+from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE, \
+    EVT_DISABLE_TOOLBAR_ITEMS
 from sunpyviewer.viewer.composite import CompositeDialog
 from sunpyviewer.viewer.content import MapTab, CompositeMapTab, TimeSeriesTab, ContentController
 from sunpyviewer.viewer.history import History
@@ -278,6 +279,7 @@ class MainFrame(wx.Frame):
         if self.profile_ctrl.view is None:
             profile_tool = self.profile_ctrl.createView(self, self.content_ctrl.getActivePage())
             self._addToolPane(profile_tool, "Profile Analysis")
+            pub.sendMessage(EVT_DISABLE_TOOLBAR_ITEMS)
         else:
             self._removeToolPane(self.profile_ctrl.view)
             self.profile_ctrl.closeView()
@@ -286,6 +288,7 @@ class MainFrame(wx.Frame):
         if self.selection_ctrl.view is None:
             selection_tool = self.selection_ctrl.createView(self, self.content_ctrl.getActivePage())
             self._addToolPane(selection_tool, "Value Highlighting")
+            pub.sendMessage(EVT_DISABLE_TOOLBAR_ITEMS)
         else:
             self._removeToolPane(self.selection_ctrl.view)
             self.selection_ctrl.closeView()

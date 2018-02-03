@@ -14,5 +14,6 @@ EVT_CHANGE_TAB = "tab.change"
 EVT_ACTIVATE_PAN = "tab.pan"
 EVT_ACTIVATE_ZOOM = "tab.zoom"
 EVT_ACTIVATE_RESET = "tab.reset"
+EVT_DISABLE_TOOLBAR_ITEMS = "toolbar.disable.all"
 
 EVT_CHANGE_PLOT_PREFERENCE = "tab.plotpreference"
