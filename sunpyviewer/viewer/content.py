@@ -204,6 +204,16 @@ class ContentController:
         self.model.plot_preferences[key] = value
         self.refreshMaps()
 
+    def getZoomSubMap(self):
+        x = self.getActivePage().figure.axes[0].get_xlim()
+        y = self.getActivePage().figure.axes[0].get_ylim()
+        bl = [x[0], y[0]]
+        tr = [x[1], y[1]]
+        current_map = self.getActiveContent()
+        sub_map = current_map.submap(bl * u.pixel, tr * u.pixel)
+        sub_map.plot_settings = current_map.plot_settings  # preserve settings
+        return sub_map
+
 
 class ContentNotebook(aui.AuiNotebook):
     def __init__(self, parent):

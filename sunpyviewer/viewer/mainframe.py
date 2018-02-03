@@ -1,6 +1,5 @@
 import os
 
-import astropy.units as u
 import numpy as np
 import sunpy.map
 import sunpy.timeseries
@@ -425,13 +424,7 @@ class MainFrame(wx.Frame):
         dlg.Destroy()
 
     def onCut(self, event):
-        x = self.content_ctrl.getActivePage().figure.axes[0].get_xlim()
-        y = self.content_ctrl.getActivePage().figure.axes[0].get_ylim()
-        bl = [x[0], y[0]]
-        tr = [x[1], y[1]]
-        current_map = self.content_ctrl.getActiveContent()
-        sub_map = current_map.submap(bl * u.pixel, tr * u.pixel)
-        sub_map.plot_settings = current_map.plot_settings  # preserve settings
+        sub_map = self.content_ctrl.getZoomSubMap()
         self.content_ctrl.setTabContent(self.content_ctrl.getActiveTabId(), sub_map)
 
     def onAdjustAlpha(self, event):
@@ -454,5 +447,7 @@ class MainFrame(wx.Frame):
         self.content_ctrl.setTabContent(self.content_ctrl.getActiveTabId(), result)
 
     def onSNR(self, event):
-        snr = signaltonoise(self.content_ctrl.getActiveContent().data, axis=None)
-        wx.MessageDialog(self, "Estimated SNR: {}".format(snr)).ShowModal()
+        data = self.content_ctrl.getZoomSubMap().data
+        snr = signaltonoise(data, axis=None)
+        message = "Estimated SNR: {0:.7}".format(float(snr))
+        wx.MessageDialog(self, message).ShowModal()
