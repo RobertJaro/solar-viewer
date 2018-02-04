@@ -11,7 +11,7 @@ from wx import aui
 from wx.lib.pubsub import pub
 
 from sunpyviewer.tools import EVT_OPEN_MAP
-from sunpyviewer.util.data import saveFigure, saveFits
+from sunpyviewer.util.data import saveFigure, saveFits, getMapName
 from sunpyviewer.util.wxmatplot import PlotPanel
 from sunpyviewer.viewer import EVT_MAP_CLOSED, EVT_TAB_SELECTION_CHANGED, EVT_MAP_ADDED, EVT_STATUS_BAR_UPDATE, \
     EVT_CHANGE_TAB, EVT_ACTIVATE_PAN, EVT_ACTIVATE_ZOOM, EVT_ACTIVATE_RESET, \
@@ -100,7 +100,7 @@ class ContentController:
             map = sunpy.map.Map(path)
             map.path = path
             map_tab = MapTab(self.parent, map, self.model.plot_preferences)
-            self.openPanel(map.name, map_tab)
+            self.openPanel(getMapName(map), map_tab)
             # add coordinates of mouse courser to status bar
             map_tab.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
         except Exception as ex:
@@ -133,7 +133,8 @@ class ContentController:
         dlg.ShowModal()
 
     def openPanel(self, name, tab):
-        self.view.AddPage(tab, name, True)
+        title = "{}: {}".format(tab.Id, name)
+        self.view.AddPage(tab, title, True)
         self._initTools(tab)
         self.model.addTab(tab)
 
@@ -175,7 +176,7 @@ class ContentController:
         threading.Thread(target=self.getActivePage().redraw).start()
 
     def getMaps(self):
-        return {id: tab.getContent().name for id, tab in self.model.tabs.items() if isinstance(tab, MapTab)}
+        return {id: getMapName(tab.getContent()) for id, tab in self.model.tabs.items() if isinstance(tab, MapTab)}
 
     def refreshMaps(self):
         for tab in self.model.tabs.values():
