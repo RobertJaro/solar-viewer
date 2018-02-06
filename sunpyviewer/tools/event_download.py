@@ -44,6 +44,8 @@ class HEKPanel(ScrolledPanel):
         result_box = wx.StaticBox(self, label="Result")
         result_sizer = wx.StaticBoxSizer(result_box, wx.VERTICAL)
 
+        self.query_button = wx.Button(self, label="Query")
+
         self.list = HEKListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.list.InsertColumn(0, "No.")
         self.list.InsertColumn(1, "Type")
@@ -55,6 +57,7 @@ class HEKPanel(ScrolledPanel):
         self.list.InsertColumn(7, "Channel")
         self.list.InsertColumn(8, "FRM")
         result_sizer.Add(self.list, flag=wx.EXPAND | wx.ALL, border=5)
+        result_sizer.Add(self.query_button, flag=wx.BOTTOM | wx.LEFT, border=5)
 
         sizer.Add(query_sizer, flag=wx.EXPAND | wx.ALL, border=5)
         sizer.AddSpacer(10)
@@ -64,6 +67,7 @@ class HEKPanel(ScrolledPanel):
 
         self.search_button.Bind(wx.EVT_BUTTON, self._onSearch)
         self.list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._onCallVSO)
+        self.query_button.Bind(wx.EVT_BUTTON, self._onCallVSO)
 
     def _onSearch(self, event):
         self.search_button.Enable(False)
@@ -99,6 +103,8 @@ class HEKPanel(ScrolledPanel):
 
     def _onCallVSO(self, event):
         selected_index = self.list.GetFirstSelected()
+        if selected_index == -1:
+            return
 
         self.vso_query_id += 1
         pub.sendMessage(EVT_QUERY_STARTED, id=self.vso_query_id, type=QueryType.HEK)

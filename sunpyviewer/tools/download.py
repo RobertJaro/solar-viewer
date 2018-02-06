@@ -155,25 +155,35 @@ class QueryTab(wx.Panel):
         self.download_paths = {}
         self.result = None
 
-        self.list = FidoListCtrl(self, style=wx.LC_REPORT)
+        self.content = wx.Panel(self)
+        self.content.Hide()
+
+        self.download_button = wx.Button(self.content, label="Download/Open")
+
+        self.list = FidoListCtrl(self.content, style=wx.LC_REPORT)
         self.image_list = wx.ImageList(24, 24)
         self.list.SetImageList(self.image_list, wx.IMAGE_LIST_SMALL)
-        self.list.Hide()
         self._createListColumns()
 
         self.progress = wx.Gauge(self, style=wx.GA_HORIZONTAL)
         self.progress.Pulse()
+
+        content_sizer = wx.BoxSizer(wx.VERTICAL)
+        content_sizer.Add(self.list, 1, flag=wx.CENTER | wx.EXPAND)
+        content_sizer.Add(self.download_button, flag=wx.ALIGN_RIGHT | wx.ALL, border=2)
+        self.content.SetSizerAndFit(content_sizer)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         prog_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         prog_sizer.Add(self.progress, 1, wx.CENTER)
         sizer.Add(prog_sizer, 1, wx.CENTER)
-        sizer.Add(self.list, 1, wx.EXPAND)
+        sizer.Add(self.content, 1, wx.EXPAND)
 
         self.SetSizerAndFit(sizer)
         self.list.Bind(wx.EVT_LIST_COL_RIGHT_CLICK, self.onColumnRightClick)
         self.list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.onItemActivated)
+        self.download_button.Bind(wx.EVT_BUTTON, self.onItemActivated)
 
     def _createListColumns(self):
         l = self.list
@@ -219,7 +229,7 @@ class QueryTab(wx.Panel):
         self.list.Refresh()
 
         self.progress.Hide()
-        self.list.Show()
+        self.content.Show()
         self.Layout()
         self.list.AdjustColumnWidth()
 
@@ -240,8 +250,11 @@ class QueryTab(wx.Panel):
         self._refreshList()
 
     def onItemActivated(self, event):
-        index = event.Index
+        indices = self.list.GetSelectedIndices()
+        for i in indices:
+            self.onIndexActivated(i)
 
+    def onIndexActivated(self, index):
         if index in self.downloading_ids:
             return
 
@@ -294,6 +307,11 @@ class FidoListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):
             self.SetColumnWidth(i, wx.LIST_AUTOSIZE_USEHEADER)
             header_width = self.GetColumnWidth(i)
             self.SetColumnWidth(i, max(content_width, header_width))
+
+    def GetSelectedIndices(self):
+        for index in range(self.GetItemCount()):
+            if self.IsSelected(index):
+                yield index
 
 
 class _FilterBox(wx.Panel):
