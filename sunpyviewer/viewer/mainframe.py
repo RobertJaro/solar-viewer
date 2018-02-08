@@ -4,7 +4,6 @@ import numpy as np
 import sunpy.map
 import sunpy.timeseries
 import wx
-from scipy.stats import signaltonoise
 from sunpy.image.coalignment import mapcube_coalign_by_match_template
 from sunpy.physics.solar_rotation import mapcube_solar_derotate
 from wx import aui
@@ -451,6 +450,6 @@ class MainFrame(wx.Frame):
 
     def onSNR(self, event):
         data = self.content_ctrl.getZoomSubMap().data
-        snr = signaltonoise(data, axis=None)
+        snr = np.mean(data) / np.std(data)
         message = "Estimated SNR: {0:.7}".format(float(snr))
         wx.MessageDialog(self, message).ShowModal()
