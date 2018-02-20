@@ -78,12 +78,12 @@ class SelectionController(ToolController):
         self.view.addPointToList(coord.Tx, coord.Ty, data, index)
         self._drawPoint(event.xdata, event.ydata, index + 1)
 
-    def onTabChange(self, tab):
+    def onTabChange(self, ctrl):
         self._removeCursor()
         if not self.view:
             return
         self.onClear()
-        self.model.setTab(tab)
+        self.model.setTab(ctrl.getView())
         self._initListener()
 
     def onClear(self):

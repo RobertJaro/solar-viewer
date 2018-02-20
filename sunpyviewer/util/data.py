@@ -47,11 +47,4 @@ def saveFits(parent, content):
         content.save(dlg.GetPath(), overwrite=True)
 
 
-def getMapName(map):
-    try:
-        return map.name
-    except:
-        return "Map"
-
-
 resources_dir = os.path.dirname(sunpyviewer.resources.__file__)

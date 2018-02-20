@@ -25,9 +25,10 @@ from sunpyviewer.tools.value_adjustment import ValueAdjustmentPanel, ValueAdjust
 from sunpyviewer.tools.wavelet import WaveletPanel, WaveletController
 from sunpyviewer.util.data import resources_dir
 from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE, \
-    EVT_DISABLE_TOOLBAR_ITEMS
+    EVT_MPL_CHANGE_MODE
 from sunpyviewer.viewer.composite import CompositeDialog
-from sunpyviewer.viewer.content import MapTab, CompositeMapTab, TimeSeriesTab, ContentController
+from sunpyviewer.viewer.content import MapViewerController, CompositeMapViewerController, TimeSeriesViewerController, \
+    ContentController, ViewMode
 from sunpyviewer.viewer.history import History
 from sunpyviewer.viewer.settings import DBDialog
 from sunpyviewer.viewer.toolbar import ToolbarController
@@ -196,15 +197,15 @@ class MainFrame(wx.Frame):
 
         self.SetMenuBar(menubar)
 
-    def onTabChange(self, tab):
+    def onTabChange(self, ctrl):
         self.disableAllMenuItems()
 
         enable = []
-        if isinstance(tab, MapTab):
+        if isinstance(ctrl, MapViewerController):
             enable.extend(self.map_items)
-        if isinstance(tab, TimeSeriesTab):
+        if isinstance(ctrl, TimeSeriesViewerController):
             enable.extend(self.series_items)
-        if isinstance(tab, CompositeMapTab):
+        if isinstance(ctrl, CompositeMapViewerController):
             enable.extend(self.map_cube_items)
 
         for item in enable:
@@ -276,9 +277,9 @@ class MainFrame(wx.Frame):
 
     def onToggleProfile(self, *args):
         if self.profile_ctrl.view is None:
-            profile_tool = self.profile_ctrl.createView(self, self.content_ctrl.getActivePage())
+            profile_tool = self.profile_ctrl.createView(self, self.content_ctrl.getActiveController())
             self._addToolPane(profile_tool, "Profile Analysis")
-            pub.sendMessage(EVT_DISABLE_TOOLBAR_ITEMS)
+            pub.sendMessage(EVT_MPL_CHANGE_MODE, mode=ViewMode.NONE)
         else:
             self._removeToolPane(self.profile_ctrl.view)
             self.profile_ctrl.closeView()
@@ -287,7 +288,7 @@ class MainFrame(wx.Frame):
         if self.selection_ctrl.view is None:
             selection_tool = self.selection_ctrl.createView(self, self.content_ctrl.getActivePage())
             self._addToolPane(selection_tool, "Value Highlighting")
-            pub.sendMessage(EVT_DISABLE_TOOLBAR_ITEMS)
+            pub.sendMessage(EVT_MPL_CHANGE_MODE, mode=ViewMode.NONE)
         else:
             self._removeToolPane(self.selection_ctrl.view)
             self.selection_ctrl.closeView()

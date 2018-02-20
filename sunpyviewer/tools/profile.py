@@ -11,8 +11,9 @@ from sunpyviewer.conversion.coordinate import extractCoordinates
 from sunpyviewer.tools import EVT_PROFILE_MODE_CHANGE, EVT_PROFILE_RESET
 from sunpyviewer.tools.default_tool import ToolController
 from sunpyviewer.util.wxmatplot import PlotPanel
-from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED, EVT_DISABLE_TOOLBAR_ITEMS
-from sunpyviewer.viewer.content import MapTab
+from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED, EVT_MPL_CHANGE_MODE
+from sunpyviewer.viewer.content import ViewerType, DataType
+from sunpyviewer.viewer.toolbar import ViewMode
 
 
 class ProfileModel:
@@ -44,9 +45,9 @@ class ProfileController(ToolController):
         pub.subscribe(self.onModeChange, EVT_PROFILE_MODE_CHANGE)
         pub.subscribe(self.resetFreeLine, EVT_PROFILE_RESET)
 
-    def createView(self, parent, tab):
+    def createView(self, parent, ctrl):
         self.view = ProfilePanel(parent)
-        self.onTabChange(tab)
+        self.onTabChange(ctrl)
         return self.view
 
     def closeView(self):
@@ -68,20 +69,21 @@ class ProfileController(ToolController):
         self.cursor.vertOn = mode is Mode.VERTICAL
         self.model.mode = mode
         self.resetFreeLine()
-        pub.sendMessage(EVT_DISABLE_TOOLBAR_ITEMS)
+        pub.sendMessage(EVT_MPL_CHANGE_MODE, mode=ViewMode.NONE)
 
-    def onTabChange(self, tab):
+    def onTabChange(self, ctrl):
         if not self.view:
             return
         self._removeCursor()
         self.resetFreeLine()
-        if not isinstance(tab, MapTab):
-            tab = None
+        if ctrl.getViewerType() is ViewerType.MPL and ctrl.getDataType() is DataType.MAP:
+            self.model.setTab(ctrl.getView())
+        else:
+            self.model.setTab(None)
             self.model.mode = Mode.NONE
-        self.model.setTab(tab)
         self.view.initMode(self.model.enabled)
         if self.model.enabled:
-            self._initFigureListener(tab)
+            self._initFigureListener(self.model.tab)
             self.onModeChange(self.model.mode)
 
     def _initFigureListener(self, tab):

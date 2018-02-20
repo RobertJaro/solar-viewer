@@ -1,15 +1,38 @@
 import os
+from enum import Enum
 
 import wx
 from wx import aui
 from wx.lib.pubsub import pub
 
+from sunpyviewer.util.common import Singleton
 from sunpyviewer.util.data import resources_dir
-from sunpyviewer.viewer import EVT_ACTIVATE_PAN, EVT_ACTIVATE_RESET, EVT_ACTIVATE_ZOOM, EVT_DISABLE_TOOLBAR_ITEMS
+from sunpyviewer.viewer import EVT_MPL_MODE_CHANGED, EVT_MPL_CHANGE_MODE, EVT_MPL_RESET
 
 
-class ToolbarController:
+class ViewMode(Enum):
+    NONE = "none"
+    PAN = "pan"
+    ZOOM = "zoom"
+
+
+class ToolbarModel():
+    def __init__(self):
+        self.mode = ViewMode.NONE
+
+    def setMode(self, mode):
+        self.mode = mode
+        pub.sendMessage(EVT_MPL_MODE_CHANGED, mode=mode)
+
+    def getMode(self):
+        return self.mode
+
+
+class ToolbarController(metaclass=Singleton):
+
     def __init__(self, parent):
+        self.model = ToolbarModel()
+
         toolbar = aui.AuiToolBar(parent, style=aui.AUI_TB_VERTICAL)
         pan_icon = wx.Image(os.path.join(resources_dir, "pan.png"), wx.BITMAP_TYPE_PNG).ConvertToBitmap()
         zoom_icon = wx.Image(os.path.join(resources_dir, "zoom.png"), wx.BITMAP_TYPE_PNG).ConvertToBitmap()
@@ -26,10 +49,24 @@ class ToolbarController:
         toolbar.Bind(wx.EVT_MENU, self.onZoom, self.zoom_item)
         toolbar.Bind(wx.EVT_MENU, self.onReset, self.reset_item)
 
-        pub.subscribe(self.disableAll, EVT_DISABLE_TOOLBAR_ITEMS)
+        pub.subscribe(self.setMode, EVT_MPL_CHANGE_MODE)
 
         toolbar.Realize()
         self.view = toolbar
+
+    def getMode(self):
+        return self.model.getMode()
+
+    def setMode(self, mode):
+        self.pan_item.SetState(False)
+        self.zoom_item.SetState(False)
+
+        self.model.setMode(mode)
+        if mode is ViewMode.PAN:
+            self.pan_item.SetState(True)
+        if mode is ViewMode.ZOOM:
+            self.zoom_item.SetState(True)
+        self.view.Realize()
 
     def disablePan(self, *args):
         self.pan_item.SetState(False)
@@ -40,25 +77,22 @@ class ToolbarController:
         self.view.Realize()
 
     def onPan(self, event):
-        pub.sendMessage(EVT_ACTIVATE_PAN)
-        event.Skip()
-
-    def onZoom(self, event):
-        pub.sendMessage(EVT_ACTIVATE_ZOOM)
+        if self.model.getMode() is ViewMode.PAN:
+            self.model.setMode(ViewMode.NONE)
+        else:
+            self.model.setMode(ViewMode.PAN)
         event.Skip()
 
     def onReset(self, event):
-        pub.sendMessage(EVT_ACTIVATE_RESET)
+        pub.sendMessage(EVT_MPL_RESET)
+        event.Skip()
+
+    def onZoom(self, event):
+        if self.model.getMode() is ViewMode.ZOOM:
+            self.model.setMode(ViewMode.NONE)
+        else:
+            self.model.setMode(ViewMode.ZOOM)
         event.Skip()
 
     def getView(self):
         return self.view
-
-    def disableAll(self):
-        if self.pan_item.GetState():
-            self.pan_item.SetState(False)
-            pub.sendMessage(EVT_ACTIVATE_PAN)
-        if self.zoom_item.GetState():
-            self.zoom_item.SetState(False)
-            pub.sendMessage(EVT_ACTIVATE_ZOOM)
-        self.view.Realize()

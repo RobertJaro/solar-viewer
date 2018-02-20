@@ -1,3 +1,4 @@
+import logging
 from abc import abstractmethod, ABC
 
 import wx
@@ -166,6 +167,7 @@ class MapToolPanel(ScrolledPanel):
             modified_map = self.modifyMap(self.content_ctrl.getContent(self.selected_id))
             pub.sendMessage(EVT_CHANGE_TAB, tab_id=self.selected_id, data=modified_map)
         except Exception as e:
+            logging.exception(e)
             self.info_bar.ShowMessage(str(e), flags=wx.ICON_ERROR)
             self.Layout()
 
@@ -175,6 +177,7 @@ class MapToolPanel(ScrolledPanel):
             modified_map = self.modifyMap(self.content_ctrl.getContent(self.selected_id))
             self._preview(modified_map)
         except Exception as e:
+            logging.exception(e)
             self.info_bar.ShowMessage(str(e), flags=wx.ICON_ERROR)
             self.Layout()
 

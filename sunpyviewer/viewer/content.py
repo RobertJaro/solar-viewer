@@ -1,6 +1,7 @@
 import copy
+import logging
 import threading
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from enum import Enum
 
 import sunpy.map
@@ -11,49 +12,54 @@ from wx import aui
 from wx.lib.pubsub import pub
 
 from sunpyviewer.tools import EVT_OPEN_MAP
-from sunpyviewer.util.data import saveFigure, saveFits, getMapName
+from sunpyviewer.util.common import Singleton
+from sunpyviewer.util.data import saveFigure, saveFits
 from sunpyviewer.util.wxmatplot import PlotPanel
 from sunpyviewer.viewer import EVT_MAP_CLOSED, EVT_TAB_SELECTION_CHANGED, EVT_MAP_ADDED, EVT_STATUS_BAR_UPDATE, \
-    EVT_CHANGE_TAB, EVT_ACTIVATE_PAN, EVT_ACTIVATE_ZOOM, EVT_ACTIVATE_RESET, \
-    EVT_CHANGE_PLOT_PREFERENCE, EVT_MAP_CHANGED
+    EVT_CHANGE_TAB, EVT_CHANGE_PLOT_PREFERENCE, EVT_MAP_CHANGED, EVT_MPL_MODE_CHANGED, EVT_MPL_RESET
+from sunpyviewer.viewer.toolbar import ViewMode, ToolbarController
 
 
-class ViewMode(Enum):
-    PAN = "pan"
-    ZOOM = "zoom"
+class DataType(Enum):
+    MAP = "map"
+    MAP_CUBE = "map_cube"
+    SERIES = "series"
+
+
+class ViewerType(Enum):
+    MPL = "matplotlib"
+    GINGA = "ginga"
 
 
 class ContentModel:
     def __init__(self):
-        self.tabs = {}
-        self.mode = None
+        self.viewer_controllers = {}
         self.plot_preferences = {"show_colorbar": False, "show_limb": False, "draw_contours": False, "draw_grid": False}
 
-    def removeTab(self, page):
-        self.tabs = {k: v for k, v in self.tabs.items() if v is not page}
-        if isinstance(page, MapTab):
-            pub.sendMessage(EVT_MAP_CLOSED, tab_id=page.Id)
-        if len(self.tabs) == 0:
-            pub.sendMessage(EVT_TAB_SELECTION_CHANGED, tab=None)
+    def removeViewerController(self, id):
+        ctrl = self.viewer_controllers[id]
+        del self.viewer_controllers[id]
+        if ctrl.getDataType() is DataType.MAP:
+            pub.sendMessage(EVT_MAP_CLOSED, tab_id=id)
+        if len(self.viewer_controllers) == 0:
+            pub.sendMessage(EVT_TAB_SELECTION_CHANGED, ctrl=None)
 
     def changeContent(self, id, content):
-        tab = self.tabs[id]
-        tab.setContent(content)
-        if isinstance(tab, MapTab):
-            pub.sendMessage(EVT_MAP_CHANGED, tab_id=id, data=content)
-        pub.sendMessage(EVT_TAB_SELECTION_CHANGED, tab=tab)
-        return tab
+        ctrl = self.viewer_controllers[id]
+        ctrl.setContent(content)
+        return ctrl
 
-    def addTab(self, tab):
-        self.tabs[tab.Id] = tab
-        if isinstance(tab, MapTab) or isinstance(tab, CompositeMapTab):
-            pub.sendMessage(EVT_MAP_ADDED, tab_id=tab.Id, data=tab.getContent())
+    def addViewerController(self, ctrl):
+        tab = ctrl.getView()
+        self.viewer_controllers[tab.Id] = ctrl
+        if ctrl.getDataType() is DataType.MAP or ctrl.getDataType() is DataType.MAP_CUBE:
+            pub.sendMessage(EVT_MAP_ADDED, tab_id=tab.Id, data=ctrl.getContent())
 
-    def getTab(self, id):
-        return self.tabs[id]
+    def getViewerController(self, id):
+        return self.viewer_controllers[id]
 
 
-class ContentController:
+class ContentController(metaclass=Singleton):
     def __init__(self, parent):
         view = ContentNotebook(parent)
         view.Bind(aui.EVT_AUINOTEBOOK_ALLOW_DND, lambda event: event.Allow())
@@ -66,44 +72,37 @@ class ContentController:
 
         pub.subscribe(self.setTabContent, EVT_CHANGE_TAB)
 
-        pub.subscribe(self.pan, EVT_ACTIVATE_PAN)
-        pub.subscribe(self.zoom, EVT_ACTIVATE_ZOOM)
-        pub.subscribe(self.reset, EVT_ACTIVATE_RESET)
-
         pub.subscribe(self.setPlotPreference, EVT_CHANGE_PLOT_PREFERENCE)
         pub.subscribe(self.openMap, EVT_OPEN_MAP)
+
+    def getPlotPreferences(self):
+        return self.model.plot_preferences
 
     def getView(self):
         return self.view
 
     def setTabContent(self, tab_id, data):
-        tab = self.model.changeContent(tab_id, data)
-        idx = self.view.GetPageIndex(tab)
+        ctrl = self.model.changeContent(tab_id, data)
+        idx = self.view.GetPageIndex(ctrl.getView())
         self.view.SetSelection(idx)
-        threading.Thread(target=tab.redraw).start()
+        pub.sendMessage(EVT_TAB_SELECTION_CHANGED, ctrl=ctrl)
+        threading.Thread(target=ctrl.redraw).start()
 
     def onClose(self, event):
         page = self.view.GetPage(event.Selection)
-        self.model.removeTab(page)
+        self.model.removeViewerController(page.Id)
 
     def onTabChanged(self, *args):
-        tab = self.getActivePage()
-        pub.sendMessage(EVT_TAB_SELECTION_CHANGED, tab=tab)
-
-    def onMapMotion(self, event):
-        if event.inaxes:
-            coord = self.getActiveContent().pixel_to_world(event.xdata * u.pixel, event.ydata * u.pixel)
-            pub.sendMessage(EVT_STATUS_BAR_UPDATE, x=coord.Tx, y=coord.Ty)
+        id = self.getActiveTabId()
+        ctrl = self.model.viewer_controllers[id]
+        pub.sendMessage(EVT_TAB_SELECTION_CHANGED, ctrl=ctrl)
 
     def openMap(self, path):
         try:
-            map = sunpy.map.Map(path)
-            map.path = path
-            map_tab = MapTab(self.parent, map, self.model.plot_preferences)
-            self.openPanel(getMapName(map), map_tab)
-            # add coordinates of mouse courser to status bar
-            map_tab.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
+            map_ctrl = MapViewerController(self.parent, path)
+            self.openPanel(map_ctrl)
         except Exception as ex:
+            logging.exception(ex)
             self.handleFileOpenError(ex, path)
 
     def openCompositeMap(self, paths):
@@ -112,8 +111,8 @@ class ContentController:
             a = 0.5
             for i in range(len(paths)):
                 comp_map.set_alpha(i, a)
-            map_tab = CompositeMapTab(self.parent, comp_map)
-            self.openPanel("Composite Map", map_tab)
+            map_tab = CompositeMapViewerController(self.parent, comp_map)
+            self.openPanel(map_tab)
         except Exception as ex:
             self.handleFileOpenError(ex, paths)
 
@@ -121,9 +120,8 @@ class ContentController:
         try:
             series = sunpy.timeseries.TimeSeries(path)
             series.path = path
-            series_tab = TimeSeriesTab(self.parent, series)
-            name = "{} ({:%Y-%m-%d %H:%M:%S})".format(series.source.upper(), series.time_range.start)
-            self.openPanel(name, series_tab)
+            ctrl = TimeSeriesViewerController(self.parent, series)
+            self.openPanel(ctrl)
         except Exception as ex:
             self.handleFileOpenError(ex, path)
 
@@ -132,33 +130,11 @@ class ContentController:
         dlg = wx.MessageDialog(self.parent, error_msg, style=wx.ICON_ERROR)
         dlg.ShowModal()
 
-    def openPanel(self, name, tab):
-        title = "{}: {}".format(tab.Id, name)
+    def openPanel(self, ctrl):
+        tab = ctrl.getView()
+        title = "{}: {}".format(tab.Id, ctrl.getTitle())
+        self.model.addViewerController(ctrl)
         self.view.AddPage(tab, title, True)
-        self._initTools(tab)
-        self.model.addTab(tab)
-
-    def _initTools(self, tab):
-        if self.model.mode is ViewMode.PAN:
-            tab.toolbar.pan()
-        if self.model.mode is ViewMode.ZOOM:
-            tab.toolbar.zoom()
-
-    def pan(self):
-        if self.model.mode is ViewMode.PAN:
-            self.model.mode = None
-        else:
-            self.model.mode = ViewMode.PAN
-        for page in self.model.tabs.values():
-            page.toolbar.pan()
-
-    def zoom(self):
-        if self.model.mode is ViewMode.ZOOM:
-            self.model.mode = None
-        else:
-            self.model.mode = ViewMode.ZOOM
-        for page in self.model.tabs.values():
-            page.toolbar.zoom()
 
     def reset(self):
         if self.hasPage():
@@ -175,13 +151,19 @@ class ContentController:
     def redrawActive(self):
         threading.Thread(target=self.getActivePage().redraw).start()
 
+    # TODO: remove maps list selection
     def getMaps(self):
-        return {id: getMapName(tab.getContent()) for id, tab in self.model.tabs.items() if isinstance(tab, MapTab)}
+        return {id: ctrl.getTitle() for id, ctrl in self.model.viewer_controllers.items() if
+                ctrl.getDataType() is DataType.MAP}
 
     def refreshMaps(self):
-        for tab in self.model.tabs.values():
-            if isinstance(tab, MapTab) or isinstance(tab, CompositeMapTab):
-                threading.Thread(target=tab.redraw).start()
+        for ctrl in self.model.viewer_controllers.values():
+            if ctrl.getDataType() is DataType.MAP or ctrl.getDataType() is DataType.MAP_CUBE:
+                ctrl.redraw()
+
+    def getActiveController(self):
+        id = self.getActiveTabId()
+        return self.model.viewer_controllers[id]
 
     def getActivePage(self):
         return self.view.GetCurrentPage()
@@ -190,7 +172,7 @@ class ContentController:
         return self.view.GetCurrentPage() is not None
 
     def getActiveContent(self):
-        return copy.deepcopy(self.getActivePage().getContent())
+        return copy.deepcopy(self.getActiveController().getContent())
 
     def getActiveTabId(self):
         page = self.getActivePage()
@@ -199,7 +181,7 @@ class ContentController:
         return page.Id
 
     def getContent(self, tab_id):
-        return copy.deepcopy(self.model.getTab(tab_id).getContent())
+        return copy.deepcopy(self.model.getViewerController(tab_id).getContent())
 
     def setPlotPreference(self, key, value):
         self.model.plot_preferences[key] = value
@@ -221,7 +203,13 @@ class ContentNotebook(aui.AuiNotebook):
         aui.AuiNotebook.__init__(self, parent, style=aui.AUI_NB_DEFAULT_STYLE | aui.AUI_NB_TAB_EXTERNAL_MOVE)
 
 
-class AbstractTab(PlotPanel):
+class AbstractViewerController(ABC):
+    content_type = None
+    viewer_type = None
+
+    @abstractmethod
+    def getView(self):
+        pass
 
     @abstractmethod
     def getContent(self):
@@ -231,44 +219,136 @@ class AbstractTab(PlotPanel):
     def setContent(self):
         pass
 
+    @abstractmethod
+    def getTitle(self):
+        pass
 
-class MapTab(AbstractTab):
-    def __init__(self, parent, map, plot_preferences):
-        self.map = map
-        self.plot_preferences = plot_preferences
-        PlotPanel.__init__(self, parent)
+    def getDataType(self):
+        return self.content_type
+
+    def getViewerType(self):
+        return self.viewer_type
+
+    def redraw(self):
+        threading.Thread(target=self.getView().redraw).start()
+
+
+class AbstractMPLController(AbstractViewerController):
+    viewer_type = ViewerType.MPL
+
+    def __init__(self):
+        self.mode = ViewMode.NONE
+        mode = ToolbarController().getMode()
+        self.changeMode(mode)
+
+        pub.subscribe(self.changeMode, EVT_MPL_MODE_CHANGED)
+        pub.subscribe(self.reset, EVT_MPL_RESET)
+
+    def changeMode(self, mode):
+        # deactivate old mode
+        if self.mode is ViewMode.PAN:
+            self.getView().toolbar.pan()
+        if self.mode is ViewMode.ZOOM:
+            self.getView().toolbar.zoom()
+        # activate new mode
+        if mode is ViewMode.PAN:
+            self.getView().toolbar.pan()
+        if mode is ViewMode.ZOOM:
+            self.getView().toolbar.zoom()
+
+        self.mode = mode
+
+    def reset(self):
+        if ContentController().getActiveTabId() == self.getView().Id:
+            self.getView().toolbar.home()
+
+
+class MapViewerController(AbstractMPLController):
+    content_type = DataType.MAP
+
+    def __init__(self, parent, path):
+        self.map = sunpy.map.Map(path)
+        self.map.path = path
+
+        self.view = MapViewer(parent, self.map)
+        # add coordinates of mouse courser to status bar
+        self.view.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
+
+        AbstractMPLController.__init__(self)
+
+    def onMapMotion(self, event):
+        if event.inaxes:
+            coord = self.map.pixel_to_world(event.xdata * u.pixel, event.ydata * u.pixel)
+            pub.sendMessage(EVT_STATUS_BAR_UPDATE, x=coord.Tx, y=coord.Ty)
+
+    def getView(self):
+        return self.view
 
     def getContent(self):
         return self.map
 
     def setContent(self, data):
         self.map = data
+        self.view.map = data
+        pub.sendMessage(EVT_MAP_CHANGED, tab_id=self.getView().Id, data=data)
+
+    def getTitle(self):
+        try:
+            return self.map.name
+        except:
+            return "Map"
+
+
+class MapViewer(PlotPanel):
+
+    def __init__(self, parent, map):
+        self.map = map
+        PlotPanel.__init__(self, parent)
 
     def draw(self):
         self.figure.clear()
         plot_settings = self.map.plot_settings
         ax = self.figure.add_subplot(111, projection=self.map)
         image = ax.imshow(self.map.data, **plot_settings)
-        if self.plot_preferences["show_colorbar"]:
+        plot_preferences = ContentController().getPlotPreferences()
+        if plot_preferences["show_colorbar"]:
             self.figure.colorbar(image)
-        if self.plot_preferences["show_limb"]:
+        if plot_preferences["show_limb"]:
             self.map.draw_limb(axes=ax)
-        if self.plot_preferences["draw_contours"]:
+        if plot_preferences["draw_contours"]:
             self.map.draw_contours([10, 20, 30, 40, 50, 60, 70, 80, 90] * u.percent, axes=ax)
-        if self.plot_preferences["draw_grid"]:
+        if plot_preferences["draw_grid"]:
             self.map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
 
 
-class CompositeMapTab(AbstractTab):
-    def __init__(self, parent, comp_map):
-        self.comp_map = comp_map
-        PlotPanel.__init__(self, parent)
+class CompositeMapViewerController(AbstractMPLController):
+    content_type = DataType.MAP_CUBE
+
+    def __init__(self, parent, paths):
+        self.comp_map = sunpy.map.Map(paths, cube=True)
+        self.view = CompositeMapViewer(parent, self.comp_map)
+
+        AbstractMPLController.__init__(self)
 
     def getContent(self):
         return self.comp_map
 
-    def setContent(self, comp_map):
+    def setContent(self, data):
+        self.comp_map = data
+        self.view.comp_map = data
+
+    def getView(self):
+        return self.view
+
+    def getTitle(self):
+        return "Composite Map"
+
+
+class CompositeMapViewer(PlotPanel):
+
+    def __init__(self, parent, comp_map):
         self.comp_map = comp_map
+        PlotPanel.__init__(self, parent)
 
     def draw(self):
         self.figure.clear()
@@ -288,16 +368,34 @@ class CompositeMapTab(AbstractTab):
                 axes.contour(m.data, m.levels, **params)
 
 
-class TimeSeriesTab(AbstractTab):
-    def __init__(self, parent, time_series):
-        self.series = time_series
-        PlotPanel.__init__(self, parent)
+class TimeSeriesViewerController(AbstractMPLController):
+    content_type = DataType.SERIES
+
+    def __init__(self, parent, series):
+        self.series = series
+        self.view = TimeSeriesViewer(parent, series)
+
+        AbstractMPLController.__init__(self)
 
     def getContent(self):
         return self.series
 
     def setContent(self, data):
         self.series = data
+        self.view.series = data
+
+    def getView(self):
+        return self.view
+
+    def getTitle(self):
+        return "{} ({:%Y-%m-%d %H:%M:%S})".format(self.series.source.upper(), self.series.time_range.start)
+
+
+class TimeSeriesViewer(PlotPanel):
+
+    def __init__(self, parent, time_series):
+        self.series = time_series
+        PlotPanel.__init__(self, parent)
 
     def draw(self):
         ax = self.figure.gca()
