@@ -1,3 +1,4 @@
+import logging
 import os
 
 import numpy as np
@@ -24,11 +25,12 @@ from sunpyviewer.tools.selection import SelectionPanel, SelectionController
 from sunpyviewer.tools.value_adjustment import ValueAdjustmentPanel, ValueAdjustmentController
 from sunpyviewer.tools.wavelet import WaveletPanel, WaveletController
 from sunpyviewer.util.data import resources_dir
+from sunpyviewer.util.event import getOpenEvent
 from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE, \
     EVT_MPL_CHANGE_MODE
 from sunpyviewer.viewer.composite import CompositeDialog
 from sunpyviewer.viewer.content import MapViewerController, CompositeMapViewerController, TimeSeriesViewerController, \
-    ContentController, ViewMode
+    ContentController, ViewMode, AbstractViewerController
 from sunpyviewer.viewer.history import History
 from sunpyviewer.viewer.settings import DBDialog
 from sunpyviewer.viewer.toolbar import ToolbarController
@@ -82,11 +84,13 @@ class MainFrame(wx.Frame):
         self.SetIcon(icon)
 
     def createMenuBar(self):
+        menubar = wx.MenuBar()
+
         # File
         file_menu = wx.Menu()
-        open_maps_item = file_menu.Append(wx.ID_ANY, "Open Map")
-        open_composite_item = file_menu.Append(wx.ID_ANY, "Open Composite Map")
-        open_series_item = file_menu.Append(wx.ID_ANY, "Open Series")
+        # Add Tab Items
+        self.addTabMenuItems(file_menu, menubar)
+
         save_image_item = file_menu.Append(wx.ID_ANY, "Save Image")
         save_fits_item = file_menu.Append(wx.ID_ANY, "Save as fits")
         file_menu.AppendSeparator()
@@ -138,8 +142,7 @@ class MainFrame(wx.Frame):
         help_menu = wx.Menu()
         snr_item = help_menu.Append(wx.ID_ANY, "Calculate Signal to Noise Ratio")
 
-        self.general_items = [open_maps_item, open_composite_item, open_series_item, data_item,
-                              fido_item, hek_item,
+        self.general_items = [data_item, fido_item, hek_item,
                               db_settings_item, exit_item, self.toolbar_item, undo_item, colorbar_item]
         self.map_items = [save_image_item, save_fits_item, cmap_item, norm_item, tv_item, bilateral_item,
                           wavelet_denoise_item, rotate_item, snr_item, cut_item]
@@ -148,16 +151,12 @@ class MainFrame(wx.Frame):
                                self.fft_item, self.wavelet_item]
         self.series_items = [save_image_item, save_fits_item]
 
-        menubar = wx.MenuBar()
         menubar.Append(file_menu, "&File")
         menubar.Append(edit_menu, "&Edit")
         menubar.Append(view_menu, "&View")
         menubar.Append(tools_menu, "&Tools")
         menubar.Append(help_menu, "&Help")
 
-        menubar.Bind(wx.EVT_MENU, self.onOpenMaps, open_maps_item)
-        menubar.Bind(wx.EVT_MENU, self.onOpenComposite, open_composite_item)
-        menubar.Bind(wx.EVT_MENU, self.onOpenSeries, open_series_item)
         menubar.Bind(wx.EVT_MENU, self.onSaveImage, save_image_item)
         menubar.Bind(wx.EVT_MENU, self.onSaveFits, save_fits_item)
         menubar.Bind(wx.EVT_MENU, self.onExit, exit_item)
@@ -196,6 +195,22 @@ class MainFrame(wx.Frame):
         pub.subscribe(self.onTabChange, EVT_TAB_SELECTION_CHANGED)
 
         self.SetMenuBar(menubar)
+
+    def addTabMenuItems(self, file_menu, menubar):
+        tab_ctrls = AbstractViewerController.__subclasses__()
+        open_dict = {}
+        for ctrl in tab_ctrls:
+            open_dict.setdefault(ctrl.data_type, []).append(ctrl)
+        self.open_functions = []
+        for k, ctrls in open_dict.items():
+            data_type_menu = wx.Menu()
+            file_menu.Append(wx.ID_ANY, "Open " + k.value + " with", data_type_menu)
+            for c in ctrls:
+                menu_item = data_type_menu.Append(wx.ID_ANY, c.viewer_type.value)
+                menubar.Bind(wx.EVT_MENU, lambda e, ctrl=c: self.onSelectAndOpen(ctrl), menu_item)
+                func = lambda path, ctrl=c: self.onOpen(ctrl, path)
+                self.open_functions.append(func)  # Workaround
+                pub.subscribe(func, getOpenEvent(c.data_type, c.viewer_type))
 
     def onTabChange(self, ctrl):
         self.disableAllMenuItems()
@@ -239,32 +254,34 @@ class MainFrame(wx.Frame):
         text = "x={0:.5f} ; y={1:.5f}".format(x, y)
         self.GetStatusBar().SetStatusText(text, 0)
 
-    def onOpenMaps(self, event):
-        dialog = wx.FileDialog(self, "Open Fits files", "", "",
-                               "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts",
-                               wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
-        if dialog.ShowModal() == wx.ID_CANCEL:
-            return
-        paths = dialog.GetPaths()
-        for path in paths:
-            self.content_ctrl.openMap(path)
+    def onSelectAndOpen(self, ctrl_class):
+        multiple = ctrl_class.file_configuration["multiple"]
+        if multiple:
+            dlg = wx.FileDialog(self, "Open Files", "", "", ctrl_class.file_configuration["extensions"],
+                                wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
+            if dlg.ShowModal() == wx.ID_CANCEL:
+                return
+            path = dlg.GetPaths()
+        else:
+            dlg = wx.FileDialog(self, "Open Files", "", "", ctrl_class.file_configuration["extensions"],
+                                wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+            if dlg.ShowModal() == wx.ID_CANCEL:
+                return
+            path = dlg.GetPath()
+        self.onOpen(ctrl_class, path)
 
-    def onOpenComposite(self, event):
-        dialog = wx.FileDialog(self, "Open Fits files", "", "",
-                               "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts",
-                               wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
-        if dialog.ShowModal() == wx.ID_CANCEL:
-            return
-        paths = dialog.GetPaths()
-        self.content_ctrl.openCompositeMap(paths)
+    def onOpen(self, ctrl_class, path):
+        try:
+            controller = ctrl_class(self, path)
+            self.content_ctrl.openViewerController(controller)
+        except Exception as ex:
+            logging.exception(ex)
+            self.handleFileOpenError(ex, path)
 
-    def onOpenSeries(self, event):
-        dialog = wx.FileDialog(self, "Open Fits file", "", "",
-                               "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-        if dialog.ShowModal() == wx.ID_CANCEL:
-            return
-        path = dialog.GetPath()
-        self.content_ctrl.openTimeSeries(path)
+    def handleFileOpenError(self, ex, path):
+        error_msg = "Error during opening: {} \nCaused by: {}".format(path, str(ex))
+        dlg = wx.MessageDialog(self, error_msg, style=wx.ICON_ERROR)
+        dlg.ShowModal()
 
     def onSaveImage(self, event):
         self.content_ctrl.saveImage()

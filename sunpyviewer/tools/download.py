@@ -18,8 +18,10 @@ from wx.lib.pubsub import pub
 from wx.lib.scrolledpanel import ScrolledPanel
 
 from sunpyviewer.tools import EVT_FILTER_CLOSE, QueryType, EVT_QUERY_RESULT, \
-    EVT_OPEN_MAP, EVT_QUERY_ERROR, EVT_QUERY_STARTED
+    EVT_QUERY_ERROR, EVT_QUERY_STARTED
 from sunpyviewer.util import vso_keys
+from sunpyviewer.util.event import getOpenEvent
+from sunpyviewer.viewer.content import ViewerType, DataType
 
 
 class QueryPanel(ScrolledPanel):
@@ -259,7 +261,7 @@ class QueryTab(wx.Panel):
             return
 
         if index in self.download_paths.keys():
-            pub.sendMessage(EVT_OPEN_MAP, path=self.download_paths[index])
+            pub.sendMessage(getOpenEvent(DataType.MAP, ViewerType.MPL), path=self.download_paths[index])
             return
 
         self.downloading_ids.append(index)

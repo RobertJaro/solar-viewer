@@ -1,17 +1,14 @@
 import copy
-import logging
 import threading
 from abc import abstractmethod, ABC
 from enum import Enum
 
 import sunpy.map
 import sunpy.timeseries
-import wx
 from astropy import units as u
 from wx import aui
 from wx.lib.pubsub import pub
 
-from sunpyviewer.tools import EVT_OPEN_MAP
 from sunpyviewer.util.common import Singleton
 from sunpyviewer.util.data import saveFigure, saveFits
 from sunpyviewer.util.wxmatplot import PlotPanel
@@ -21,14 +18,14 @@ from sunpyviewer.viewer.toolbar import ViewMode, ToolbarController
 
 
 class DataType(Enum):
-    MAP = "map"
-    MAP_CUBE = "map_cube"
-    SERIES = "series"
+    MAP = "SunPy Map"
+    MAP_CUBE = "SunPy Composite Map"
+    SERIES = "SunPy Series"
 
 
 class ViewerType(Enum):
-    MPL = "matplotlib"
-    GINGA = "ginga"
+    MPL = "Matplotlib"
+    GINGA = "Ginga"
 
 
 class ContentModel:
@@ -39,7 +36,7 @@ class ContentModel:
     def removeViewerController(self, id):
         ctrl = self.viewer_controllers[id]
         del self.viewer_controllers[id]
-        if ctrl.getDataType() is DataType.MAP:
+        if ctrl.data_type is DataType.MAP:
             pub.sendMessage(EVT_MAP_CLOSED, tab_id=id)
         if len(self.viewer_controllers) == 0:
             pub.sendMessage(EVT_TAB_SELECTION_CHANGED, ctrl=None)
@@ -52,7 +49,7 @@ class ContentModel:
     def addViewerController(self, ctrl):
         tab = ctrl.getView()
         self.viewer_controllers[tab.Id] = ctrl
-        if ctrl.getDataType() is DataType.MAP or ctrl.getDataType() is DataType.MAP_CUBE:
+        if ctrl.data_type is DataType.MAP or ctrl.data_type is DataType.MAP_CUBE:
             pub.sendMessage(EVT_MAP_ADDED, tab_id=tab.Id, data=ctrl.getContent())
 
     def getViewerController(self, id):
@@ -73,7 +70,6 @@ class ContentController(metaclass=Singleton):
         pub.subscribe(self.setTabContent, EVT_CHANGE_TAB)
 
         pub.subscribe(self.setPlotPreference, EVT_CHANGE_PLOT_PREFERENCE)
-        pub.subscribe(self.openMap, EVT_OPEN_MAP)
 
     def getPlotPreferences(self):
         return self.model.plot_preferences
@@ -97,48 +93,11 @@ class ContentController(metaclass=Singleton):
         ctrl = self.model.viewer_controllers[id]
         pub.sendMessage(EVT_TAB_SELECTION_CHANGED, ctrl=ctrl)
 
-    def openMap(self, path):
-        try:
-            map_ctrl = MapViewerController(self.parent, path)
-            self.openPanel(map_ctrl)
-        except Exception as ex:
-            logging.exception(ex)
-            self.handleFileOpenError(ex, path)
-
-    def openCompositeMap(self, paths):
-        try:
-            comp_map = sunpy.map.Map(paths, composite=True)
-            a = 0.5
-            for i in range(len(paths)):
-                comp_map.set_alpha(i, a)
-            map_tab = CompositeMapViewerController(self.parent, comp_map)
-            self.openPanel(map_tab)
-        except Exception as ex:
-            self.handleFileOpenError(ex, paths)
-
-    def openTimeSeries(self, path):
-        try:
-            series = sunpy.timeseries.TimeSeries(path)
-            series.path = path
-            ctrl = TimeSeriesViewerController(self.parent, series)
-            self.openPanel(ctrl)
-        except Exception as ex:
-            self.handleFileOpenError(ex, path)
-
-    def handleFileOpenError(self, ex, path):
-        error_msg = "Error during opening: {} \nCaused by: {}".format(path, str(ex))
-        dlg = wx.MessageDialog(self.parent, error_msg, style=wx.ICON_ERROR)
-        dlg.ShowModal()
-
-    def openPanel(self, ctrl):
+    def openViewerController(self, ctrl):
         tab = ctrl.getView()
         title = "{}: {}".format(tab.Id, ctrl.getTitle())
         self.model.addViewerController(ctrl)
         self.view.AddPage(tab, title, True)
-
-    def reset(self):
-        if self.hasPage():
-            self.getActivePage().toolbar.home()
 
     def saveImage(self):
         figure = self.getActivePage().figure
@@ -154,11 +113,11 @@ class ContentController(metaclass=Singleton):
     # TODO: remove maps list selection
     def getMaps(self):
         return {id: ctrl.getTitle() for id, ctrl in self.model.viewer_controllers.items() if
-                ctrl.getDataType() is DataType.MAP}
+                ctrl.data_type is DataType.MAP}
 
     def refreshMaps(self):
         for ctrl in self.model.viewer_controllers.values():
-            if ctrl.getDataType() is DataType.MAP or ctrl.getDataType() is DataType.MAP_CUBE:
+            if ctrl.data_type is DataType.MAP or ctrl.data_type is DataType.MAP_CUBE:
                 ctrl.redraw()
 
     def getActiveController(self):
@@ -204,8 +163,13 @@ class ContentNotebook(aui.AuiNotebook):
 
 
 class AbstractViewerController(ABC):
-    content_type = None
+    data_type = None
     viewer_type = None
+    file_configuration = {"extensions": "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts", "multiple": False}
+
+    @abstractmethod
+    def __init__(self, parent, path):
+        pass
 
     @abstractmethod
     def getView(self):
@@ -216,25 +180,18 @@ class AbstractViewerController(ABC):
         pass
 
     @abstractmethod
-    def setContent(self):
+    def setContent(self, data):
         pass
 
     @abstractmethod
     def getTitle(self):
         pass
 
-    def getDataType(self):
-        return self.content_type
-
-    def getViewerType(self):
-        return self.viewer_type
-
     def redraw(self):
         threading.Thread(target=self.getView().redraw).start()
 
 
-class AbstractMPLController(AbstractViewerController):
-    viewer_type = ViewerType.MPL
+class MPLToolbarRegisterMixin():
 
     def __init__(self):
         self.mode = ViewMode.NONE
@@ -263,8 +220,9 @@ class AbstractMPLController(AbstractViewerController):
             self.getView().toolbar.home()
 
 
-class MapViewerController(AbstractMPLController):
-    content_type = DataType.MAP
+class MapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
+    data_type = DataType.MAP
+    viewer_type = ViewerType.MPL
 
     def __init__(self, parent, path):
         self.map = sunpy.map.Map(path)
@@ -274,7 +232,7 @@ class MapViewerController(AbstractMPLController):
         # add coordinates of mouse courser to status bar
         self.view.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
 
-        AbstractMPLController.__init__(self)
+        MPLToolbarRegisterMixin.__init__(self)
 
     def onMapMotion(self, event):
         if event.inaxes:
@@ -321,14 +279,20 @@ class MapViewer(PlotPanel):
             self.map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
 
 
-class CompositeMapViewerController(AbstractMPLController):
-    content_type = DataType.MAP_CUBE
+class CompositeMapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
+    data_type = DataType.MAP_CUBE
+    viewer_type = ViewerType.MPL
+    file_configuration = {"extensions": "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts", "multiple": True}
 
-    def __init__(self, parent, paths):
-        self.comp_map = sunpy.map.Map(paths, cube=True)
+    def __init__(self, parent, path):
+        self.comp_map = sunpy.map.Map(path, composite=True)
+        a = 0.5
+        for i in range(len(path)):
+            self.comp_map.set_alpha(i, a)
+
         self.view = CompositeMapViewer(parent, self.comp_map)
 
-        AbstractMPLController.__init__(self)
+        MPLToolbarRegisterMixin.__init__(self)
 
     def getContent(self):
         return self.comp_map
@@ -368,14 +332,15 @@ class CompositeMapViewer(PlotPanel):
                 axes.contour(m.data, m.levels, **params)
 
 
-class TimeSeriesViewerController(AbstractMPLController):
-    content_type = DataType.SERIES
+class TimeSeriesViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
+    data_type = DataType.SERIES
+    viewer_type = ViewerType.MPL
 
-    def __init__(self, parent, series):
-        self.series = series
-        self.view = TimeSeriesViewer(parent, series)
+    def __init__(self, parent, path):
+        self.series = sunpy.timeseries.TimeSeries(path)
+        self.view = TimeSeriesViewer(parent, self.series)
 
-        AbstractMPLController.__init__(self)
+        MPLToolbarRegisterMixin.__init__(self)
 
     def getContent(self):
         return self.series

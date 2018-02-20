@@ -3,7 +3,8 @@ from sunpy.database import Database
 from wx import dataview
 from wx.lib.pubsub import pub
 
-from sunpyviewer.tools import EVT_OPEN_MAP
+from sunpyviewer.util.event import getOpenEvent
+from sunpyviewer.viewer.content import ViewerType, DataType
 
 
 class DataViewer(wx.Panel):
@@ -38,7 +39,7 @@ class DataViewer(wx.Panel):
             node = self.model.ItemToObject(selection)
             if isinstance(node, Entry):
                 path = node.path
-                pub.sendMessage(EVT_OPEN_MAP, path=path)
+                pub.sendMessage(getOpenEvent(DataType.MAP, ViewerType.MPL), path=path)
 
 
 class InstrumentModel(dataview.PyDataViewModel):

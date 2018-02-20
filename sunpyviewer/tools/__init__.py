@@ -4,7 +4,6 @@ EVT_FILTER_CLOSE = "fido.filter.close"
 EVT_QUERY_STARTED = "query.started"
 EVT_QUERY_RESULT = "query.result"
 EVT_QUERY_ERROR = "query.error"
-EVT_OPEN_MAP = "open.map"
 
 EVT_FFT_FILTER = "fft.filter"
 

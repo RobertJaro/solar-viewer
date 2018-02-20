@@ -76,7 +76,7 @@ class ProfileController(ToolController):
             return
         self._removeCursor()
         self.resetFreeLine()
-        if ctrl.getViewerType() is ViewerType.MPL and ctrl.getDataType() is DataType.MAP:
+        if ctrl.viewer_type is ViewerType.MPL and ctrl.data_type is DataType.MAP:
             self.model.setTab(ctrl.getView())
         else:
             self.model.setTab(None)
