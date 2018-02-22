@@ -8,8 +8,9 @@ from wx.lib.scrolledpanel import ScrolledPanel
 
 from sunpyviewer.tools import EVT_SELECTION_EXPORT, EVT_SELECTION_CLEAR, EVT_SELECTION_IMPORT, \
     EVT_SELECTION_POINT_REMOVE, EVT_SELECTION_STYLE_CHANGE
-from sunpyviewer.tools.default_tool import ToolController
+from sunpyviewer.util.default_tool import ToolController, ItemConfig
 from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED
+from sunpyviewer.viewer.content import DataType, ViewerType
 
 
 class SelectionModel:
@@ -54,10 +55,15 @@ class SelectionController(ToolController):
         pub.subscribe(self.onRemovePoint, EVT_SELECTION_POINT_REMOVE)
         pub.subscribe(self.onStyleChange, EVT_SELECTION_STYLE_CHANGE)
 
-    def createView(self, parent, tab):
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Highlight Values").setMenuPath("Tools\\Highlight Values").addSupportedData(
+            DataType.MAP).addSupportedViewer(ViewerType.MPL)
+
+    def createView(self, parent, ctrl):
         self.view = SelectionPanel(parent)
         self.model = SelectionModel()
-        self.model.setTab(tab)
+        self.model.setTab(ctrl.getView() if ctrl is not None else None)
         self._initListener()
         self.onClear()
         return self.view
@@ -83,7 +89,7 @@ class SelectionController(ToolController):
         if not self.view:
             return
         self.onClear()
-        self.model.setTab(ctrl.getView())
+        self.model.setTab(ctrl.getView() if ctrl is not None else None)
         self._initListener()
 
     def onClear(self):

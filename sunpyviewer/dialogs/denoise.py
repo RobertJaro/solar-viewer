@@ -1,47 +1,59 @@
 import wx
 from skimage.restoration import denoise_tv_chambolle, denoise_bilateral, denoise_wavelet, estimate_sigma
-from wx.lib.pubsub import pub
 
-from sunpyviewer.viewer import EVT_CHANGE_TAB
-from sunpyviewer.viewer.settings import DefaultDialog
+from sunpyviewer.util.default_dialog import DialogController
+from sunpyviewer.util.default_tool import ItemConfig
+from sunpyviewer.viewer.content import ViewerType, DataType
 
 
-class TVDenoiseDialog(DefaultDialog):
-    def __init__(self, parent, tab_id, map):
-        self.tab_id = tab_id
-        self.map = map
-        DefaultDialog.__init__(self, parent, 'Denoise Total Variation Chambolle')
+class TVDenoiseController(DialogController):
+    def __init__(self):
+        DialogController.__init__(self)
 
-    def createContent(self, panel):
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("TV Denoising").setMenuPath("Edit\\Denoise\\TV").addSupportedViewer(
+            ViewerType.ANY).addSupportedData(
+            DataType.MAP)
+
+    def getContentView(self, parent):
+        self.parent = parent
         content_sizer = wx.FlexGridSizer(2, 5, 5)
 
-        weight_label = wx.StaticText(panel, label="Weight: ")
-        self.weight_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1", inc=0.01)
+        weight_label = wx.StaticText(parent, label="Weight: ")
+        self.weight_spin = wx.SpinCtrlDouble(parent, min=0, value="0.1", inc=0.01)
 
         content_sizer.AddMany([weight_label, self.weight_spin])
 
         return content_sizer
 
-    def onOk(self, event):
+    def refreshContent(self, viewer_ctrl):
+        pass
+
+    def modifyData(self, data, data_type):
         weight = self.weight_spin.GetValue()
-        im = self.map.data
-        bi = wx.BusyInfo("Denoising, please wait", parent=self.GetParent())
-        self.map._data = denoise_tv_chambolle(im, weight=weight)
-        self.map.plot_settings["norm"].vmin = self.map.data.min()
-        self.map.plot_settings["norm"].vmax = self.map.data.max()
+        im = data.data
+        bi = wx.BusyInfo("Denoising, please wait", parent=self.parent)
+        data._data = denoise_tv_chambolle(im, weight=weight)
+        data.plot_settings["norm"].vmin = data.data.min()
+        data.plot_settings["norm"].vmax = data.data.max()
         del bi
-
-        pub.sendMessage(EVT_CHANGE_TAB, tab_id=self.tab_id, data=self.map)
-        event.Skip()
+        return data
 
 
-class BilateralDenoiseDialog(DefaultDialog):
-    def __init__(self, parent, tab_id, map):
-        self.tab_id = tab_id
-        self.map = map
-        DefaultDialog.__init__(self, parent, 'Denoise Bilateral')
+class BilateralDenoiseController(DialogController):
+    def __init__(self):
+        DialogController.__init__(self)
 
-    def createContent(self, panel):
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Bilateral Denoising").setMenuPath("Edit\\Denoise\\Bilateral").addSupportedViewer(
+            ViewerType.ANY).addSupportedData(
+            DataType.MAP)
+
+    def getContentView(self, parent):
+        self.parent = parent
+        panel = wx.Panel(parent)
         content_sizer = wx.FlexGridSizer(2, 5, 5)
 
         color_label = wx.StaticText(panel, label="Sigma Color: ")
@@ -51,61 +63,74 @@ class BilateralDenoiseDialog(DefaultDialog):
 
         content_sizer.AddMany([color_label, self.color_spin, spatial_label, self.spatial_spin])
 
-        return content_sizer
+        panel.SetSizerAndFit(content_sizer)
+        return panel
 
-    def onOk(self, event):
+    def refreshContent(self, viewer_ctrl):
+        pass
+
+    def modifyData(self, data, data_type):
         color = self.color_spin.GetValue()
         spatial = self.spatial_spin.GetValue()
-        im = self.map.data
+        im = data.data
 
-        bi = wx.BusyInfo("Denoising, please wait", parent=self.GetParent())
-        self.map._data = denoise_bilateral(im, sigma_color=color, sigma_spatial=spatial, multichannel=False)
-        self.map.plot_settings["norm"].vmin = self.map.data.min()
-        self.map.plot_settings["norm"].vmax = self.map.data.max()
+        bi = wx.BusyInfo("Denoising, please wait", parent=self.parent)
+        data._data = denoise_bilateral(im, sigma_color=color, sigma_spatial=spatial, multichannel=False)
+        data.plot_settings["norm"].vmin = data.data.min()
+        data.plot_settings["norm"].vmax = data.data.max()
         del bi
 
-        pub.sendMessage(EVT_CHANGE_TAB, tab_id=self.tab_id, data=self.map)
-        event.Skip()
+        return data
 
 
-class WaveletDenoiseDialog(DefaultDialog):
-    def __init__(self, parent, tab_id, map):
-        self.tab_id = tab_id
-        self.map = map
-        DefaultDialog.__init__(self, parent, 'Denoise Wavelet')
+class WaveletDenoiseController(DialogController):
+    def __init__(self):
+        DialogController.__init__(self)
 
-    def createContent(self, panel):
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Wavelet Denoising").setMenuPath("Edit\\Denoise\\Wavelet").addSupportedViewer(
+            ViewerType.ANY).addSupportedData(
+            DataType.MAP)
+
+    def getContentView(self, parent):
+        self.parent = parent
+        panel = wx.Panel(parent)
         content_sizer = wx.FlexGridSizer(2, 5, 5)
-        estimated_sigma = estimate_sigma(self.map.data)
 
         estimation_label = wx.StaticText(panel, label="Estimated Sigma: ")
-        estimation_value = wx.StaticText(panel, label=str(estimated_sigma))
+        self.estimation_value = wx.StaticText(panel)
         wavelet_label = wx.StaticText(panel, label="Wavelet: ")
         self.wavelet_text = wx.TextCtrl(panel, value="db1")
         sigma_label = wx.StaticText(panel, label="Sigma: ")
-        self.sigma_spin = wx.SpinCtrlDouble(panel, value=str(estimated_sigma), inc=0.01)
+        self.sigma_spin = wx.SpinCtrlDouble(panel, inc=0.01)
         level_label = wx.StaticText(panel, label="Level(0 for auto): ")
         self.level_spin = wx.SpinCtrl(panel, value="0")
 
         content_sizer.AddMany(
-            [estimation_label, estimation_value, wavelet_label, self.wavelet_text, level_label, self.level_spin,
+            [estimation_label, self.estimation_value, wavelet_label, self.wavelet_text, level_label, self.level_spin,
              sigma_label, self.sigma_spin])
 
-        return content_sizer
+        panel.SetSizerAndFit(content_sizer)
+        return panel
 
-    def onOk(self, event):
+    def refreshContent(self, viewer_ctrl):
+        estimated_sigma = estimate_sigma(viewer_ctrl.getContent().data)
+        self.sigma_spin.SetValue(estimated_sigma)
+        self.estimation_value.SetLabel(str(estimated_sigma))
+
+    def modifyData(self, data, data_type):
         wavelet = self.wavelet_text.GetValue()
         sigma = self.sigma_spin.GetValue()
         level = self.level_spin.GetValue()
         if level == 0:
             level = None
-        im = self.map.data
+        im = data.data
 
-        bi = wx.BusyInfo("Denoising, please wait", parent=self.GetParent())
-        self.map._data = denoise_wavelet(im, sigma=sigma, wavelet=wavelet, wavelet_levels=level)
-        self.map.plot_settings["norm"].vmin = self.map.data.min()
-        self.map.plot_settings["norm"].vmax = self.map.data.max()
+        bi = wx.BusyInfo("Denoising, please wait", parent=self.parent)
+        data._data = denoise_wavelet(im, sigma=sigma, wavelet=wavelet, wavelet_levels=level)
+        data.plot_settings["norm"].vmin = data.data.min()
+        data.plot_settings["norm"].vmax = data.data.max()
         del bi
 
-        pub.sendMessage(EVT_CHANGE_TAB, tab_id=self.tab_id, data=self.map)
-        event.Skip()
+        return data

@@ -9,7 +9,7 @@ from wx.lib.scrolledpanel import ScrolledPanel
 
 from sunpyviewer.conversion.coordinate import extractCoordinates
 from sunpyviewer.tools import EVT_PROFILE_MODE_CHANGE, EVT_PROFILE_RESET
-from sunpyviewer.tools.default_tool import ToolController
+from sunpyviewer.util.default_tool import ToolController, ItemConfig
 from sunpyviewer.util.wxmatplot import PlotPanel
 from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED, EVT_MPL_CHANGE_MODE
 from sunpyviewer.viewer.content import ViewerType, DataType
@@ -45,6 +45,11 @@ class ProfileController(ToolController):
         pub.subscribe(self.onModeChange, EVT_PROFILE_MODE_CHANGE)
         pub.subscribe(self.resetFreeLine, EVT_PROFILE_RESET)
 
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Profile").setMenuPath("Tools\\Profile").addSupportedData(
+            DataType.MAP).addSupportedViewer(ViewerType.MPL)
+
     def createView(self, parent, ctrl):
         self.view = ProfilePanel(parent)
         self.onTabChange(ctrl)
@@ -76,7 +81,7 @@ class ProfileController(ToolController):
             return
         self._removeCursor()
         self.resetFreeLine()
-        if ctrl.viewer_type is ViewerType.MPL and ctrl.data_type is DataType.MAP:
+        if ctrl and ctrl.viewer_type is ViewerType.MPL and ctrl.data_type is DataType.MAP:
             self.model.setTab(ctrl.getView())
         else:
             self.model.setTab(None)

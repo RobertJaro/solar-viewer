@@ -1,10 +1,10 @@
-import copy
 import threading
 from abc import abstractmethod, ABC
 from enum import Enum
 
 import sunpy.map
 import sunpy.timeseries
+import wx
 from astropy import units as u
 from wx import aui
 from wx.lib.pubsub import pub
@@ -21,11 +21,15 @@ class DataType(Enum):
     MAP = "SunPy Map"
     MAP_CUBE = "SunPy Composite Map"
     SERIES = "SunPy Series"
+    ANY = "Any"
+    NONE = ""
 
 
 class ViewerType(Enum):
     MPL = "Matplotlib"
     GINGA = "Ginga"
+    ANY = "Any"
+    NONE = ""
 
 
 class ContentModel:
@@ -110,11 +114,6 @@ class ContentController(metaclass=Singleton):
     def redrawActive(self):
         threading.Thread(target=self.getActivePage().redraw).start()
 
-    # TODO: remove maps list selection
-    def getMaps(self):
-        return {id: ctrl.getTitle() for id, ctrl in self.model.viewer_controllers.items() if
-                ctrl.data_type is DataType.MAP}
-
     def refreshMaps(self):
         for ctrl in self.model.viewer_controllers.values():
             if ctrl.data_type is DataType.MAP or ctrl.data_type is DataType.MAP_CUBE:
@@ -122,7 +121,7 @@ class ContentController(metaclass=Singleton):
 
     def getActiveController(self):
         id = self.getActiveTabId()
-        return self.model.viewer_controllers[id]
+        return self.model.viewer_controllers.get(id, None)
 
     def getActivePage(self):
         return self.view.GetCurrentPage()
@@ -131,7 +130,7 @@ class ContentController(metaclass=Singleton):
         return self.view.GetCurrentPage() is not None
 
     def getActiveContent(self):
-        return copy.deepcopy(self.getActiveController().getContent())
+        return self.getActiveController().getContent()
 
     def getActiveTabId(self):
         page = self.getActivePage()
@@ -140,21 +139,11 @@ class ContentController(metaclass=Singleton):
         return page.Id
 
     def getContent(self, tab_id):
-        return copy.deepcopy(self.model.getViewerController(tab_id).getContent())
+        return self.model.getViewerController(tab_id).getContent()
 
     def setPlotPreference(self, key, value):
         self.model.plot_preferences[key] = value
         self.refreshMaps()
-
-    def getZoomSubMap(self):
-        x = self.getActivePage().figure.axes[0].get_xlim()
-        y = self.getActivePage().figure.axes[0].get_ylim()
-        bl = [x[0], y[0]]
-        tr = [x[1], y[1]]
-        current_map = self.getActiveContent()
-        sub_map = current_map.submap(bl * u.pixel, tr * u.pixel)
-        sub_map.plot_settings = current_map.plot_settings  # preserve settings
-        return sub_map
 
 
 class ContentNotebook(aui.AuiNotebook):
@@ -189,6 +178,9 @@ class AbstractViewerController(ABC):
 
     def redraw(self):
         threading.Thread(target=self.getView().redraw).start()
+
+    def getId(self):
+        return self.getView().Id
 
 
 class MPLToolbarRegisterMixin():
@@ -255,6 +247,16 @@ class MapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
             return self.map.name
         except:
             return "Map"
+
+    def getZoomSubMap(self):
+        x = self.view.figure.axes[0].get_xlim()
+        y = self.view.figure.axes[0].get_ylim()
+        bl = [x[0], y[0]]
+        tr = [x[1], y[1]]
+        current_map = self.getContent()
+        sub_map = current_map.submap(bl * u.pixel, tr * u.pixel)
+        sub_map.plot_settings = current_map.plot_settings  # preserve settings
+        return sub_map
 
 
 class MapViewer(PlotPanel):
@@ -365,3 +367,28 @@ class TimeSeriesViewer(PlotPanel):
     def draw(self):
         ax = self.figure.gca()
         self.series.plot(axes=ax)
+
+
+class NoPreviewViewer(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        text = wx.StaticText(parent, label="no preview available")
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(text, flag=wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, border=10)
+        self.SetSizerAndFit(sizer)
+
+
+class PreviewUtil:
+    viewers = {DataType.MAP: {ViewerType.MPL: MapViewer},
+               DataType.SERIES: {ViewerType.MPL: TimeSeriesViewer},
+               DataType.MAP_CUBE: {ViewerType.MPL: CompositeMapViewer}}
+
+    @staticmethod
+    def getPreviewer(parent, data, data_type, viewer_type):
+        if data_type not in PreviewUtil.viewers.keys():
+            return NoPreviewViewer(parent)
+        sub_cat = PreviewUtil.viewers[data_type]
+        if viewer_type not in sub_cat.keys():
+            return NoPreviewViewer(parent)
+        return sub_cat[viewer_type](parent, data)

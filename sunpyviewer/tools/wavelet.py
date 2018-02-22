@@ -3,31 +3,44 @@ import pywt
 import wx
 from skimage.restoration import estimate_sigma
 
-from sunpyviewer.tools.default_tool import MapToolPanel, ToolController
+from sunpyviewer.util.default_tool import ToolController, ItemConfig, DataControllerMixin
+from sunpyviewer.viewer.content import ViewerType, DataType
 
 
-class WaveletController(ToolController):
+class WaveletController(DataControllerMixin, ToolController):
 
     def __init__(self):
         self.view = None
 
-    def createView(self, parent, content_ctrl):
-        self.view = WaveletPanel(parent, content_ctrl)
-        return self.view
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Wavelet Filter").setMenuPath("Tools\\Wavelet Filter").addSupportedData(
+            DataType.MAP).addSupportedViewer(ViewerType.MPL)
 
-    def closeView(self, *args):
-        self.view = None
+    def modifyData(self, data, data_type):
+        noiseSigma = self.sigma_spin.GetValue()
+        d = data.data
+        wavelet = self.wavelet_choice.GetStringSelection()
+        level = self.level_spin.GetValue()
 
+        WC = pywt.wavedec2(data=d, wavelet=wavelet, level=level)
 
-class WaveletPanel(MapToolPanel):
-    def __init__(self, parent, content_ctrl):
-        MapToolPanel.__init__(self, parent, content_ctrl)
+        threshold = noiseSigma * np.sqrt(2 * np.log2(d.size))
 
-    def initContent(self):
-        return [self.initDecompositionSettings(), self.initDenoise()]
+        NWC = map(lambda x: pywt.threshold(x, threshold), WC)
+        data._data = pywt.waverec2(list(NWC), wavelet=self.wavelet_choice.GetStringSelection())
+        return data
 
-    def initDecompositionSettings(self):
-        panel = wx.Panel(self)
+    def getContentView(self, parent):
+        return [self._initDecompositionSettings(parent), self._initDenoise(parent)]
+
+    def refreshContent(self, data, data_type):
+        estimated_sigma = estimate_sigma(data.data)
+        self.sigma_spin.SetValue(str(estimated_sigma))
+        self.selected_map = data
+
+    def _initDecompositionSettings(self, parent):
+        panel = wx.Panel(parent)
         box_sizer = wx.StaticBoxSizer(wx.VERTICAL, panel, "Wavelet Settings")
         grid_sizer = wx.FlexGridSizer(2, 10, 15)
 
@@ -51,8 +64,8 @@ class WaveletPanel(MapToolPanel):
 
         return panel
 
-    def initDenoise(self):
-        panel = wx.Panel(self)
+    def _initDenoise(self, parent):
+        panel = wx.Panel(parent)
         box = wx.StaticBoxSizer(wx.VERTICAL, panel, "Denoise")
         panel.SetSizer(box)
 
@@ -64,22 +77,3 @@ class WaveletPanel(MapToolPanel):
         grid.AddMany([sigma_text, self.sigma_spin])
 
         return panel
-
-    def modifyMap(self, d_map):
-        noiseSigma = self.sigma_spin.GetValue()
-        data = d_map.data
-        wavelet = self.wavelet_choice.GetStringSelection()
-        level = self.level_spin.GetValue()
-
-        WC = pywt.wavedec2(data=data, wavelet=wavelet, level=level)
-
-        threshold = noiseSigma * np.sqrt(2 * np.log2(data.size))
-
-        NWC = map(lambda x: pywt.threshold(x, threshold), WC)
-        d_map._data = pywt.waverec2(list(NWC), wavelet=self.wavelet_choice.GetStringSelection())
-        return d_map
-
-    def refreshContent(self, data):
-        estimated_sigma = estimate_sigma(data.data)
-        self.sigma_spin.SetValue(str(estimated_sigma))
-        self.selected_map = data

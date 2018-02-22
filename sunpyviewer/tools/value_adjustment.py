@@ -1,28 +1,46 @@
 import numpy as np
 import wx
 
-from sunpyviewer.tools.default_tool import MapToolPanel, ToolController
+from sunpyviewer.util.default_tool import ToolController, ItemConfig, DataControllerMixin
+from sunpyviewer.viewer.content import DataType, ViewerType
 
 
-class ValueAdjustmentController(ToolController):
+class ValueAdjustmentController(DataControllerMixin, ToolController):
 
     def __init__(self):
         self.view = None
 
-    def createView(self, parent, content_ctrl):
-        self.view = ValueAdjustmentPanel(parent, content_ctrl)
-        return self.view
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Value Adjustment").setMenuPath("Tools\\Value Adjustment").addSupportedData(
+            DataType.MAP).addSupportedViewer(ViewerType.MPL)
 
-    def closeView(self, *args):
-        self.view = None
+    def modifyData(self, data, data_type):
+        d = data.data
+        if self.cutoff_radio.GetValue():
+            data._data = d.clip(0)
+        if self.offset_radio.GetValue():
+            min_value = d.min()
+            if min_value < 0:
+                data._data = d - min_value + 1
+        if self.cutoff_range_radio.GetValue():
+            vmin = self.min_range.GetValue()
+            vmax = self.max_range.GetValue()
+            data._data = np.clip(d, vmin, vmax)
 
+        if self.contrast_none.GetValue():
+            return
+        if self.contrast_min_max.GetValue():
+            data.plot_settings["norm"].vmin = data.min()
+            data.plot_settings["norm"].vmax = data.max()
+        if self.contrast_average.GetValue():
+            data.plot_settings["norm"].vmin = data.min()
+            data.plot_settings["norm"].vmax = data.mean() + 3 * data.std()
 
-class ValueAdjustmentPanel(MapToolPanel):
-    def __init__(self, parent, content_ctrl):
-        MapToolPanel.__init__(self, parent, content_ctrl)
+        return data
 
-    def initContent(self):
-        panel = wx.Panel(self)
+    def getContentView(self, parent):
+        panel = wx.Panel(parent)
 
         settings_box = wx.StaticBoxSizer(wx.VERTICAL, panel, "Settings")
         grid_sizer = wx.FlexGridSizer(1, 10, 10)
@@ -66,15 +84,7 @@ class ValueAdjustmentPanel(MapToolPanel):
 
         return [panel]
 
-    def _onShowRange(self, event):
-        self.min_range.Enable(True)
-        self.max_range.Enable(True)
-
-    def _onHideRange(self, event):
-        self.min_range.Enable(False)
-        self.max_range.Enable(False)
-
-    def refreshContent(self, data):
+    def refreshContent(self, data, data_type):
         if data is None:
             self.min_range.SetRange(0, 0)
             self.min_range.SetValue(str(0))
@@ -91,26 +101,10 @@ class ValueAdjustmentPanel(MapToolPanel):
         self.max_range.SetRange(vmin, vmax)
         self.max_range.SetValue(str(norm_vmax))
 
-    def modifyMap(self, map):
-        data = map.data
-        if self.cutoff_radio.GetValue():
-            map._data = data.clip(0)
-        if self.offset_radio.GetValue():
-            min_value = data.min()
-            if min_value < 0:
-                map._data = data - min_value + 1
-        if self.cutoff_range_radio.GetValue():
-            vmin = self.min_range.GetValue()
-            vmax = self.max_range.GetValue()
-            map._data = np.clip(data, vmin, vmax)
+    def _onShowRange(self, event):
+        self.min_range.Enable(True)
+        self.max_range.Enable(True)
 
-        if self.contrast_none.GetValue():
-            return
-        if self.contrast_min_max.GetValue():
-            map.plot_settings["norm"].vmin = map.min()
-            map.plot_settings["norm"].vmax = map.max()
-        if self.contrast_average.GetValue():
-            map.plot_settings["norm"].vmin = map.min()
-            map.plot_settings["norm"].vmax = map.mean() + 3 * map.std()
-
-        return map
+    def _onHideRange(self, event):
+        self.min_range.Enable(False)
+        self.max_range.Enable(False)

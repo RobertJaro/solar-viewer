@@ -1,7 +1,6 @@
 import logging
 import os
 
-import numpy as np
 import sunpy.map
 import sunpy.timeseries
 import wx
@@ -10,27 +9,18 @@ from sunpy.physics.solar_rotation import mapcube_solar_derotate
 from wx import aui
 from wx.lib.pubsub import pub
 
-from sunpyviewer.dialogs.cmap import CmapDialog
-from sunpyviewer.dialogs.denoise import TVDenoiseDialog, BilateralDenoiseDialog, WaveletDenoiseDialog
-from sunpyviewer.dialogs.norm import NormDialog
-from sunpyviewer.dialogs.rotate import RotateDialog
+from sunpyviewer.download.data_viewer import DataViewer
+from sunpyviewer.download.download import QueryPanel, QueryResultNotebook
+from sunpyviewer.download.event_download import HEKPanel
 from sunpyviewer.tools import EVT_QUERY_STARTED, EVT_QUERY_RESULT
-from sunpyviewer.tools.contrast import ContrastPanel, ContrastController
-from sunpyviewer.tools.data_viewer import DataViewer
-from sunpyviewer.tools.download import QueryPanel, QueryResultNotebook
-from sunpyviewer.tools.event_download import HEKPanel
-from sunpyviewer.tools.fft import FFTPanel, FFTController
-from sunpyviewer.tools.profile import ProfilePanel, ProfileController
-from sunpyviewer.tools.selection import SelectionPanel, SelectionController
-from sunpyviewer.tools.value_adjustment import ValueAdjustmentPanel, ValueAdjustmentController
-from sunpyviewer.tools.wavelet import WaveletPanel, WaveletController
 from sunpyviewer.util.data import resources_dir
-from sunpyviewer.util.event import getOpenEvent
+from sunpyviewer.util.default_action import ActionController
+from sunpyviewer.util.default_dialog import DialogController
+from sunpyviewer.util.default_tool import ToolController
+from sunpyviewer.util.event import getOpenEvent, isSupported
 from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE, \
     EVT_MPL_CHANGE_MODE
-from sunpyviewer.viewer.composite import CompositeDialog
-from sunpyviewer.viewer.content import MapViewerController, CompositeMapViewerController, TimeSeriesViewerController, \
-    ContentController, ViewMode, AbstractViewerController
+from sunpyviewer.viewer.content import ContentController, ViewMode, AbstractViewerController
 from sunpyviewer.viewer.history import History
 from sunpyviewer.viewer.settings import DBDialog
 from sunpyviewer.viewer.toolbar import ToolbarController
@@ -42,20 +32,14 @@ class MainFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, wx.ID_ANY, "SunPy - Viewer")
         self.setIcon()
-        self.createMenuBar()
 
         self.toolbar_ctrl = ToolbarController(self)
         self.content_ctrl = ContentController(self)
-        self.profile_ctrl = ProfileController()
-        self.selection_ctrl = SelectionController()
-        self.contrast_ctrl = ContrastController()
-        self.fft_ctrl = FFTController()
-        self.value_ctrl = ValueAdjustmentController()
-        self.wavelet_ctrl = WaveletController()
 
         self.createStatusBar()
         self.manager = self.initManager()
         self.history = History()
+        self.createMenuBar()
         wx.CallLater(100, self.addContentPane)  # Workaround
 
     def addContentPane(self):
@@ -84,12 +68,13 @@ class MainFrame(wx.Frame):
         self.SetIcon(icon)
 
     def createMenuBar(self):
-        menubar = wx.MenuBar()
+        menu_bar = wx.MenuBar()
 
         # File
         file_menu = wx.Menu()
+        menu_bar.Append(file_menu, "&File")
         # Add Tab Items
-        self.addTabMenuItems(file_menu, menubar)
+        self.addViewerMenuItems(file_menu, menu_bar)
 
         save_image_item = file_menu.Append(wx.ID_ANY, "Save Image")
         save_fits_item = file_menu.Append(wx.ID_ANY, "Save as fits")
@@ -103,25 +88,13 @@ class MainFrame(wx.Frame):
 
         # Edit
         edit_menu = wx.Menu()
+        menu_bar.Append(edit_menu, "&Edit")
         undo_item = edit_menu.Append(wx.NewId(), "Undo")
         edit_menu.AppendSeparator()
-        cmap_item = edit_menu.Append(wx.ID_ANY, "Change Colormap")
-        norm_item = edit_menu.Append(wx.ID_ANY, "Change Norm")
-        denoise_submenu = wx.Menu()
-        tv_item = denoise_submenu.Append(wx.ID_ANY, "TV Chambolle")
-        bilateral_item = denoise_submenu.Append(wx.ID_ANY, "Bilateral")
-        wavelet_denoise_item = denoise_submenu.Append(wx.ID_ANY, "Wavelet")
-        edit_menu.Append(wx.ID_ANY, "Denoise", denoise_submenu)
-        rotate_item = edit_menu.Append(wx.ID_ANY, "Rotate")
-        cut_item = edit_menu.Append(wx.ID_ANY, "Cut To Current View")
-        comp_submenu = wx.Menu()
-        alpha_item = comp_submenu.Append(wx.ID_ANY, "Adjust Alpha")
-        derotate_item = comp_submenu.Append(wx.ID_ANY, "Derotate")
-        coalign_item = comp_submenu.Append(wx.ID_ANY, "Coalign")
-        edit_menu.Append(wx.ID_ANY, "Composite Map Options", comp_submenu)
 
         # View
         view_menu = wx.Menu()
+        menu_bar.Append(view_menu, "&View")
         self.toolbar_item = view_menu.AppendCheckItem(wx.ID_ANY, "Toolbar")
         self.toolbar_item.Check()
         colorbar_item = view_menu.AppendCheckItem(wx.ID_ANY, "Show Colorbar")
@@ -130,73 +103,122 @@ class MainFrame(wx.Frame):
         grid_item = view_menu.AppendCheckItem(wx.ID_ANY, "Draw Grid")
 
         # Tools
-        tools_menu = wx.Menu()
-        self.contrast_item = tools_menu.AppendCheckItem(wx.ID_ANY, "Modify Contrast")
-        self.value_item = tools_menu.AppendCheckItem(wx.ID_ANY, "Adjust Values")
-        self.profile_item = tools_menu.AppendCheckItem(wx.ID_ANY, "Profile Analysis")
-        self.selection_item = tools_menu.AppendCheckItem(wx.ID_ANY, "Highlight Values")
-        self.fft_item = tools_menu.AppendCheckItem(wx.ID_ANY, "FFT")
-        self.wavelet_item = tools_menu.AppendCheckItem(wx.ID_ANY, "Wavelet Filter")
+        tool_menu = wx.Menu()
+        menu_bar.Append(tool_menu, "&Tools")
 
         # Help
         help_menu = wx.Menu()
-        snr_item = help_menu.Append(wx.ID_ANY, "Calculate Signal to Noise Ratio")
+        menu_bar.Append(help_menu, "&Help")
 
-        self.general_items = [data_item, fido_item, hek_item,
-                              db_settings_item, exit_item, self.toolbar_item, undo_item, colorbar_item]
-        self.map_items = [save_image_item, save_fits_item, cmap_item, norm_item, tv_item, bilateral_item,
-                          wavelet_denoise_item, rotate_item, snr_item, cut_item]
-        self.map_cube_items = [alpha_item, derotate_item, coalign_item]
-        self.map_tool_items = [self.contrast_item, self.value_item, self.profile_item, self.selection_item,
-                               self.fft_item, self.wavelet_item]
-        self.series_items = [save_image_item, save_fits_item]
+        # Load Dynamic Items
+        self.content_aware_items = {}
+        self.tool_items = {}
+        self.active_tools = {}  # used for toggle
+        self.addTools(menu_bar)
+        self.addDialogs(menu_bar)
+        self.addActions(menu_bar)
 
-        menubar.Append(file_menu, "&File")
-        menubar.Append(edit_menu, "&Edit")
-        menubar.Append(view_menu, "&View")
-        menubar.Append(tools_menu, "&Tools")
-        menubar.Append(help_menu, "&Help")
-
-        menubar.Bind(wx.EVT_MENU, self.onSaveImage, save_image_item)
-        menubar.Bind(wx.EVT_MENU, self.onSaveFits, save_fits_item)
-        menubar.Bind(wx.EVT_MENU, self.onExit, exit_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleToolbar, self.toolbar_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleProfile, self.profile_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleSelection, self.selection_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleFFT, self.fft_item)
-        menubar.Bind(wx.EVT_MENU, self.onChangeCmap, cmap_item)
-        menubar.Bind(wx.EVT_MENU, self.onUndo, undo_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleContrast, self.contrast_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleValueAdjust, self.value_item)
-        menubar.Bind(wx.EVT_MENU, self.onChangeNorm, norm_item)
-        menubar.Bind(wx.EVT_MENU, self.onDenoiseTV, tv_item)
-        menubar.Bind(wx.EVT_MENU, self.onDenoiseBilateral, bilateral_item)
-        menubar.Bind(wx.EVT_MENU, self.onDenoiseWavelet, wavelet_denoise_item)
-        menubar.Bind(wx.EVT_MENU, self.onToggleWavelet, self.wavelet_item)
-        menubar.Bind(wx.EVT_MENU, self.onDBSettings, db_settings_item)
-        menubar.Bind(wx.EVT_MENU, self.onStartDownloader, fido_item)
-        menubar.Bind(wx.EVT_MENU, self.onDataManager, data_item)
-        menubar.Bind(wx.EVT_MENU, self.onHEK, hek_item)
-        menubar.Bind(wx.EVT_MENU, self.onColorbar, colorbar_item)
-        menubar.Bind(wx.EVT_MENU, self.onLimb, limb_item)
-        menubar.Bind(wx.EVT_MENU, self.onContours, contours_item)
-        menubar.Bind(wx.EVT_MENU, self.onGrid, grid_item)
-        menubar.Bind(wx.EVT_MENU, self.onRotate, rotate_item)
-        menubar.Bind(wx.EVT_MENU, self.onCut, cut_item)
-        menubar.Bind(wx.EVT_MENU, self.onAdjustAlpha, alpha_item)
-        menubar.Bind(wx.EVT_MENU, self.onDerotateCube, derotate_item)
-        menubar.Bind(wx.EVT_MENU, self.onCoalign, coalign_item)
-        menubar.Bind(wx.EVT_MENU, self.onSNR, snr_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onSaveImage, save_image_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onSaveFits, save_fits_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onExit, exit_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onToggleToolbar, self.toolbar_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onUndo, undo_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onDBSettings, db_settings_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onStartDownloader, fido_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onDataManager, data_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onHEK, hek_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onColorbar, colorbar_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onLimb, limb_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onContours, contours_item)
+        menu_bar.Bind(wx.EVT_MENU, self.onGrid, grid_item)
 
         accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('Z'), undo_item.GetId())])
         self.SetAcceleratorTable(accel_tbl)
 
-        self.disableAllMenuItems()
+        self.onTabChange(None)
         pub.subscribe(self.onTabChange, EVT_TAB_SELECTION_CHANGED)
 
-        self.SetMenuBar(menubar)
+        self.SetMenuBar(menu_bar)
 
-    def addTabMenuItems(self, file_menu, menubar):
+    def addTools(self, menu_bar):
+        __import__("sunpyviewer.tools", globals(), locals(), ['*'])
+        dict = self.getItemTree(ToolController)
+        return self.addToolItems(menu_bar, dict)
+
+    def addDialogs(self, menu_bar):
+        __import__("sunpyviewer.dialogs", globals(), locals(), ['*'])
+        dict = self.getItemTree(DialogController)
+        return self.addDialogItems(menu_bar, dict)
+
+    def addActions(self, menu_bar):
+        __import__("sunpyviewer.viewer.actions", globals(), locals(), ['*'])
+        dict = self.getItemTree(ActionController)
+        return self.addActionItems(menu_bar, dict)
+
+    def getItemTree(self, super_class):
+        items = super_class.__subclasses__()
+        dict = {}
+        for item in items:
+            tree = item.getItemConfig().menu_path.split("\\")
+            parent_dict = dict
+            for i, node in enumerate(tree):
+                if i + 1 == len(tree):
+                    parent_dict.setdefault(node, item)
+                    continue
+                sub_dict = {}
+                parent_dict = parent_dict.setdefault(node, sub_dict)
+        return dict
+
+    def addToolItems(self, parent, tree):
+        for k, v in tree.items():
+            if not isinstance(v, dict):
+                item = parent.AppendCheckItem(wx.ID_ANY, k)
+                tool_ctrl = v()
+                parent.Bind(wx.EVT_MENU, lambda e, ctrl=tool_ctrl: self.onToggleTool(ctrl), item)
+                self.tool_items[tool_ctrl] = item
+                continue
+            menus = [menu[1] for menu in parent.Menus]
+            if k in menus:
+                index = menus.index(k)
+                sub_menu = parent.Menus[index][0]
+            else:
+                sub_menu = wx.Menu()
+                parent.Append(sub_menu, k)
+            self.addToolItems(sub_menu, v)
+
+    def addDialogItems(self, parent, tree):
+        for k, v in tree.items():
+            if not isinstance(v, dict):
+                item = parent.Append(wx.ID_ANY, k)
+                dlg_ctrl = v()
+                parent.Bind(wx.EVT_MENU, lambda e, ctrl=dlg_ctrl: self.onOpenDialog(self, ctrl), item)
+                self.content_aware_items[dlg_ctrl] = item
+                continue
+            if isinstance(parent, wx.MenuBar) and k in [menu[1] for menu in parent.Menus]:
+                index = [menu[1] for menu in parent.Menus].index(k)
+                sub_menu = parent.Menus[index][0]
+            else:
+                sub_menu = wx.Menu()
+                parent.Append(wx.ID_ANY, k, sub_menu)
+            self.addDialogItems(sub_menu, v)
+
+    def addActionItems(self, parent, tree):
+        for k, v in tree.items():
+            if not isinstance(v, dict):
+                item = parent.Append(wx.ID_ANY, k)
+                action_ctrl = v()
+                parent.Bind(wx.EVT_MENU, lambda e, ctrl=action_ctrl: self.onAction(ctrl), item)
+                self.content_aware_items[action_ctrl] = item
+                continue
+            if isinstance(parent, wx.MenuBar) and k in [menu[1] for menu in parent.Menus]:
+                index = [menu[1] for menu in parent.Menus].index(k)
+                sub_menu = parent.Menus[index][0]
+            else:
+                sub_menu = wx.Menu()
+                parent.Append(wx.ID_ANY, k, sub_menu)
+            self.addActionItems(sub_menu, v)
+
+    def addViewerMenuItems(self, file_menu, menubar):
         tab_ctrls = AbstractViewerController.__subclasses__()
         open_dict = {}
         for ctrl in tab_ctrls:
@@ -212,43 +234,45 @@ class MainFrame(wx.Frame):
                 self.open_functions.append(func)  # Workaround
                 pub.subscribe(func, getOpenEvent(c.data_type, c.viewer_type))
 
+    def onToggleTool(self, tool_ctrl):
+        if tool_ctrl.view is None:
+            viewer_ctrl = self.content_ctrl.getActiveController()
+            if not isSupported(tool_ctrl, viewer_ctrl):
+                viewer_ctrl = None
+            view = tool_ctrl.createView(self, viewer_ctrl)
+            self._addToolPane(view, tool_ctrl.getItemConfig().title)
+            self.active_tools[view] = tool_ctrl
+        else:
+            self._removeToolPane(tool_ctrl.view)
+            tool_ctrl.closeView()
+
+    def _removeToolPane(self, tool):
+        self.manager.GetPane(tool).Show(False)
+        self.manager.DetachPane(tool)
+        tool.Destroy()
+        self.manager.Update()
+
+    def _addToolPane(self, panel, name):
+        size = panel.GetSize()
+        size[0] += 18
+        size[1] = 200
+        info = aui.AuiPaneInfo().MinSize(size).MaximizeButton(True).DestroyOnClose(True).Name(name).Left()
+        self.manager.AddPane(panel, info)
+        self.manager.Update()
+
     def onTabChange(self, ctrl):
-        self.disableAllMenuItems()
-
-        enable = []
-        if isinstance(ctrl, MapViewerController):
-            enable.extend(self.map_items)
-        if isinstance(ctrl, TimeSeriesViewerController):
-            enable.extend(self.series_items)
-        if isinstance(ctrl, CompositeMapViewerController):
-            enable.extend(self.map_cube_items)
-
-        for item in enable:
-            item.Enable(True)
-
-    def disableAllMenuItems(self):
-        for item in (self.map_items + self.series_items + self.map_cube_items):
-            item.Enable(False)
+        for k, v in self.content_aware_items.items():
+            if isSupported(k, ctrl):
+                v.Enable()
+            else:
+                v.Enable(False)
 
     def onPaneClose(self, event):
-        if isinstance(event.Pane.window, ProfilePanel):
-            self.profile_ctrl.closeView()
-            self.profile_item.Check(False)
-        if isinstance(event.Pane.window, SelectionPanel):
-            self.selection_ctrl.closeView()
-            self.selection_item.Check(False)
-        if isinstance(event.Pane.window, FFTPanel):
-            self.fft_ctrl.closeView()
-            self.fft_item.Check(False)
-        if isinstance(event.Pane.window, ContrastPanel):
-            self.contrast_ctrl.closeView()
-            self.contrast_item.Check(False)
-        if isinstance(event.Pane.window, ValueAdjustmentPanel):
-            self.value_ctrl.closeView()
-            self.value_item.Check(False)
-        if isinstance(event.Pane.window, WaveletPanel):
-            self.wavelet_ctrl.closeView()
-            self.wavelet_item.Check(False)
+        if event.Pane.window not in self.active_tools.keys():
+            return
+        ctrl = self.active_tools[event.Pane.window]
+        ctrl.closeView()
+        self.tool_items[ctrl].Check(False)
 
     def onUpdateStatusBar(self, x, y):
         text = "x={0:.5f} ; y={1:.5f}".format(x, y)
@@ -342,48 +366,6 @@ class MainFrame(wx.Frame):
             self._removeToolPane(self.wavelet_ctrl.view)
             self.wavelet_ctrl.closeView()
 
-    def _removeToolPane(self, tool):
-        self.manager.GetPane(tool).Show(False)
-        self.manager.DetachPane(tool)
-        tool.Destroy()
-        self.manager.Update()
-
-    def _addToolPane(self, panel, name):
-        size = panel.GetSize()
-        size[0] += 18
-        size[1] = 200
-        info = aui.AuiPaneInfo().MinSize(size).MaximizeButton(True).DestroyOnClose(True).Name(name).Left()
-        self.manager.AddPane(panel, info)
-        self.manager.Update()
-
-    def onChangeCmap(self, event):
-        dlg = CmapDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
-    def onChangeNorm(self, event):
-        dlg = NormDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
-    def onDenoiseTV(self, event):
-        dlg = TVDenoiseDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
-    def onDenoiseBilateral(self, event):
-        if np.any(self.content_ctrl.getActiveContent().data < 0):
-            wx.MessageDialog(self, "Negative Values Encountered").ShowModal()
-            return
-        dlg = BilateralDenoiseDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
-    def onDenoiseWavelet(self, event):
-        dlg = WaveletDenoiseDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
     def onStartDownloader(self, *args):
         query = QueryPanel(self)
         self._addToolPane(query, "Data Download")
@@ -420,6 +402,12 @@ class MainFrame(wx.Frame):
         pane.Show(not pane.IsShown())
         self.manager.Update()
 
+    def onOpenDialog(self, parent, ctrl):
+        ctrl.openDialog(parent, self.content_ctrl.getActiveController())
+
+    def onAction(self, ctrl):
+        ctrl.doAction(self.content_ctrl.getActiveController())
+
     def onColorbar(self, event):
         pub.sendMessage(EVT_CHANGE_PLOT_PREFERENCE, key="show_colorbar", value=event.Selection)
 
@@ -438,20 +426,6 @@ class MainFrame(wx.Frame):
         if data != None:
             self.content_ctrl.setTabContent(tab_id, data)
 
-    def onRotate(self, event):
-        dlg = RotateDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
-    def onCut(self, event):
-        sub_map = self.content_ctrl.getZoomSubMap()
-        self.content_ctrl.setTabContent(self.content_ctrl.getActiveTabId(), sub_map)
-
-    def onAdjustAlpha(self, event):
-        dlg = CompositeDialog(self, self.content_ctrl.getActiveTabId(), self.content_ctrl.getActiveContent())
-        dlg.ShowModal()
-        dlg.Destroy()
-
     def onDerotateCube(self, event):
         comp_map = self.content_ctrl.getActiveContent()
         mc = sunpy.map.Map(comp_map._maps, cube=True)
@@ -465,9 +439,3 @@ class MainFrame(wx.Frame):
         derotated = mapcube_coalign_by_match_template(mc)
         result = sunpy.map.Map(derotated.maps, composite=True)
         self.content_ctrl.setTabContent(self.content_ctrl.getActiveTabId(), result)
-
-    def onSNR(self, event):
-        data = self.content_ctrl.getZoomSubMap().data
-        snr = np.mean(data) / np.std(data)
-        message = "Estimated SNR: {0:.7}".format(float(snr))
-        wx.MessageDialog(self, message).ShowModal()

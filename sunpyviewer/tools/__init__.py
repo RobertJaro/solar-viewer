@@ -1,3 +1,6 @@
+__all__ = ["contrast", "fft", "profile",
+           "selection", "value_adjustment", "wavelet", "composite"]
+
 from enum import Enum
 
 EVT_FILTER_CLOSE = "fido.filter.close"

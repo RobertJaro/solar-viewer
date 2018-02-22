@@ -3,10 +3,10 @@ from enum import Enum
 import matplotlib.colors as colors
 import wx
 from astropy.visualization import mpl_normalize, stretch
-from wx.lib.pubsub import pub
 
-from sunpyviewer.viewer import EVT_CHANGE_TAB
-from sunpyviewer.viewer.settings import DefaultDialog
+from sunpyviewer.util.default_dialog import DialogController
+from sunpyviewer.util.default_tool import ItemConfig
+from sunpyviewer.viewer.content import ViewerType, DataType
 
 
 class Norm(Enum):
@@ -48,13 +48,18 @@ class Stretch(Enum):
             return Stretch.POWER.value
 
 
-class NormDialog(DefaultDialog):
-    def __init__(self, parent, tab_id, map):
-        self.map = map
-        self.tab_id = tab_id
-        DefaultDialog.__init__(self, parent, 'Change Normalization')
+class NormController(DialogController):
+    def __init__(self):
+        DialogController.__init__(self)
 
-    def createContent(self, panel):
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("Select Normalization").setMenuPath("Edit\\Change Norm").addSupportedViewer(
+            ViewerType.ANY).addSupportedData(
+            DataType.MAP)
+
+    def getContentView(self, parent):
+        panel = wx.Panel(parent)
         content_sizer = wx.FlexGridSizer(2, 5, 5)
 
         norm_label = wx.StaticText(panel)
@@ -62,32 +67,21 @@ class NormDialog(DefaultDialog):
 
         choices = [e.value for e in Norm]
         self.norm_combo = wx.Choice(panel, choices=choices)
-        self.norm_combo.SetStringSelection(Norm.convertToString(self.map.plot_settings["norm"]))
 
         self.stretch_label = wx.StaticText(panel)
         self.stretch_label.SetLabel("Stretch:")
         stretch_choices = [e.value for e in Stretch]
         self.stretch_combo = wx.Choice(panel, choices=stretch_choices)
-        if self.norm_combo.GetStringSelection() == Norm.IMAGE.value:
-            self.stretch_combo.SetStringSelection(Stretch.convertToString(self.map.plot_settings["norm"].stretch))
 
         self.stretch_a_label = wx.StaticText(panel, label="a:")
         self.stretch_a_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1", inc=0.01)
-        if self.stretch_combo.GetStringSelection() == Stretch.SINH.value or self.stretch_combo.GetStringSelection() == Stretch.ASINH.value:
-            self.stretch_a_spin.SetValue(self.map.plot_settings["norm"].stretch.a)
 
         self.stretch_power_label = wx.StaticText(panel, label="power:")
         self.stretch_power_spin = wx.SpinCtrlDouble(panel, min=0, value="0.1", inc=0.01)
-        if self.stretch_combo.GetStringSelection() == Stretch.POWER.value:
-            self.stretch_power_spin.SetValue(self.map.plot_settings["norm"].stretch.power)
 
         self.power_label = wx.StaticText(panel)
         self.power_label.SetLabel("Power:")
         self.power_spin = wx.SpinCtrl(panel, min=1, value="1")
-        if self.norm_combo.GetStringSelection() == Norm.POWER.value:
-            self.power_spin.SetValue(self.map.plot_settings["norm"].gamma)
-
-        self.onSelect()
 
         content_sizer.AddMany(
             [norm_label, self.norm_combo, self.stretch_label, self.stretch_combo, self.stretch_a_label,
@@ -97,7 +91,45 @@ class NormDialog(DefaultDialog):
         self.norm_combo.Bind(wx.EVT_CHOICE, self.onSelect)
         self.stretch_combo.Bind(wx.EVT_CHOICE, self.onSelect)
 
-        return content_sizer
+        panel.SetSizerAndFit(content_sizer)
+        return panel
+
+    def refreshContent(self, viewer_ctrl):
+        map = viewer_ctrl.getContent()
+        self.norm_combo.SetStringSelection(Norm.convertToString(map.plot_settings["norm"]))
+        if self.norm_combo.GetStringSelection() == Norm.IMAGE.value:
+            self.stretch_combo.SetStringSelection(Stretch.convertToString(map.plot_settings["norm"].stretch))
+        if self.stretch_combo.GetStringSelection() == Stretch.SINH.value or self.stretch_combo.GetStringSelection() == Stretch.ASINH.value:
+            self.stretch_a_spin.SetValue(map.plot_settings["norm"].stretch.a)
+        if self.stretch_combo.GetStringSelection() == Stretch.POWER.value:
+            self.stretch_power_spin.SetValue(map.plot_settings["norm"].stretch.power)
+        if self.norm_combo.GetStringSelection() == Norm.POWER.value:
+            self.power_spin.SetValue(map.plot_settings["norm"].gamma)
+        self.onSelect()
+
+    def modifyData(self, data, data_type):
+        selection = Norm(self.norm_combo.GetStringSelection())
+        old_norm = data.plot_settings["norm"]
+        clip = old_norm.clip
+        vmin = old_norm.vmin
+        vmax = old_norm.vmax
+
+        if selection is Norm.LOG:
+            if vmin <= 0:
+                raise Exception("Values must be positive for log-norm")
+            data.plot_settings["norm"] = colors.LogNorm(vmin=vmin, vmax=vmax, clip=clip)
+        if selection is Norm.NO:
+            data.plot_settings["norm"] = colors.NoNorm(vmin=vmin, vmax=vmax, clip=clip)
+        if selection is Norm.LINEAR:
+            data.plot_settings["norm"] = colors.Normalize(vmin=vmin, vmax=vmax, clip=clip)
+        if selection is Norm.POWER:
+            data.plot_settings["norm"] = colors.PowerNorm(self.power_spin.GetValue(), vmin=vmin, vmax=vmax,
+                                                          clip=clip)
+        if selection is Norm.IMAGE:
+            data.plot_settings["norm"] = mpl_normalize.ImageNormalize(vmin=vmin, vmax=vmax, clip=clip,
+                                                                      stretch=self.getStretch())
+
+        return data
 
     def onSelect(self, *args):
         if self.norm_combo.GetStringSelection() == Norm.POWER.value:
@@ -126,35 +158,8 @@ class NormDialog(DefaultDialog):
             self.stretch_power_spin.Hide()
             self.stretch_power_label.Hide()
 
-        self.Layout()
-        self.Fit()
-
-    def onOk(self, event):
-        selection = Norm(self.norm_combo.GetStringSelection())
-        old_norm = self.map.plot_settings["norm"]
-        clip = old_norm.clip
-        vmin = old_norm.vmin
-        vmax = old_norm.vmax
-
-        if selection is Norm.LOG:
-            if vmin <= 0:
-                self.info_bar.ShowMessage("Values must be positive for log-norm", flags=wx.ICON_WARNING)
-                self.Fit()
-                return
-            self.map.plot_settings["norm"] = colors.LogNorm(vmin=vmin, vmax=vmax, clip=clip)
-        if selection is Norm.NO:
-            self.map.plot_settings["norm"] = colors.NoNorm(vmin=vmin, vmax=vmax, clip=clip)
-        if selection is Norm.LINEAR:
-            self.map.plot_settings["norm"] = colors.Normalize(vmin=vmin, vmax=vmax, clip=clip)
-        if selection is Norm.POWER:
-            self.map.plot_settings["norm"] = colors.PowerNorm(self.power_spin.GetValue(), vmin=vmin, vmax=vmax,
-                                                              clip=clip)
-        if selection is Norm.IMAGE:
-            self.map.plot_settings["norm"] = mpl_normalize.ImageNormalize(vmin=vmin, vmax=vmax, clip=clip,
-                                                                          stretch=self.getStretch())
-
-        pub.sendMessage(EVT_CHANGE_TAB, tab_id=self.tab_id, data=self.map)
-        event.Skip()
+        self.dlg.Layout()
+        self.dlg.Fit()
 
     def getStretch(self):
         selection = Stretch(self.stretch_combo.GetStringSelection())

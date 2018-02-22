@@ -2,28 +2,33 @@ import numpy as np
 import wx
 
 from sunpyviewer.conversion.filter import butter2d_lp, butter2d_hp, butter2d_bp
-from sunpyviewer.tools.default_tool import MapToolPanel, ToolController
+from sunpyviewer.util.default_tool import ToolController, ItemConfig, DataControllerMixin
+from sunpyviewer.viewer.content import DataType, ViewerType
 
 
-class FFTController(ToolController):
+class FFTController(DataControllerMixin, ToolController):
 
     def __init__(self):
         self.view = None
 
-    def createView(self, parent, content_ctrl):
-        self.view = FFTPanel(parent, content_ctrl)
-        return self.view
+    @staticmethod
+    def getItemConfig():
+        return ItemConfig().setTitle("FFT").setMenuPath("Tools\\FFT").addSupportedData(DataType.MAP).addSupportedViewer(
+            ViewerType.ANY)
 
-    def closeView(self, *args):
-        self.view = None
+    def modifyData(self, data, data_type):
+        adjust_contrast = self.contrast_check.IsChecked()
+        h_val = self.h_spiner.GetValue()
+        l_val = self.l_spiner.GetValue()
+        shape = data.data.shape
+        highpass = self.h_check.IsChecked()
+        lowpass = self.l_check.IsChecked()
 
+        filt = self.createFilter(h_val, highpass, l_val, lowpass, shape)
+        return self._filterMap(filt, data, adjust_contrast)
 
-class FFTPanel(MapToolPanel):
-    def __init__(self, parent, content_ctrl):
-        MapToolPanel.__init__(self, parent, content_ctrl)
-
-    def initContent(self):
-        filter_panel = wx.Panel(self)
+    def getContentView(self, parent):
+        filter_panel = wx.Panel(parent)
 
         box_sizer = wx.StaticBoxSizer(wx.VERTICAL, filter_panel, "Filter")
         grid_sizer = wx.FlexGridSizer(2, 10, 15)
@@ -49,18 +54,7 @@ class FFTPanel(MapToolPanel):
 
         return [filter_panel]
 
-    def modifyMap(self, data_map):
-        adjust_contrast = self.contrast_check.IsChecked()
-        h_val = self.h_spiner.GetValue()
-        l_val = self.l_spiner.GetValue()
-        shape = data_map.data.shape
-        highpass = self.h_check.IsChecked()
-        lowpass = self.l_check.IsChecked()
-
-        filt = self.createFilter(h_val, highpass, l_val, lowpass, shape)
-        return self._filterMap(filt, data_map, adjust_contrast)
-
-    def refreshContent(self, data):
+    def refreshContent(self, data, data_type):
         pass
 
     def _filterMap(self, filt, map, adjust_contrast):
