@@ -1,11 +1,7 @@
 import logging
 import os
 
-import sunpy.map
-import sunpy.timeseries
 import wx
-from sunpy.image.coalignment import mapcube_coalign_by_match_template
-from sunpy.physics.solar_rotation import mapcube_solar_derotate
 from wx import aui
 from wx.lib.pubsub import pub
 
@@ -18,9 +14,8 @@ from sunpyviewer.util.default_action import ActionController
 from sunpyviewer.util.default_dialog import DialogController
 from sunpyviewer.util.default_tool import ToolController
 from sunpyviewer.util.event import getOpenEvent, isSupported
-from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE, \
-    EVT_MPL_CHANGE_MODE
-from sunpyviewer.viewer.content import ContentController, ViewMode, AbstractViewerController
+from sunpyviewer.viewer import EVT_STATUS_BAR_UPDATE, EVT_TAB_SELECTION_CHANGED, EVT_CHANGE_PLOT_PREFERENCE
+from sunpyviewer.viewer.content import ContentController, AbstractViewerController
 from sunpyviewer.viewer.history import History
 from sunpyviewer.viewer.settings import DBDialog
 from sunpyviewer.viewer.toolbar import ToolbarController
@@ -316,56 +311,6 @@ class MainFrame(wx.Frame):
     def onExit(self, event):
         self.Close(True)
 
-    def onToggleProfile(self, *args):
-        if self.profile_ctrl.view is None:
-            profile_tool = self.profile_ctrl.createView(self, self.content_ctrl.getActiveController())
-            self._addToolPane(profile_tool, "Profile Analysis")
-            pub.sendMessage(EVT_MPL_CHANGE_MODE, mode=ViewMode.NONE)
-        else:
-            self._removeToolPane(self.profile_ctrl.view)
-            self.profile_ctrl.closeView()
-
-    def onToggleSelection(self, *args):
-        if self.selection_ctrl.view is None:
-            selection_tool = self.selection_ctrl.createView(self, self.content_ctrl.getActivePage())
-            self._addToolPane(selection_tool, "Value Highlighting")
-            pub.sendMessage(EVT_MPL_CHANGE_MODE, mode=ViewMode.NONE)
-        else:
-            self._removeToolPane(self.selection_ctrl.view)
-            self.selection_ctrl.closeView()
-
-    def onToggleFFT(self, *args):
-        if self.fft_ctrl.view is None:
-            fft_tool = self.fft_ctrl.createView(self, self.content_ctrl)
-            self._addToolPane(fft_tool, "FFT - Filter")
-        else:
-            self._removeToolPane(self.fft_ctrl.view)
-            self.fft_ctrl.closeView()
-
-    def onToggleContrast(self, *args):
-        if self.contrast_ctrl.view is None:
-            contrast_tool = self.contrast_ctrl.createView(self, self.content_ctrl)
-            self._addToolPane(contrast_tool, "Contrast Modification")
-        else:
-            self._removeToolPane(self.contrast_ctrl.view)
-            self.contrast_ctrl.closeView()
-
-    def onToggleValueAdjust(self, *args):
-        if self.value_ctrl.view is None:
-            value_tool = self.value_ctrl.createView(self, self.content_ctrl)
-            self._addToolPane(value_tool, "Value Adjustment")
-        else:
-            self._removeToolPane(self.value_ctrl.view)
-            self.value_ctrl.closeView()
-
-    def onToggleWavelet(self, *args):
-        if self.wavelet_ctrl.view is None:
-            wavelet_tool = self.wavelet_ctrl.createView(self, self.content_ctrl)
-            self._addToolPane(wavelet_tool, "Wavelet Analysis")
-        else:
-            self._removeToolPane(self.wavelet_ctrl.view)
-            self.wavelet_ctrl.closeView()
-
     def onStartDownloader(self, *args):
         query = QueryPanel(self)
         self._addToolPane(query, "Data Download")
@@ -425,17 +370,3 @@ class MainFrame(wx.Frame):
         data = self.history.undo(tab_id)
         if data != None:
             self.content_ctrl.setTabContent(tab_id, data)
-
-    def onDerotateCube(self, event):
-        comp_map = self.content_ctrl.getActiveContent()
-        mc = sunpy.map.Map(comp_map._maps, cube=True)
-        derotated = mapcube_solar_derotate(mc)
-        result = sunpy.map.Map(derotated.maps, composite=True)
-        self.content_ctrl.setTabContent(self.content_ctrl.getActiveTabId(), result)
-
-    def onCoalign(self, event):
-        comp_map = self.content_ctrl.getActiveContent()
-        mc = sunpy.map.Map(comp_map._maps, cube=True)
-        derotated = mapcube_coalign_by_match_template(mc)
-        result = sunpy.map.Map(derotated.maps, composite=True)
-        self.content_ctrl.setTabContent(self.content_ctrl.getActiveTabId(), result)

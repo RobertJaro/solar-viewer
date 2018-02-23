@@ -30,7 +30,7 @@ class ContrastController(DataControllerMixin, ToolController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setTitle("Contrast Adjustment").setMenuPath("Tools\\Contrast").addSupportedData(
-            DataType.MAP).addSupportedViewer(ViewerType.ANY)
+            DataType.MAP).addSupportedViewer(ViewerType.MPL)
 
     def modifyData(self, data, data_type):
         data.plot_settings["norm"].vmin = self.model.min

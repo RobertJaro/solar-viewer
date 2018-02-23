@@ -13,7 +13,7 @@ class ValueAdjustmentController(DataControllerMixin, ToolController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setTitle("Value Adjustment").setMenuPath("Tools\\Value Adjustment").addSupportedData(
-            DataType.MAP).addSupportedViewer(ViewerType.MPL)
+            DataType.MAP).addSupportedViewer(ViewerType.ANY)
 
     def modifyData(self, data, data_type):
         d = data.data

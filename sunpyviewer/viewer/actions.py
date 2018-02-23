@@ -16,7 +16,7 @@ class CutController(ActionController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setMenuPath("Edit\\Cut To Current View").addSupportedViewer(
-            ViewerType.ANY).addSupportedData(DataType.MAP)
+            ViewerType.MPL).addSupportedData(DataType.MAP)
 
     def doAction(self, viewer_ctrl):
         map = viewer_ctrl.getZoomSubMap()
@@ -58,7 +58,7 @@ class SNRController(ActionController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setMenuPath("Help\\Calculate SNR").addSupportedViewer(
-            ViewerType.ANY).addSupportedData(DataType.MAP)
+            ViewerType.MPL).addSupportedData(DataType.MAP)
 
     def doAction(self, viewer_ctrl):
         data = viewer_ctrl.getZoomSubMap().data

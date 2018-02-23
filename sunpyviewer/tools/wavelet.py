@@ -15,7 +15,7 @@ class WaveletController(DataControllerMixin, ToolController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setTitle("Wavelet Filter").setMenuPath("Tools\\Wavelet Filter").addSupportedData(
-            DataType.MAP).addSupportedViewer(ViewerType.MPL)
+            DataType.MAP).addSupportedViewer(ViewerType.ANY)
 
     def modifyData(self, data, data_type):
         noiseSigma = self.sigma_spin.GetValue()

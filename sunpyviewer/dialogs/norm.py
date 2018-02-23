@@ -55,7 +55,7 @@ class NormController(DialogController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setTitle("Select Normalization").setMenuPath("Edit\\Change Norm").addSupportedViewer(
-            ViewerType.ANY).addSupportedData(
+            ViewerType.MPL).addSupportedData(
             DataType.MAP)
 
     def getContentView(self, parent):

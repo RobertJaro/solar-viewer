@@ -9,7 +9,7 @@ from astropy import units as u
 from wx import aui
 from wx.lib.pubsub import pub
 
-from sunpyviewer.util.common import Singleton
+from sunpyviewer.util.common import Singleton, InstallUtil
 from sunpyviewer.util.data import saveFigure, saveFits
 from sunpyviewer.util.wxmatplot import PlotPanel
 from sunpyviewer.viewer import EVT_MAP_CLOSED, EVT_TAB_SELECTION_CHANGED, EVT_MAP_ADDED, EVT_STATUS_BAR_UPDATE, \
@@ -373,14 +373,80 @@ class NoPreviewViewer(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         text = wx.StaticText(parent, label="no preview available")
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer_h = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_h.Add(text, 1, wx.CENTER)
+        self.sizer.Add(sizer_h, 1, wx.CENTER)
+        self.SetSizerAndFit(self.sizer)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(text, flag=wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, border=10)
-        self.SetSizerAndFit(sizer)
+
+class NoViewer(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        text = wx.StaticText(parent, label="no view available")
+        font = text.GetFont()
+        font.PointSize = 28
+        text.SetFont(font)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer_h = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_h.Add(text, 1, wx.CENTER)
+        self.sizer.Add(sizer_h, 1, wx.CENTER)
+        self.SetSizerAndFit(self.sizer)
+
+
+class GingaMapViewerController(AbstractViewerController):
+    data_type = DataType.MAP
+    viewer_type = ViewerType.GINGA
+
+    def __init__(self, parent, path):
+        self.map = sunpy.map.Map(path)
+        self.map.path = path
+        if InstallUtil.checkPackage("ginga"):
+            self.view = GingaMapViewer(parent, self.map)
+        else:
+            self.view = NoViewer(parent)
+
+    def getView(self):
+        return self.view
+
+    def getContent(self):
+        return self.map
+
+    def setContent(self, data):
+        self.map = data
+        self.view.map = data
+        pub.sendMessage(EVT_MAP_CHANGED, tab_id=self.getView().Id, data=data)
+
+    def getTitle(self):
+        try:
+            return self.map.name
+        except:
+            return "Map"
+
+
+class GingaMapViewer(PlotPanel):
+
+    def __init__(self, parent, map):
+        self.map = map
+        self.AstroImage = __import__("ginga.AstroImage", fromlist="AstroImage").AstroImage
+        self.ImageViewCanvas = __import__("ginga.mplw.ImageViewCanvasMpl", fromlist="ImageViewCanvas").ImageViewCanvas
+        PlotPanel.__init__(self, parent)
+
+    def draw(self):
+        self.figure.clear()
+        fi = self.ImageViewCanvas()
+        fi.enable_autocuts('on')
+        fi.set_autocut_params('zscale')
+        image = self.AstroImage()
+        image.load_data(self.map.data)
+        wx.CallAfter(fi.set_figure, self.figure)
+        wx.CallAfter(fi.get_bindings().enable_all, True)
+        wx.CallAfter(fi.set_image, image)
+        wx.CallAfter(fi.add_axes)
 
 
 class PreviewUtil:
-    viewers = {DataType.MAP: {ViewerType.MPL: MapViewer},
+    viewers = {DataType.MAP: {ViewerType.MPL: MapViewer, ViewerType.GINGA: GingaMapViewer},
                DataType.SERIES: {ViewerType.MPL: TimeSeriesViewer},
                DataType.MAP_CUBE: {ViewerType.MPL: CompositeMapViewer}}
 

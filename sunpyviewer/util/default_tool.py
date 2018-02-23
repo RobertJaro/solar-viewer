@@ -99,9 +99,10 @@ class DataControllerMixin(ABC):
         if not isSupported(self, ctrl):
             self.view.enable(False)
             self.viewer_ctrl = None
+            data_types = [type.value for type in self.getItemConfig().supported_data_types]
+            viewer_types = [type.value for type in self.getItemConfig().supported_viewer_types]
             self.view.info_bar.ShowMessage(
-                "Only Supports:\nDataTypes: {}\nViewerTypes: {} ".format(self.getItemConfig().supported_data_types,
-                                                                         self.getItemConfig().supported_viewer_types))
+                "Only Supports:\nDataTypes: {}\nViewerTypes: {} ".format(data_types, viewer_types))
             self.view.Layout()
             self.view.FitInside()
             return

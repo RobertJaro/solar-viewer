@@ -13,7 +13,7 @@ class CmapController(DialogController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setTitle("Select Coloramap").setMenuPath("Edit\\Change Colormap").addSupportedViewer(
-            ViewerType.ANY).addSupportedData(
+            ViewerType.MPL).addSupportedData(
             DataType.MAP)
 
     def getContentView(self, parent):
