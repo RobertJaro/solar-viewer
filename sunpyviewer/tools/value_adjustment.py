@@ -29,13 +29,14 @@ class ValueAdjustmentController(DataControllerMixin, ToolController):
             data._data = np.clip(d, vmin, vmax)
 
         if self.contrast_none.GetValue():
-            return
+            return data
+        d = data.data
         if self.contrast_min_max.GetValue():
-            data.plot_settings["norm"].vmin = data.min()
-            data.plot_settings["norm"].vmax = data.max()
+            data.plot_settings["norm"].vmin = d.min()
+            data.plot_settings["norm"].vmax = d.max()
         if self.contrast_average.GetValue():
-            data.plot_settings["norm"].vmin = data.min()
-            data.plot_settings["norm"].vmax = data.mean() + 3 * data.std()
+            data.plot_settings["norm"].vmin = d.min()
+            data.plot_settings["norm"].vmax = d.mean() + 3 * d.std()
 
         return data
 

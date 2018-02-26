@@ -1,5 +1,6 @@
 import threading
 import time
+from abc import abstractmethod
 
 import wx
 from matplotlib.backends.backend_wx import wxc
@@ -84,5 +85,6 @@ class PlotPanel(wx.Panel):
     def getCanvas(self):
         return self.canvas
 
+    @abstractmethod
     def draw(self):
         pass

@@ -89,7 +89,8 @@ class SelectionController(ToolController):
         if not self.view:
             return
         self.onClear()
-        self.model.setTab(ctrl.getView() if ctrl is not None else None)
+        supported = ctrl and ctrl.viewer_type in self.getItemConfig().supported_viewer_types and ctrl.data_type in self.getItemConfig().supported_data_types
+        self.model.setTab(ctrl.getView() if supported else None)
         self._initListener()
 
     def onClear(self):

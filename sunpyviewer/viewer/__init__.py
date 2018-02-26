@@ -1,8 +1,5 @@
 EVT_STATUS_BAR_UPDATE = "statusbar.update"
 
-EVT_MAP_CLOSED = "tab.closed.map"
-EVT_MAP_ADDED = "tab.added.map"
-EVT_MAP_CHANGED = "tab.changed.map"
 EVT_TAB_CLOSED = "tab.closed"
 EVT_TAB_ADDED = "tab.added"
 EVT_TAB_CHANGED = "tab.changed"

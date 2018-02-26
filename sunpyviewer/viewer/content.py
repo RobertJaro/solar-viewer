@@ -1,3 +1,4 @@
+import os.path
 import threading
 from abc import abstractmethod, ABC
 from enum import Enum
@@ -6,14 +7,18 @@ import sunpy.map
 import sunpy.timeseries
 import wx
 from astropy import units as u
+from astropy.io import fits
+from astropy.wcs import WCS
+from matplotlib.colors import Normalize
 from wx import aui
 from wx.lib.pubsub import pub
 
 from sunpyviewer.util.common import Singleton, InstallUtil
 from sunpyviewer.util.data import saveFigure, saveFits
 from sunpyviewer.util.wxmatplot import PlotPanel
-from sunpyviewer.viewer import EVT_MAP_CLOSED, EVT_TAB_SELECTION_CHANGED, EVT_MAP_ADDED, EVT_STATUS_BAR_UPDATE, \
-    EVT_CHANGE_TAB, EVT_CHANGE_PLOT_PREFERENCE, EVT_MAP_CHANGED, EVT_MPL_MODE_CHANGED, EVT_MPL_RESET
+from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED, EVT_STATUS_BAR_UPDATE, \
+    EVT_CHANGE_TAB, EVT_CHANGE_PLOT_PREFERENCE, EVT_MPL_MODE_CHANGED, EVT_MPL_RESET, EVT_TAB_CHANGED, \
+    EVT_TAB_ADDED, EVT_TAB_CLOSED
 from sunpyviewer.viewer.toolbar import ViewMode, ToolbarController
 
 
@@ -21,6 +26,7 @@ class DataType(Enum):
     MAP = "SunPy Map"
     MAP_CUBE = "SunPy Composite Map"
     SERIES = "SunPy Series"
+    PLAIN_2D = "2D FITS"
     ANY = "Any"
     NONE = ""
 
@@ -38,23 +44,21 @@ class ContentModel:
         self.plot_preferences = {"show_colorbar": False, "show_limb": False, "draw_contours": False, "draw_grid": False}
 
     def removeViewerController(self, id):
-        ctrl = self.viewer_controllers[id]
         del self.viewer_controllers[id]
-        if ctrl.data_type is DataType.MAP:
-            pub.sendMessage(EVT_MAP_CLOSED, tab_id=id)
+        pub.sendMessage(EVT_TAB_CLOSED, tab_id=id)
         if len(self.viewer_controllers) == 0:
             pub.sendMessage(EVT_TAB_SELECTION_CHANGED, ctrl=None)
 
     def changeContent(self, id, content):
         ctrl = self.viewer_controllers[id]
         ctrl.setContent(content)
+        pub.sendMessage(EVT_TAB_CHANGED, tab_id=ctrl.getView().Id, data=content)
         return ctrl
 
     def addViewerController(self, ctrl):
         tab = ctrl.getView()
         self.viewer_controllers[tab.Id] = ctrl
-        if ctrl.data_type is DataType.MAP or ctrl.data_type is DataType.MAP_CUBE:
-            pub.sendMessage(EVT_MAP_ADDED, tab_id=tab.Id, data=ctrl.getContent())
+        pub.sendMessage(EVT_TAB_ADDED, tab_id=tab.Id, data=ctrl.getContent())
 
     def getViewerController(self, id):
         return self.viewer_controllers[id]
@@ -114,10 +118,9 @@ class ContentController(metaclass=Singleton):
     def redrawActive(self):
         threading.Thread(target=self.getActivePage().redraw).start()
 
-    def refreshMaps(self):
+    def refreshViewers(self):
         for ctrl in self.model.viewer_controllers.values():
-            if ctrl.data_type is DataType.MAP or ctrl.data_type is DataType.MAP_CUBE:
-                ctrl.redraw()
+            ctrl.redraw()
 
     def getActiveController(self):
         id = self.getActiveTabId()
@@ -143,7 +146,7 @@ class ContentController(metaclass=Singleton):
 
     def setPlotPreference(self, key, value):
         self.model.plot_preferences[key] = value
-        self.refreshMaps()
+        self.refreshViewers()
 
 
 class ContentNotebook(aui.AuiNotebook):
@@ -183,12 +186,14 @@ class AbstractViewerController(ABC):
         return self.getView().Id
 
 
-class MPLToolbarRegisterMixin():
+class MPLControllerMixin():
 
     def __init__(self):
         self.mode = ViewMode.NONE
         mode = ToolbarController().getMode()
         self.changeMode(mode)
+
+        self.getView().canvas.mpl_connect('motion_notify_event', self.onMapMotion)
 
         pub.subscribe(self.changeMode, EVT_MPL_MODE_CHANGED)
         pub.subscribe(self.reset, EVT_MPL_RESET)
@@ -211,8 +216,13 @@ class MPLToolbarRegisterMixin():
         if ContentController().getActiveTabId() == self.getView().Id:
             self.getView().toolbar.home()
 
+    def onMapMotion(self, event):
+        if event.inaxes:
+            message = event.inaxes.format_coord(event.xdata, event.ydata)
+            pub.sendMessage(EVT_STATUS_BAR_UPDATE, message=message)
 
-class MapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
+
+class MapViewerController(AbstractViewerController, MPLControllerMixin):
     data_type = DataType.MAP
     viewer_type = ViewerType.MPL
 
@@ -222,14 +232,7 @@ class MapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
 
         self.view = MapViewer(parent, self.map)
         # add coordinates of mouse courser to status bar
-        self.view.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
-
-        MPLToolbarRegisterMixin.__init__(self)
-
-    def onMapMotion(self, event):
-        if event.inaxes:
-            coord = self.map.pixel_to_world(event.xdata * u.pixel, event.ydata * u.pixel)
-            pub.sendMessage(EVT_STATUS_BAR_UPDATE, x=coord.Tx, y=coord.Ty)
+        MPLControllerMixin.__init__(self)
 
     def getView(self):
         return self.view
@@ -240,7 +243,6 @@ class MapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
     def setContent(self, data):
         self.map = data
         self.view.map = data
-        pub.sendMessage(EVT_MAP_CHANGED, tab_id=self.getView().Id, data=data)
 
     def getTitle(self):
         try:
@@ -281,7 +283,64 @@ class MapViewer(PlotPanel):
             self.map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
 
 
-class CompositeMapViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
+class Plain2DModel:
+    def __init__(self, data):
+        self._data = data
+        self.data = self.getData()
+        self.plot_settings = {"norm": Normalize(vmin=data.min(), vmax=data.max()), "cmap": "gray"}
+        self.wcs = None
+        self.title = "AstroPy Image"
+
+    def getData(self):
+        return self._data
+
+
+class AstropyViewer(PlotPanel):
+    def __init__(self, parent, model):
+        self.model = model
+        PlotPanel.__init__(self, parent)
+
+    def draw(self):
+        self.figure.clear()
+        plot_settings = self.model.plot_settings
+        self.ax = self.figure.add_subplot(111, projection=self.model.wcs)
+        image = self.ax.imshow(self.model.data, **plot_settings)
+        plot_preferences = ContentController().getPlotPreferences()
+        if plot_preferences["show_colorbar"]:
+            self.figure.colorbar(image)
+
+
+class AstropyViewerController(AbstractViewerController, MPLControllerMixin):
+    data_type = DataType.PLAIN_2D
+    viewer_type = ViewerType.MPL
+
+    def __init__(self, parent, path):
+        hdu = fits.open(path)[0]
+        wcs = WCS(hdu.header)
+
+        self.model = Plain2DModel(hdu.data)
+        self.model.title = os.path.basename(path)
+        self.model.wcs = wcs
+
+        self.view = AstropyViewer(parent, self.model)
+
+        MPLControllerMixin.__init__(self)
+
+    def getView(self):
+        return self.view
+
+    def getContent(self):
+        return self.model
+
+    def setContent(self, data):
+        self.model = data
+        self.view.model = data
+
+    def getTitle(self):
+        return self.model.title
+
+
+class CompositeMapViewerController(AbstractViewerController, MPLControllerMixin):
     data_type = DataType.MAP_CUBE
     viewer_type = ViewerType.MPL
     file_configuration = {"extensions": "Fits files (*.fits;*.fit;*.fts)|*.fits;*.fit;*.fts", "multiple": True}
@@ -294,7 +353,7 @@ class CompositeMapViewerController(AbstractViewerController, MPLToolbarRegisterM
 
         self.view = CompositeMapViewer(parent, self.comp_map)
 
-        MPLToolbarRegisterMixin.__init__(self)
+        MPLControllerMixin.__init__(self)
 
     def getContent(self):
         return self.comp_map
@@ -334,7 +393,7 @@ class CompositeMapViewer(PlotPanel):
                 axes.contour(m.data, m.levels, **params)
 
 
-class TimeSeriesViewerController(AbstractViewerController, MPLToolbarRegisterMixin):
+class TimeSeriesViewerController(AbstractViewerController, MPLControllerMixin):
     data_type = DataType.SERIES
     viewer_type = ViewerType.MPL
 
@@ -342,7 +401,7 @@ class TimeSeriesViewerController(AbstractViewerController, MPLToolbarRegisterMix
         self.series = sunpy.timeseries.TimeSeries(path)
         self.view = TimeSeriesViewer(parent, self.series)
 
-        MPLToolbarRegisterMixin.__init__(self)
+        MPLControllerMixin.__init__(self)
 
     def getContent(self):
         return self.series
@@ -369,31 +428,6 @@ class TimeSeriesViewer(PlotPanel):
         self.series.plot(axes=ax)
 
 
-class NoPreviewViewer(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-        text = wx.StaticText(parent, label="no preview available")
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer_h = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_h.Add(text, 1, wx.CENTER)
-        self.sizer.Add(sizer_h, 1, wx.CENTER)
-        self.SetSizerAndFit(self.sizer)
-
-
-class NoViewer(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-        text = wx.StaticText(parent, label="no view available")
-        font = text.GetFont()
-        font.PointSize = 28
-        text.SetFont(font)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer_h = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_h.Add(text, 1, wx.CENTER)
-        self.sizer.Add(sizer_h, 1, wx.CENTER)
-        self.SetSizerAndFit(self.sizer)
-
-
 class GingaMapViewerController(AbstractViewerController):
     data_type = DataType.MAP
     viewer_type = ViewerType.GINGA
@@ -415,7 +449,6 @@ class GingaMapViewerController(AbstractViewerController):
     def setContent(self, data):
         self.map = data
         self.view.map = data
-        pub.sendMessage(EVT_MAP_CHANGED, tab_id=self.getView().Id, data=data)
 
     def getTitle(self):
         try:
@@ -445,10 +478,36 @@ class GingaMapViewer(PlotPanel):
         wx.CallAfter(fi.add_axes)
 
 
+class NoPreviewViewer(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        text = wx.StaticText(parent, label="no preview available")
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer_h = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_h.Add(text, 1, wx.CENTER)
+        self.sizer.Add(sizer_h, 1, wx.CENTER)
+        self.SetSizerAndFit(self.sizer)
+
+
+class NoViewer(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        text = wx.StaticText(parent, label="no view available")
+        font = text.GetFont()
+        font.PointSize = 28
+        text.SetFont(font)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer_h = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_h.Add(text, 1, wx.CENTER)
+        self.sizer.Add(sizer_h, 1, wx.CENTER)
+        self.SetSizerAndFit(self.sizer)
+
+
 class PreviewUtil:
     viewers = {DataType.MAP: {ViewerType.MPL: MapViewer, ViewerType.GINGA: GingaMapViewer},
                DataType.SERIES: {ViewerType.MPL: TimeSeriesViewer},
-               DataType.MAP_CUBE: {ViewerType.MPL: CompositeMapViewer}}
+               DataType.MAP_CUBE: {ViewerType.MPL: CompositeMapViewer},
+               DataType.PLAIN_2D: {ViewerType.MPL: AstropyViewer}}
 
     @staticmethod
     def getPreviewer(parent, data, data_type, viewer_type):

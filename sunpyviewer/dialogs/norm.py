@@ -56,7 +56,7 @@ class NormController(DialogController):
     def getItemConfig():
         return ItemConfig().setTitle("Select Normalization").setMenuPath("Edit\\Change Norm").addSupportedViewer(
             ViewerType.MPL).addSupportedData(
-            DataType.MAP)
+            DataType.MAP).addSupportedData(DataType.PLAIN_2D)
 
     def getContentView(self, parent):
         panel = wx.Panel(parent)

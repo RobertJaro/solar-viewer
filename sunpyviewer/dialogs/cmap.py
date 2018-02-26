@@ -1,4 +1,5 @@
-import sunpy.cm as cm
+import matplotlib.cm
+import sunpy.cm
 import wx
 
 from sunpyviewer.util.default_dialog import DialogController
@@ -13,13 +14,13 @@ class CmapController(DialogController):
     @staticmethod
     def getItemConfig():
         return ItemConfig().setTitle("Select Coloramap").setMenuPath("Edit\\Change Colormap").addSupportedViewer(
-            ViewerType.MPL).addSupportedData(
-            DataType.MAP)
+            ViewerType.MPL).addSupportedData(DataType.MAP).addSupportedData(DataType.PLAIN_2D)
 
     def getContentView(self, parent):
         panel = wx.Panel(parent)
-        choices = list(cm.cmlist.keys())
-        choices.append("Greys_r")
+        choices = []
+        choices.extend(list(sunpy.cm.cmlist.keys()))
+        choices.extend(list(matplotlib.cm.cmap_d.keys()))
         choices.sort()
 
         cmap_label = wx.StaticText(panel)

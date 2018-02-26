@@ -269,9 +269,8 @@ class MainFrame(wx.Frame):
         ctrl.closeView()
         self.tool_items[ctrl].Check(False)
 
-    def onUpdateStatusBar(self, x, y):
-        text = "x={0:.5f} ; y={1:.5f}".format(x, y)
-        self.GetStatusBar().SetStatusText(text, 0)
+    def onUpdateStatusBar(self, message):
+        self.GetStatusBar().SetStatusText(message, 0)
 
     def onSelectAndOpen(self, ctrl_class):
         multiple = ctrl_class.file_configuration["multiple"]

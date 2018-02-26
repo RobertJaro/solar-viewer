@@ -63,8 +63,8 @@ class FFTController(DataControllerMixin, ToolController):
             map._data = np.abs(np.fft.ifft2(np.fft.ifftshift(filtered_fft)))
 
         if adjust_contrast:
-            map.plot_settings["norm"].vmin = map.min()
-            map.plot_settings["norm"].vmax = map.mean() + 3 * map.std()
+            map.plot_settings["norm"].vmin = map.data.min()
+            map.plot_settings["norm"].vmax = map.data.mean() + 3 * map.data.std()
 
         return map
 
