@@ -7,14 +7,13 @@ import sunpy.map
 import sunpy.timeseries
 import wx
 from astropy import units as u
-from astropy.io import fits
 from astropy.wcs import WCS
 from matplotlib.colors import Normalize
 from wx import aui
 from wx.lib.pubsub import pub
 
 from sunpyviewer.util.common import Singleton, InstallUtil
-from sunpyviewer.util.data import saveFigure, saveFits
+from sunpyviewer.util.data import saveFigure, saveFits, getFitsHDU
 from sunpyviewer.util.wxmatplot import PlotPanel
 from sunpyviewer.viewer import EVT_TAB_SELECTION_CHANGED, EVT_STATUS_BAR_UPDATE, \
     EVT_CHANGE_TAB, EVT_CHANGE_PLOT_PREFERENCE, EVT_MPL_MODE_CHANGED, EVT_MPL_RESET, EVT_TAB_CHANGED, \
@@ -315,12 +314,10 @@ class AstropyViewerController(AbstractViewerController, MPLControllerMixin):
     viewer_type = ViewerType.MPL
 
     def __init__(self, parent, path):
-        hdu = fits.open(path)[0]
-        wcs = WCS(hdu.header)
-
+        hdu = getFitsHDU(path)
         self.model = Plain2DModel(hdu.data)
+        self.model.wcs = WCS(hdu.header)
         self.model.title = os.path.basename(path)
-        self.model.wcs = wcs
 
         self.view = AstropyViewer(parent, self.model)
 
@@ -436,7 +433,7 @@ class GingaMapViewerController(AbstractViewerController):
         self.map = sunpy.map.Map(path)
         self.map.path = path
         if InstallUtil.checkPackage("ginga"):
-            self.view = GingaMapViewer(parent, self.map)
+            self.view = GingaViewer(parent, self.map)
         else:
             self.view = NoViewer(parent)
 
@@ -448,7 +445,7 @@ class GingaMapViewerController(AbstractViewerController):
 
     def setContent(self, data):
         self.map = data
-        self.view.map = data
+        self.view.model = data
 
     def getTitle(self):
         try:
@@ -457,10 +454,38 @@ class GingaMapViewerController(AbstractViewerController):
             return "Map"
 
 
-class GingaMapViewer(PlotPanel):
+class Ginga2DViewerController(AbstractViewerController):
+    data_type = DataType.PLAIN_2D
+    viewer_type = ViewerType.GINGA
 
-    def __init__(self, parent, map):
-        self.map = map
+    def __init__(self, parent, path):
+        hdu = getFitsHDU(path)
+        self.model = Plain2DModel(hdu.data)
+        self.model.title = os.path.basename(path)
+
+        if InstallUtil.checkPackage("ginga"):
+            self.view = GingaViewer(parent, self.model)
+        else:
+            self.view = NoViewer(parent)
+
+    def getView(self):
+        return self.view
+
+    def getContent(self):
+        return self.model
+
+    def setContent(self, data):
+        self.model = data
+        self.view.model = data
+
+    def getTitle(self):
+        return self.model.title
+
+
+class GingaViewer(PlotPanel):
+
+    def __init__(self, parent, model):
+        self.model = model
         self.AstroImage = __import__("ginga.AstroImage", fromlist="AstroImage").AstroImage
         self.ImageViewCanvas = __import__("ginga.mplw.ImageViewCanvasMpl", fromlist="ImageViewCanvas").ImageViewCanvas
         PlotPanel.__init__(self, parent)
@@ -471,7 +496,7 @@ class GingaMapViewer(PlotPanel):
         fi.enable_autocuts('on')
         fi.set_autocut_params('zscale')
         image = self.AstroImage()
-        image.load_data(self.map.data)
+        image.load_data(self.model.data)
         wx.CallAfter(fi.set_figure, self.figure)
         wx.CallAfter(fi.get_bindings().enable_all, True)
         wx.CallAfter(fi.set_image, image)
@@ -504,10 +529,10 @@ class NoViewer(wx.Panel):
 
 
 class PreviewUtil:
-    viewers = {DataType.MAP: {ViewerType.MPL: MapViewer, ViewerType.GINGA: GingaMapViewer},
+    viewers = {DataType.MAP: {ViewerType.MPL: MapViewer, ViewerType.GINGA: GingaViewer},
                DataType.SERIES: {ViewerType.MPL: TimeSeriesViewer},
                DataType.MAP_CUBE: {ViewerType.MPL: CompositeMapViewer},
-               DataType.PLAIN_2D: {ViewerType.MPL: AstropyViewer}}
+               DataType.PLAIN_2D: {ViewerType.MPL: AstropyViewer, ViewerType.GINGA: GingaViewer}}
 
     @staticmethod
     def getPreviewer(parent, data, data_type, viewer_type):

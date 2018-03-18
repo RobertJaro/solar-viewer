@@ -1,6 +1,7 @@
 import os
 
 import wx
+from astropy.io import fits
 
 import sunpyviewer.resources
 
@@ -45,6 +46,14 @@ def saveFits(parent, content):
                         wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
     if dlg.ShowModal() == wx.ID_OK:
         content.save(dlg.GetPath(), overwrite=True)
+
+
+def getFitsHDU(path):
+    hdu_list = fits.open(path)
+    hdu_list.verify("silentfix")
+    for hdu in hdu_list:
+        if hdu.data is not None:
+            return hdu
 
 
 resources_dir = os.path.dirname(sunpyviewer.resources.__file__)
