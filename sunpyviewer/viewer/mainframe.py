@@ -25,7 +25,7 @@ class MainFrame(wx.Frame):
     query_result_notebook = None
 
     def __init__(self):
-        wx.Frame.__init__(self, None, wx.ID_ANY, "SunPy - Viewer")
+        wx.Frame.__init__(self, None, wx.ID_ANY, "Solar - Viewer")
         self.setIcon()
 
         self.toolbar_ctrl = ToolbarController(self)
