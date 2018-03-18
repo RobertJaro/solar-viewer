@@ -7,7 +7,7 @@ setup(
     author='Robert Jarolim',
     packages=find_packages(),
     provides=find_packages(),
-    install_requires=['sunpy[all]==0.8.4', 'wxpython', 'pywavelets', 'scikit-image'],
+    install_requires=['sunpy[all]==0.8.5', 'wxpython==4.0.1', 'pywavelets', 'scikit-image'],
     python_requires='>=3',
     package_data={'sunpyviewer.resources': ['*.png', '*.txt', '*.pkl']},
     entry_points={

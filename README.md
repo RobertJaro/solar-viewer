@@ -9,9 +9,8 @@ Start by installing wxpython and sunpy.
 
 Using anconda:
 ```
-conda config --add channels conda-forge
-conda install sunpy
-conda install wxpython
+conda install -c conda-forge sunpy
+conda install -c anaconda wxpython 
 ```
 Using pip:
 
