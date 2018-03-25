@@ -32,6 +32,8 @@ class QueryPanel(ScrolledPanel):
         self.SetAutoLayout(True)
         self.SetupScrolling(scroll_x=False)
 
+        self.info_bar = wx.InfoBar(self)
+
         query_box = wx.StaticBox(self, label='Query')
         self.filter_panel = wx.Panel(self)
 
@@ -60,6 +62,7 @@ class QueryPanel(ScrolledPanel):
         query_sizer.Add(query_button, border=5)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.info_bar, flag=wx.EXPAND | wx.ALL, border=5)
         sizer.Add(query_sizer, flag=wx.EXPAND | wx.ALL, border=5)
         self.SetSizerAndFit(sizer)
 
@@ -102,14 +105,18 @@ class QueryPanel(ScrolledPanel):
         self.GetParent()
 
     def onQuery(self, event):
-        attrs = []
-        filters = [f for f in self.filter_panel.GetChildren() if isinstance(f, _FilterBox)]
-        for f in filters:
-            attrs.append(f.GetValue())
+        self.info_bar.Hide()
+        try:
+            attrs = []
+            filters = [f for f in self.filter_panel.GetChildren() if isinstance(f, _FilterBox)]
+            for f in filters:
+                attrs.append(f.GetValue())
 
-        self.query_id += 1
-        pub.sendMessage(EVT_QUERY_STARTED, id=self.query_id, type=QueryType.FIDO)
-        threading.Thread(target=self.executeQuery, args=(self.query_id, attrs)).start()
+            self.query_id += 1
+            pub.sendMessage(EVT_QUERY_STARTED, id=self.query_id, type=QueryType.FIDO)
+            threading.Thread(target=self.executeQuery, args=(self.query_id, attrs)).start()
+        except Exception as ex:
+            self.info_bar.ShowMessage("Invalid Query: " + str(ex), flags=wx.ICON_ERROR)
 
     def executeQuery(self, id, attrs):
         try:

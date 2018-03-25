@@ -268,18 +268,22 @@ class MapViewer(PlotPanel):
 
     def draw(self):
         self.figure.clear()
-        plot_settings = self.map.plot_settings
-        ax = self.figure.add_subplot(111, projection=self.map)
-        image = ax.imshow(self.map.data, **plot_settings)
-        plot_preferences = ContentController().getPlotPreferences()
-        if plot_preferences["show_colorbar"]:
-            self.figure.colorbar(image)
-        if plot_preferences["show_limb"]:
-            self.map.draw_limb(axes=ax)
-        if plot_preferences["draw_contours"]:
-            self.map.draw_contours([10, 20, 30, 40, 50, 60, 70, 80, 90] * u.percent, axes=ax)
-        if plot_preferences["draw_grid"]:
-            self.map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
+        try:
+            plot_settings = self.map.plot_settings
+            ax = self.figure.add_subplot(111, projection=self.map)
+            image = ax.imshow(self.map.data, **plot_settings)
+            plot_preferences = ContentController().getPlotPreferences()
+            if plot_preferences["show_colorbar"]:
+                self.figure.colorbar(image)
+            if plot_preferences["show_limb"]:
+                self.map.draw_limb(axes=ax)
+            if plot_preferences["draw_contours"]:
+                self.map.draw_contours([10, 20, 30, 40, 50, 60, 70, 80, 90] * u.percent, axes=ax)
+            if plot_preferences["draw_grid"]:
+                self.map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
+        except Exception as ex:
+            self.figure.clear()
+            self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")
 
 
 class Plain2DModel:
