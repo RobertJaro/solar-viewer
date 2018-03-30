@@ -8,6 +8,8 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from matplotlib.figure import Figure
 
+from sunpyviewer.util.data import saveFigure
+
 
 class PlotPanel(wx.Panel):
     def __init__(self, parent):
@@ -17,12 +19,14 @@ class PlotPanel(wx.Panel):
         self.initProgress()
         self.initMainCanvas()
         self.initLayout()
+        self.initPopupMenu()
 
         self._resize_flag = False
         self._drawn_flag = False
 
         self.Bind(wx.EVT_IDLE, self._onIdle)
         self.Bind(wx.EVT_SIZE, self._onSize)
+        self.Bind(wx.EVT_CONTEXT_MENU, self._onShowPopup)
 
         threading.Thread(target=self.redraw).start()
 
@@ -46,6 +50,11 @@ class PlotPanel(wx.Panel):
         self.sizer.Add(self.canvas, flag=wx.EXPAND)
         self.SetSizerAndFit(self.sizer)
 
+    def initPopupMenu(self):
+        self.popupmenu = wx.Menu()
+        item = self.popupmenu.Append(-1, "Save Image")
+        self.Bind(wx.EVT_MENU, self._onSaveImage, item)
+
     def _onSize(self, event):
         self._resize_flag = True
         self.canvas.Hide()
@@ -56,6 +65,15 @@ class PlotPanel(wx.Panel):
         if self._resize_flag and self._drawn_flag:
             self._resize_flag = False
             threading.Thread(target=self._SetSize).start()
+
+    def _onShowPopup(self, evt):
+        pos = evt.GetPosition()
+        pos = self.ScreenToClient(pos)
+        self.PopupMenu(self.popupmenu, pos)
+
+    def _onSaveImage(self, evt):
+        figure = self.getFigure()
+        saveFigure(None, figure)
 
     def _SetSize(self):
         pixels = tuple(self.GetClientSize())
