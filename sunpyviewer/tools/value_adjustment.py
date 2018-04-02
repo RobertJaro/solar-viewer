@@ -20,7 +20,7 @@ class ValueAdjustmentController(DataControllerMixin, ToolController):
         if self.cutoff_radio.GetValue():
             data._data = d.clip(0)
         if self.offset_radio.GetValue():
-            min_value = d.min()
+            min_value = np.nanmin(d)
             if min_value < 0:
                 data._data = d - min_value + 1
         if self.cutoff_range_radio.GetValue():
@@ -32,11 +32,11 @@ class ValueAdjustmentController(DataControllerMixin, ToolController):
             return data
         d = data.data
         if self.contrast_min_max.GetValue():
-            data.plot_settings["norm"].vmin = d.min()
-            data.plot_settings["norm"].vmax = d.max()
+            data.plot_settings["norm"].vmin = np.nanmin(d)
+            data.plot_settings["norm"].vmax = np.nanmax(d)
         if self.contrast_average.GetValue():
-            data.plot_settings["norm"].vmin = d.min()
-            data.plot_settings["norm"].vmax = d.mean() + 3 * d.std()
+            data.plot_settings["norm"].vmin = np.nanmin(d)
+            data.plot_settings["norm"].vmax = np.nanmean(d) + 3 * np.nanstd(d)
 
         return data
 
@@ -93,8 +93,8 @@ class ValueAdjustmentController(DataControllerMixin, ToolController):
             self.max_range.SetValue(str(0))
             return
         norm = data.plot_settings["norm"]
-        vmin = data.data.min()
-        vmax = data.data.max()
+        vmin = np.nanmin(data.data)
+        vmax = np.nanmax(data.data)
         norm_vmin = norm.vmin if norm.vmin != None and norm.vmin >= vmin else vmin
         norm_vmax = norm.vmax if norm.vmax != None and norm.vmax <= vmax else vmax
         self.min_range.SetRange(vmin, vmax)

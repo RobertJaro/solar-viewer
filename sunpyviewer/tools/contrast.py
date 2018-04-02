@@ -1,5 +1,6 @@
 import time
 
+import numpy as np
 import wx
 
 from sunpyviewer.util.default_tool import ToolController, ItemConfig, DataControllerMixin
@@ -161,8 +162,8 @@ class ContrastHist(PlotPanel):
         PlotPanel.__init__(self, parent)
 
     def draw(self):
-        min_value = min(self.map.data.flatten())
-        max_value = max(self.map.data.flatten())
+        min_value = np.nanmin(self.map.data.flatten())
+        max_value = np.nanmax(self.map.data.flatten())
 
         self.ax = self.figure.add_subplot(1, 1, 1)
         self.ax.hist(self.map.data.ravel(), bins=300, range=(min_value, max_value), fc='k', ec='k')
