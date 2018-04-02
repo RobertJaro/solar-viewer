@@ -15,7 +15,7 @@ class CutController(ActionController):
 
     @staticmethod
     def getItemConfig():
-        return ItemConfig().setMenuPath("Edit\\Cut To Current View").addSupportedViewer(
+        return ItemConfig().setMenuPath("Edit\\Crop To Current View").addSupportedViewer(
             ViewerType.MPL).addSupportedData(DataType.MAP)
 
     def doAction(self, viewer_ctrl):
