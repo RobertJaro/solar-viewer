@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>Contrast</class>
+    <widget class="QWidget" name="Contrast">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>563</width>
+                <height>756</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Form</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <widget class="QPushButton" name="histo_button">
+                    <property name="text">
+                        <string>&gt;&gt;Histogram</string>
+                    </property>
+                    <property name="checkable">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QFrame" name="histo_plot">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="cursor">
+                        <cursorShape>ArrowCursor</cursorShape>
+                    </property>
+                    <property name="frameShape">
+                        <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QVBoxLayout" name="hist_layout">
+                        <property name="spacing">
+                            <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                            <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                            <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                            <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                            <number>0</number>
+                        </property>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="groupBox">
+                    <property name="title">
+                        <string>Settings</string>
+                    </property>
+                    <layout class="QFormLayout" name="formLayout">
+                        <item row="0" column="0">
+                            <widget class="QLabel" name="label">
+                                <property name="text">
+                                    <string>Min:</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="0" column="1">
+                            <widget class="QDoubleSpinBox" name="spin_min">
+                                <property name="prefix">
+                                    <string/>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="0">
+                            <widget class="QLabel" name="label_2">
+                                <property name="text">
+                                    <string>Max:</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="1">
+                            <widget class="QDoubleSpinBox" name="spin_max"/>
+                        </item>
+                        <item row="2" column="1">
+                            <widget class="QPushButton" name="pushButton">
+                                <property name="text">
+                                    <string>Adjust Min/Max</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="3" column="1">
+                            <widget class="QPushButton" name="pushButton_2">
+                                <property name="text">
+                                    <string>Adjust Average</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="color_clipped">
+                    <property name="title">
+                        <string>Color Clipped Values</string>
+                    </property>
+                    <property name="flat">
+                        <bool>false</bool>
+                    </property>
+                    <property name="checkable">
+                        <bool>true</bool>
+                    </property>
+                    <layout class="QFormLayout" name="formLayout_2">
+                        <item row="0" column="0">
+                            <widget class="QCheckBox" name="checkBox">
+                                <property name="text">
+                                    <string>Over</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="0">
+                            <widget class="QCheckBox" name="checkBox_2">
+                                <property name="text">
+                                    <string>Under</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="0" column="1">
+                            <widget class="QColorButton" name="color_above">
+                                <property name="enabled">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="text">
+                                    <string/>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="1">
+                            <widget class="QColorButton" name="color_below">
+                                <property name="text">
+                                    <string/>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <customwidgets>
+        <customwidget>
+            <class>QColorButton</class>
+            <extends>QPushButton</extends>
+            <header>solarviewer.ui.util</header>
+        </customwidget>
+    </customwidgets>
+    <resources/>
+    <connections>
+        <connection>
+            <sender>color_clipped</sender>
+            <signal>clicked(bool)</signal>
+            <receiver>checkBox</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>24</x>
+                    <y>674</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>53</x>
+                    <y>689</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>color_clipped</sender>
+            <signal>clicked(bool)</signal>
+            <receiver>checkBox_2</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>29</x>
+                    <y>675</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>66</x>
+                    <y>724</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>color_clipped</sender>
+            <signal>clicked(bool)</signal>
+            <receiver>color_above</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>30</x>
+                    <y>648</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>276</x>
+                    <y>674</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>color_clipped</sender>
+            <signal>clicked(bool)</signal>
+            <receiver>color_below</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>23</x>
+                    <y>650</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>314</x>
+                    <y>723</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>histo_button</sender>
+            <signal>clicked(bool)</signal>
+            <receiver>histo_plot</receiver>
+            <slot>setVisible(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>80</x>
+                    <y>38</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>115</x>
+                    <y>73</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
+</ui>

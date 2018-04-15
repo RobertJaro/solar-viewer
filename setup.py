@@ -1,16 +1,16 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='sunpyviewer',
+    name='solarviewer',
     version='0.1',
     description='Viewer application for solar physics',
     author='Robert Jarolim',
     packages=find_packages(),
     provides=find_packages(),
-    install_requires=['sunpy==0.9.0', 'wxpython==4.0.1', 'pywavelets', 'scikit-image'],
+    install_requires=['sunpy==0.8.5', 'qtpy', 'pywavelets', 'scikit-image'],
     python_requires='>=3',
-    package_data={'sunpyviewer.resources': ['*.png', '*.txt', '*.pkl']},
+    package_data={'solarviewer.resource': ['*.png', '*.txt', '*.pkl']},
     entry_points={
-        'gui_scripts': ['sunpyviewer=sunpyviewer.main:main'],
+        'gui_scripts': ['solarviewer=solarviewer.main:main'],
     }
 )

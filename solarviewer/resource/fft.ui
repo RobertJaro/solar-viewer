@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>DockWidget</class>
+    <widget class="QDockWidget" name="DockWidget">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>484</width>
+                <height>403</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>DockWidget</string>
+        </property>
+        <widget class="QWidget" name="dockWidgetContents">
+            <layout class="QVBoxLayout" name="verticalLayout">
+                <item>
+                    <widget class="QGroupBox" name="groupBox_2">
+                        <property name="title">
+                            <string>Filter Parameters</string>
+                        </property>
+                        <layout class="QFormLayout" name="formLayout">
+                            <item row="0" column="0">
+                                <widget class="QCheckBox" name="checkBox">
+                                    <property name="text">
+                                        <string>Highpass</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QCheckBox" name="checkBox_2">
+                                    <property name="text">
+                                        <string>Lowpass</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+                            </item>
+                        </layout>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QGroupBox" name="groupBox">
+                        <property name="title">
+                            <string>Contrast Adjustment</string>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayout_3">
+                            <item>
+                                <widget class="QRadioButton" name="contrast_none">
+                                    <property name="locale">
+                                        <locale language="English" country="UnitedStates"/>
+                                    </property>
+                                    <property name="text">
+                                        <string>None</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QRadioButton" name="contrast_min_max">
+                                    <property name="locale">
+                                        <locale language="English" country="UnitedStates"/>
+                                    </property>
+                                    <property name="text">
+                                        <string>Min/Max</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <widget class="QRadioButton" name="contrast_average">
+                                    <property name="locale">
+                                        <locale language="English" country="UnitedStates"/>
+                                    </property>
+                                    <property name="text">
+                                        <string>Average</string>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QDialogButtonBox" name="buttonBox">
+                        <property name="locale">
+                            <locale language="English" country="UnitedStates"/>
+                        </property>
+                        <property name="standardButtons">
+                            <set>QDialogButtonBox::Apply</set>
+                        </property>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>

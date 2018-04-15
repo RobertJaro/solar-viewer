@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>DataTool</class>
+    <widget class="QWidget" name="DataTool">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>836</width>
+                <height>681</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Form</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <widget class="QWidget" name="content" native="true"/>
+            </item>
+            <item>
+                <widget class="QDialogButtonBox" name="button_box">
+                    <property name="standardButtons">
+                        <set>QDialogButtonBox::Apply</set>
+                    </property>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>
