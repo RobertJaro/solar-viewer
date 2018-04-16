@@ -1,3 +1,5 @@
+from copy import copy
+
 from astropy import units as u
 from sunpy.map import Map
 
@@ -15,6 +17,7 @@ class SunPyMapModel(DataModel):
         self.map = s_map
 
         self.cmap = s_map.plot_settings.get("cmap", None)
+        self.cmap_preferences = {"over": None, "under": None}
         self.norm = s_map.plot_settings.get("norm", None)
         self.interpolation = s_map.plot_settings.get("interpolation", None)
         self.origin = s_map.plot_settings.get("origin", None)
@@ -104,7 +107,7 @@ class MapViewer(PlotWidget):
         try:
             s_map = self.model.map
             ax = self.figure.add_subplot(111, projection=s_map)
-            image = ax.imshow(self.model.data, cmap=self.model.cmap, norm=self.model.norm,
+            image = ax.imshow(self.model.data, cmap=self._initCMap(), norm=self.model.norm,
                               interpolation=self.model.interpolation, origin=self.model.origin)
             plot_preferences = self.model.plot_preferences
             if plot_preferences["show_colorbar"]:
@@ -118,3 +121,14 @@ class MapViewer(PlotWidget):
         except Exception as ex:
             self.figure.clear()
             self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")
+
+    def _initCMap(self):
+        cmap = copy(self.model.cmap)
+        over = self.model.cmap_preferences["over"]
+        under = self.model.cmap_preferences["under"]
+        if over:
+            cmap.set_over(over)
+        if under:
+            cmap.set_under(under)
+
+        return cmap

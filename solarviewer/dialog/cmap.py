@@ -1,5 +1,6 @@
 import matplotlib
 import sunpy
+from PyQt5.QtGui import QColor
 from matplotlib.colors import Colormap
 
 from solarviewer.config.base import DialogController, ItemConfig, ViewerType, DataType, ViewerController, DataModel
@@ -36,6 +37,25 @@ class CmapController(DialogController):
         if cmap_name is not None:
             self._ui.cmap_combo.setCurrentText(cmap_name)
 
+        over = viewer_ctrl.model.cmap_preferences["over"]
+        under = viewer_ctrl.model.cmap_preferences["under"]
+        over = QColor(over) if over else None
+        under = QColor(under) if under else None
+        self._ui.over_color.setColor(over)
+        self._ui.over_check.setChecked(over is not None)
+        self._ui.under_color.setColor(under)
+        self._ui.under_check.setChecked(under is not None)
+        self._ui.color_clipped.setChecked(over is not None or under is not None)
+
     def modifyData(self, model: DataModel):
         model.cmap = self.cmaps[self._ui.cmap_combo.currentText()]
+        model.cmap_preferences["over"] = None
+        model.cmap_preferences["under"] = None
+        if self._ui.color_clipped.isChecked():
+            if self._ui.over_check.isChecked():
+                c = self._ui.over_color.color()
+                model.cmap_preferences["over"] = c.name() if c else None
+            if self._ui.under_check.isChecked():
+                c = self._ui.under_color.color()
+                model.cmap_preferences["under"] = c.name() if c else None
         return model

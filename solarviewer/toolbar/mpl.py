@@ -60,6 +60,7 @@ class MplToolbarController(ToolbarController):
             self.toolbar.pan()
         if self.zoom_action.isChecked():
             self.toolbar.zoom()
+        self.toolbar = None
 
     def _onPan(self):
         self.toolbar.pan()

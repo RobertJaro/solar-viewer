@@ -91,14 +91,14 @@
                             <widget class="QDoubleSpinBox" name="spin_max"/>
                         </item>
                         <item row="2" column="1">
-                            <widget class="QPushButton" name="pushButton">
+                            <widget class="QPushButton" name="min_max_button">
                                 <property name="text">
                                     <string>Adjust Min/Max</string>
                                 </property>
                             </widget>
                         </item>
                         <item row="3" column="1">
-                            <widget class="QPushButton" name="pushButton_2">
+                            <widget class="QPushButton" name="average_button">
                                 <property name="text">
                                     <string>Adjust Average</string>
                                 </property>
@@ -120,7 +120,7 @@
                     </property>
                     <layout class="QFormLayout" name="formLayout_2">
                         <item row="0" column="0">
-                            <widget class="QCheckBox" name="checkBox">
+                            <widget class="QCheckBox" name="over_check">
                                 <property name="text">
                                     <string>Over</string>
                                 </property>
@@ -130,7 +130,7 @@
                             </widget>
                         </item>
                         <item row="1" column="0">
-                            <widget class="QCheckBox" name="checkBox_2">
+                            <widget class="QCheckBox" name="under_check">
                                 <property name="text">
                                     <string>Under</string>
                                 </property>
@@ -140,7 +140,7 @@
                             </widget>
                         </item>
                         <item row="0" column="1">
-                            <widget class="QColorButton" name="color_above">
+                            <widget class="QColorButton" name="over_color">
                                 <property name="enabled">
                                     <bool>true</bool>
                                 </property>
@@ -150,7 +150,7 @@
                             </widget>
                         </item>
                         <item row="1" column="1">
-                            <widget class="QColorButton" name="color_below">
+                            <widget class="QColorButton" name="under_color">
                                 <property name="text">
                                     <string/>
                                 </property>
@@ -170,70 +170,6 @@
     </customwidgets>
     <resources/>
     <connections>
-        <connection>
-            <sender>color_clipped</sender>
-            <signal>clicked(bool)</signal>
-            <receiver>checkBox</receiver>
-            <slot>setEnabled(bool)</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>24</x>
-                    <y>674</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>53</x>
-                    <y>689</y>
-                </hint>
-            </hints>
-        </connection>
-        <connection>
-            <sender>color_clipped</sender>
-            <signal>clicked(bool)</signal>
-            <receiver>checkBox_2</receiver>
-            <slot>setEnabled(bool)</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>29</x>
-                    <y>675</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>66</x>
-                    <y>724</y>
-                </hint>
-            </hints>
-        </connection>
-        <connection>
-            <sender>color_clipped</sender>
-            <signal>clicked(bool)</signal>
-            <receiver>color_above</receiver>
-            <slot>setEnabled(bool)</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>30</x>
-                    <y>648</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>276</x>
-                    <y>674</y>
-                </hint>
-            </hints>
-        </connection>
-        <connection>
-            <sender>color_clipped</sender>
-            <signal>clicked(bool)</signal>
-            <receiver>color_below</receiver>
-            <slot>setEnabled(bool)</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>23</x>
-                    <y>650</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>314</x>
-                    <y>723</y>
-                </hint>
-            </hints>
-        </connection>
         <connection>
             <sender>histo_button</sender>
             <signal>clicked(bool)</signal>

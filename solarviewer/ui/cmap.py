@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_Colormap(object):
     def setupUi(self, Colormap):
         Colormap.setObjectName("Colormap")
@@ -29,23 +28,23 @@ class Ui_Colormap(object):
         self.color_clipped.setObjectName("color_clipped")
         self.formLayout_2 = QtWidgets.QFormLayout(self.color_clipped)
         self.formLayout_2.setObjectName("formLayout_2")
-        self.checkBox = QtWidgets.QCheckBox(self.color_clipped)
-        self.checkBox.setChecked(False)
-        self.checkBox.setObjectName("checkBox")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.checkBox)
-        self.checkBox_2 = QtWidgets.QCheckBox(self.color_clipped)
-        self.checkBox_2.setChecked(False)
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.checkBox_2)
-        self.color_above = QColorButton(self.color_clipped)
-        self.color_above.setEnabled(True)
-        self.color_above.setText("")
-        self.color_above.setObjectName("color_above")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.color_above)
-        self.color_below = QColorButton(self.color_clipped)
-        self.color_below.setText("")
-        self.color_below.setObjectName("color_below")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.color_below)
+        self.over_check = QtWidgets.QCheckBox(self.color_clipped)
+        self.over_check.setChecked(False)
+        self.over_check.setObjectName("over_check")
+        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.over_check)
+        self.under_check = QtWidgets.QCheckBox(self.color_clipped)
+        self.under_check.setChecked(False)
+        self.under_check.setObjectName("under_check")
+        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.under_check)
+        self.over_color = QColorButton(self.color_clipped)
+        self.over_color.setEnabled(True)
+        self.over_color.setText("")
+        self.over_color.setObjectName("over_color")
+        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.over_color)
+        self.under_color = QColorButton(self.color_clipped)
+        self.under_color.setText("")
+        self.under_color.setObjectName("under_color")
+        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.under_color)
         self.verticalLayout.addWidget(self.color_clipped)
 
         self.retranslateUi(Colormap)
@@ -56,8 +55,7 @@ class Ui_Colormap(object):
         Colormap.setWindowTitle(_translate("Colormap", "Form"))
         self.groupBox.setTitle(_translate("Colormap", "Select Colormap"))
         self.color_clipped.setTitle(_translate("Colormap", "Color Clipped Values"))
-        self.checkBox.setText(_translate("Colormap", "Over"))
-        self.checkBox_2.setText(_translate("Colormap", "Under"))
-
+        self.over_check.setText(_translate("Colormap", "Over"))
+        self.under_check.setText(_translate("Colormap", "Under"))
 
 from solarviewer.ui.util import QColorButton
