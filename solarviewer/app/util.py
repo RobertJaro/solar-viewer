@@ -34,10 +34,15 @@ class InitUtil:
 
 def supported(data_type, viewer_type, supported_types, supported_viewers):
     from solarviewer.config.base import DataType, ViewerType
-    return (str(DataType.ANY) in [str(t) for t in supported_types] or str(data_type) in [str(t) for t in
-                                                                                         supported_types]) and (
-                   str(ViewerType.ANY) in [str(t) for t in supported_viewers] or str(viewer_type) in [str(t) for t in
-                                                                                                      supported_viewers])
+    if ViewerType.NONE in supported_viewers or len(supported_viewers) == 0:
+        return True
+    if data_type is None or viewer_type is None:
+        return False
+    types = [str(t) for t in supported_types]
+    viewers = [str(t) for t in supported_viewers]
+
+    return (str(DataType.ANY) in types or str(data_type) in types) and (
+            str(ViewerType.ANY) in viewers or str(viewer_type) in viewers)
 
 
 def saveFits(s_map):

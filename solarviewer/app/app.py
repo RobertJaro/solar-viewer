@@ -5,9 +5,9 @@ from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.app.content import ContentController
 from solarviewer.app.statusbar import StatusBarController
-from solarviewer.app.util import InitUtil
+from solarviewer.app.util import InitUtil, supported
 from solarviewer.config import content_ctrl_name, viewers_name
-from solarviewer.config.base import ToolController, DialogController, ActionController
+from solarviewer.config.base import ToolController, DialogController, ActionController, ViewerController
 from solarviewer.config.impl import ToolbarController
 from solarviewer.config.ioc import RequiredFeature, MatchingFeatures, IsInstanceOf
 from solarviewer.ui.app import Ui_MainWindow
@@ -86,15 +86,27 @@ class AppController(QtWidgets.QMainWindow):
             tree = ctrl.item_config.menu_path.split("\\")
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(lambda evt, c=ctrl: self.openDialog(c))
+            self._subscribeItemSupportCheck(action, ctrl)
 
     def _initActions(self):
         for ctrl in self.action_ctrls:
             tree = ctrl.item_config.menu_path.split("\\")
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(ctrl.onAction)
+            self._subscribeItemSupportCheck(action, ctrl)
 
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:
             tree = ctrl.item_config.menu_path.split("\\")
             action = InitUtil.getAction(tree, self.ui.menubar, checkable=True)
             action.triggered.connect(lambda checked, c=ctrl: self.toggleToolbar(checked, c))
+
+    def _subscribeItemSupportCheck(self, action, ctrl):
+        def f(vc: ViewerController, a=action, c=ctrl):
+            dt = vc.data_type if vc else None
+            vt = vc.viewer_type if vc else None
+            enabled = supported(dt, vt, c.item_config.supported_data_types, c.item_config.supported_viewer_types)
+            a.setEnabled(enabled)
+
+        self.content_ctrl.subscribeTabChange(f)
+        f(None)  # initial
