@@ -114,7 +114,7 @@ class MatchingFeatures:
 
     def __getattr__(self, name):
         assert name == 'result', "Unexpected attribute request other then 'result'"
-        self.result = self.Request()
+        self.result = list(self.Request())
         return self.result
 
     def Request(self):

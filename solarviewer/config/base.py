@@ -52,7 +52,6 @@ class ItemConfig:
         self.title = ""
         self.supported_data_types = []
         self.supported_viewer_types = []
-        self.hide = False
 
     def setMenuPath(self, path: str):
         self.menu_path = path
@@ -76,10 +75,6 @@ class ItemConfig:
 
     def addSupportedViewer(self, viewer_type: ViewerType):
         self.supported_viewer_types.append(viewer_type)
-        return self
-
-    def setHide(self, value: bool):
-        self.hide = value
         return self
 
 

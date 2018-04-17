@@ -38,6 +38,7 @@ def main(controllers=[], viewers=[]):
 
     # start application
     app_ctrl = AppController()
+    features.Provide(AppController.__name__, app_ctrl)
     app_ctrl.show()
     sys.exit(app.exec_())
 

@@ -1,6 +1,5 @@
 from typing import List
 
-from PyQt5.QtWidgets import QAction
 from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.app.content import ContentController
@@ -42,23 +41,44 @@ class AppController(QtWidgets.QMainWindow):
 
         self.ui.default_toolbar.trigger()
 
-    def toggleTool(self, ctrl: ToolController, action: QAction):
-        if action.isChecked():
+    def openController(self, controller_name: str):
+        if controller_name in self.active_toolbars or controller_name in self.active_tools:
+            return
+        for ctrl in self.tool_ctrls:
+            if ctrl.name == controller_name:
+                self.toggleTool(ctrl)
+                return
+        for ctrl in self.dlg_ctrls:
+            if ctrl.name == controller_name:
+                self.openDialog(ctrl)
+                return
+        for ctrl in self.action_ctrls:
+            if ctrl.name == controller_name:
+                ctrl.onAction()
+                return
+        for ctrl in self.toolbar_ctrls:
+            if ctrl.name == controller_name:
+                self.toggleToolbar(ctrl)
+                return
+
+    def toggleTool(self, ctrl: ToolController, action=None):
+        if ctrl.name not in self.active_tools:
             dock = QtWidgets.QDockWidget(ctrl.item_config.title)
             dock.setWidget(ctrl.view)
-            dock.closeEvent = lambda evt, a=action: a.setChecked(False)
+            if action:
+                dock.closeEvent = lambda evt, a=action: a.setChecked(False)
             self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock)
             self.active_tools[ctrl.name] = dock
         else:
-            self.active_tools[ctrl.name].close()
+            self.active_tools.pop(ctrl.name).close()
 
-    def toggleToolbar(self, checked: bool, ctrl: ToolbarController):
-        if checked:
+    def toggleToolbar(self, ctrl: ToolbarController):
+        if ctrl.name not in self.active_toolbars:
             tool_bar = ctrl.view
             self.addToolBar(QtCore.Qt.RightToolBarArea, tool_bar)
             self.active_toolbars[ctrl.name] = tool_bar
         else:
-            self.active_toolbars[ctrl.name].close()
+            self.active_toolbars.pop(ctrl.name).close()
 
     def openDialog(self, dlg_ctrl: DialogController):
         dlg = dlg_ctrl.view
@@ -72,18 +92,24 @@ class AppController(QtWidgets.QMainWindow):
     def _initViewers(self):
         for v_ctrl in self.viewers:
             tree = v_ctrl.viewer_config.menu_path.split("\\")
+            if len(tree) == 1:
+                continue
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(lambda evt, c=v_ctrl: self.content_ctrl.openViewer(c))
 
     def _initTools(self):
         for ctrl in self.tool_ctrls:
             tree = ctrl.item_config.menu_path.split("\\")
+            if len(tree) == 1:
+                continue
             action = InitUtil.getAction(tree, self.ui.menubar, True)
             action.triggered.connect(lambda evt, c=ctrl, a=action: self.toggleTool(c, a))
 
     def _initDialogs(self):
         for ctrl in self.dlg_ctrls:
             tree = ctrl.item_config.menu_path.split("\\")
+            if len(tree) == 1:
+                continue
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(lambda evt, c=ctrl: self.openDialog(c))
             self._subscribeItemSupportCheck(action, ctrl)
@@ -91,6 +117,8 @@ class AppController(QtWidgets.QMainWindow):
     def _initActions(self):
         for ctrl in self.action_ctrls:
             tree = ctrl.item_config.menu_path.split("\\")
+            if len(tree) == 1:
+                continue
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(ctrl.onAction)
             self._subscribeItemSupportCheck(action, ctrl)
@@ -98,8 +126,10 @@ class AppController(QtWidgets.QMainWindow):
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:
             tree = ctrl.item_config.menu_path.split("\\")
+            if len(tree) == 1:
+                continue
             action = InitUtil.getAction(tree, self.ui.menubar, checkable=True)
-            action.triggered.connect(lambda checked, c=ctrl: self.toggleToolbar(checked, c))
+            action.triggered.connect(lambda checked, c=ctrl: self.toggleToolbar(c))
 
     def _subscribeItemSupportCheck(self, action, ctrl):
         def f(vc: ViewerController, a=action, c=ctrl):
