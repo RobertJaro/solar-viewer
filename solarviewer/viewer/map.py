@@ -4,10 +4,9 @@ from astropy import units as u
 from sunpy.map import Map
 
 from solarviewer.app.plot import PlotWidget
-from solarviewer.app.statusbar import StatusBarController
 from solarviewer.config.base import ViewerController, DataType, ViewerType, ViewerConfig, DataModel
-from solarviewer.config.ioc import RequiredFeature
 from solarviewer.util import classproperty
+from solarviewer.viewer.util import MPLCoordinatesMixin
 
 
 class SunPyMapModel(DataModel):
@@ -21,9 +20,6 @@ class SunPyMapModel(DataModel):
         self.norm = s_map.plot_settings.get("norm", None)
         self.interpolation = s_map.plot_settings.get("interpolation", None)
         self.origin = s_map.plot_settings.get("origin", None)
-
-    def setData(self, data):
-        self.map = Map(data, self.map.meta)
 
     @property
     def data(self):
@@ -41,10 +37,9 @@ class SunPyMapModel(DataModel):
         return self._plot_preferences
 
 
-class MapViewerController(ViewerController):
+class MapViewerController(ViewerController, MPLCoordinatesMixin):
     data_type = DataType.MAP
     viewer_type = ViewerType.MPL
-    status_bar_ctrl: StatusBarController = RequiredFeature(StatusBarController.name)
 
     def __init__(self, model):
         ViewerController.__init__(self)
@@ -52,8 +47,7 @@ class MapViewerController(ViewerController):
         self._model = model
         self._view = MapViewer(model)
 
-        # add coordinates of mouse courser to status bar
-        self.view.canvas.mpl_connect('motion_notify_event', self.onMapMotion)
+        MPLCoordinatesMixin.__init__(self)
 
     @classproperty
     def viewer_config(self) -> ViewerConfig:
@@ -78,11 +72,6 @@ class MapViewerController(ViewerController):
     @property
     def model(self) -> SunPyMapModel:
         return self._model
-
-    def onMapMotion(self, event):
-        if event.inaxes:
-            message = event.inaxes.format_coord(event.xdata, event.ydata)
-            self.status_bar_ctrl.setText(message)
 
     def updateModel(self, model):
         self._model = model

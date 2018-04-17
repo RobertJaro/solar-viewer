@@ -81,8 +81,8 @@ class ContrastController(DataToolController):
         self._ui.histo_plot.layout().addWidget(self._hist)
 
     def _applyValues(self):
-        min = np.nanmin(self._model.map.data)
-        max = np.nanmax(self._model.map.data)
+        min = np.nanmin(self._model.data)
+        max = np.nanmax(self._model.data)
         self._ui.spin_min.setMinimum(min)
         self._ui.spin_min.setMaximum(max)
         self._ui.spin_max.setMinimum(min)
@@ -122,13 +122,13 @@ class ContrastController(DataToolController):
             self._drawMaxLine()
 
     def _onAdjustMinMax(self):
-        data = self._model.map.data
+        data = self._model.data
         self._model.min = np.nanmin(data)
         self._model.max = np.nanmax(data)
         self._applyValues()
 
     def _onAdjustAvg(self):
-        data = self._model.map.data
+        data = self._model.data
         self._model.min = np.nanmin(data)
         self._model.max = np.nanmean(data) + 3 * np.nanstd(data)
         self._applyValues()
@@ -141,8 +141,8 @@ class ContrastHist(PlotWidget):
         PlotWidget.__init__(self)
 
     def draw(self):
-        min_value = np.nanmin(self.map.data)
-        max_value = np.nanmax(self.map.data)
+        min_value = np.nanmin(self.data)
+        max_value = np.nanmax(self.data)
 
         self.ax = self.figure.add_subplot(1, 1, 1)
         self.ax.hist(self.map.data.ravel(), bins=300, range=(min_value, max_value), fc='k', ec='k')
@@ -160,3 +160,7 @@ class ContrastModel:
         self.min_line = None
         self.max_line = None
         self.map = None
+
+    @property
+    def data(self):
+        return self.map.data

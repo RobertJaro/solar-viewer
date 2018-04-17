@@ -137,7 +137,7 @@
         </action>
         <action name="openSeries">
             <property name="text">
-                <string>Open SunPy Series</string>
+                <string>Open SunPy Timeseries</string>
             </property>
         </action>
         <action name="actionSave_2">

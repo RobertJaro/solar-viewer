@@ -118,7 +118,7 @@ class ContentController(Controller):
         if not files:
             return
         if ctrl.viewer_config.multi_file:
-            viewer = ctrl(files)
+            viewer = ctrl.fromFile(files)
             self.addViewerCtrl(viewer)
             return
         for f in files:

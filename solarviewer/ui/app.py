@@ -139,7 +139,7 @@ class Ui_MainWindow(object):
         self.menuTools.setTitle(_translate("MainWindow", "Tools"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuToolbar.setTitle(_translate("MainWindow", "Toolbar"))
-        self.openSeries.setText(_translate("MainWindow", "Open SunPy Series"))
+        self.openSeries.setText(_translate("MainWindow", "Open SunPy Timeseries"))
         self.actionSave_2.setText(_translate("MainWindow", "Save"))
         self.actionSave_As.setText(_translate("MainWindow", "Save As.."))
         self.actionDownload_Data.setText(_translate("MainWindow", "Download Data"))

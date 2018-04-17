@@ -132,15 +132,6 @@ class DataModel(ABC):
     """Base class for viewer controller models"""
     path = None
 
-    @abstractmethod
-    def setData(self, data):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def data(self):
-        raise NotImplementedError
-
 
 class Controller(ABC):
     """Base class for registering controllers"""
@@ -162,12 +153,12 @@ class ViewerController(ABC):
 
     @classmethod
     @abstractmethod
-    def fromFile(cls, file):
+    def fromFile(cls, file) -> 'ViewerController':
         raise NotImplementedError
 
     @classmethod
     @abstractmethod
-    def fromModel(cls, model):
+    def fromModel(cls, model: DataModel) -> 'ViewerController':
         raise NotImplementedError
 
     @classproperty
