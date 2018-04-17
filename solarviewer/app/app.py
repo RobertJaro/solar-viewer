@@ -42,15 +42,20 @@ class AppController(QtWidgets.QMainWindow):
         self.ui.default_toolbar.trigger()
 
     def openController(self, controller_name: str):
+        """
+        Opens the controller of the given name in the application
+        :param controller_name: the class name of the controller to open (tool, dialog, action or toolbar)
+        :return:
+        """
         if controller_name in self.active_toolbars or controller_name in self.active_tools:
             return
         for ctrl in self.tool_ctrls:
             if ctrl.name == controller_name:
-                self.toggleTool(ctrl)
+                self._toggleTool(ctrl)
                 return
         for ctrl in self.dlg_ctrls:
             if ctrl.name == controller_name:
-                self.openDialog(ctrl)
+                self._openDialog(ctrl)
                 return
         for ctrl in self.action_ctrls:
             if ctrl.name == controller_name:
@@ -58,10 +63,10 @@ class AppController(QtWidgets.QMainWindow):
                 return
         for ctrl in self.toolbar_ctrls:
             if ctrl.name == controller_name:
-                self.toggleToolbar(ctrl)
+                self._toggleToolbar(ctrl)
                 return
 
-    def toggleTool(self, ctrl: ToolController, action=None):
+    def _toggleTool(self, ctrl: ToolController, action=None):
         if ctrl.name not in self.active_tools:
             dock = QtWidgets.QDockWidget(ctrl.item_config.title)
             dock.setWidget(ctrl.view)
@@ -72,7 +77,7 @@ class AppController(QtWidgets.QMainWindow):
         else:
             self.active_tools.pop(ctrl.name).close()
 
-    def toggleToolbar(self, ctrl: ToolbarController):
+    def _toggleToolbar(self, ctrl: ToolbarController):
         if ctrl.name not in self.active_toolbars:
             tool_bar = ctrl.view
             self.addToolBar(QtCore.Qt.RightToolBarArea, tool_bar)
@@ -80,7 +85,7 @@ class AppController(QtWidgets.QMainWindow):
         else:
             self.active_toolbars.pop(ctrl.name).close()
 
-    def openDialog(self, dlg_ctrl: DialogController):
+    def _openDialog(self, dlg_ctrl: DialogController):
         dlg = dlg_ctrl.view
         dlg.exec_()
 
@@ -103,7 +108,7 @@ class AppController(QtWidgets.QMainWindow):
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar, True)
-            action.triggered.connect(lambda evt, c=ctrl, a=action: self.toggleTool(c, a))
+            action.triggered.connect(lambda evt, c=ctrl, a=action: self._toggleTool(c, a))
 
     def _initDialogs(self):
         for ctrl in self.dlg_ctrls:
@@ -111,7 +116,7 @@ class AppController(QtWidgets.QMainWindow):
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar)
-            action.triggered.connect(lambda evt, c=ctrl: self.openDialog(c))
+            action.triggered.connect(lambda evt, c=ctrl: self._openDialog(c))
             self._subscribeItemSupportCheck(action, ctrl)
 
     def _initActions(self):
@@ -129,7 +134,7 @@ class AppController(QtWidgets.QMainWindow):
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar, checkable=True)
-            action.triggered.connect(lambda checked, c=ctrl: self.toggleToolbar(c))
+            action.triggered.connect(lambda checked, c=ctrl: self._toggleToolbar(c))
 
     def _subscribeItemSupportCheck(self, action, ctrl):
         def f(vc: ViewerController, a=action, c=ctrl):
