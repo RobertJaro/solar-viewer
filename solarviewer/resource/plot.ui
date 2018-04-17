@@ -16,8 +16,17 @@
         <layout class="QVBoxLayout" name="verticalLayout">
             <item alignment="Qt::AlignVCenter">
                 <widget class="QProgressBar" name="progress">
+                    <property name="maximum">
+                        <number>0</number>
+                    </property>
                     <property name="value">
-                        <number>24</number>
+                        <number>0</number>
+                    </property>
+                    <property name="textVisible">
+                        <bool>false</bool>
+                    </property>
+                    <property name="invertedAppearance">
+                        <bool>false</bool>
                     </property>
                 </widget>
             </item>

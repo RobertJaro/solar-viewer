@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from threading import Thread
 
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -31,6 +32,9 @@ class PlotWidget(QtWidgets.QWidget):
         self.ui.verticalLayout.addWidget(self.canvas)
 
     def redraw(self):
+        Thread(target=self._onRedraw).start()
+
+    def _onRedraw(self):
         self.canvas.hide()
         self.ui.progress.show()
         self.draw()

@@ -15,7 +15,10 @@ class Ui_Plot(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(Plot)
         self.verticalLayout.setObjectName("verticalLayout")
         self.progress = QtWidgets.QProgressBar(Plot)
-        self.progress.setProperty("value", 24)
+        self.progress.setMaximum(0)
+        self.progress.setProperty("value", 0)
+        self.progress.setTextVisible(False)
+        self.progress.setInvertedAppearance(False)
         self.progress.setObjectName("progress")
         self.verticalLayout.addWidget(self.progress, 0, QtCore.Qt.AlignVCenter)
 
