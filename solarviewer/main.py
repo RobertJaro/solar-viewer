@@ -1,6 +1,7 @@
 import sys
 from inspect import isabstract
 
+import pkg_resources
 from PyQt5.QtCore import QLocale
 from qtpy import QtWidgets
 
@@ -25,15 +26,15 @@ def addExceptionHook():
     sys.excepthook = my_exception_hook
 
 
-def main(controllers=[], viewers=[]):
+def main():
     # prepare application
     app = QtWidgets.QApplication(sys.argv)
     QLocale.setDefault(QLocale(QLocale.English, QLocale.UnitedStates))
 
     addExceptionHook()
     prepareImports()
-    registerControllers(controllers)
-    registerViewers(viewers)
+    registerControllers()
+    registerViewers()
     loadResources()
 
     # start application
@@ -55,20 +56,20 @@ def prepareImports():
     __import__("solarviewer.action", globals(), locals(), ['*'])
     __import__("solarviewer.dialog", globals(), locals(), ['*'])
     __import__("solarviewer.toolbar", globals(), locals(), ['*'])
+    for ep in pkg_resources.iter_entry_points('solarviewer.plugins'):
+        __import__(ep.module_name, globals(), locals(), ['*'])
 
 
-def registerControllers(controllers):
-    ctrls = getAllSubclasses(Controller)  # load base controllers
-    ctrls.extend(controllers)
-    for c in ctrls:
+def registerControllers():
+    # load base controllers
+    for c in getAllSubclasses(Controller):
         if isabstract(c):
             continue
         features.Provide(c.name, c())  # instantiate and add to ioc container
 
 
-def registerViewers(viewers):
+def registerViewers():
     ctrls = ViewerController.__subclasses__()
-    ctrls.extend(viewers)
     features.Provide(viewers_name, ctrls)
 
 

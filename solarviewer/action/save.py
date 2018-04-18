@@ -85,6 +85,7 @@ class OpenProjectAction(ActionController):
         wrapper = pickle.load(bin_file)
         ctrl = wrapper.viewer_ctrl_type.fromModel(wrapper.model)
         self.content_ctrl.addViewerCtrl(ctrl)
+        bin_file.close()
 
 
 class SaveFitsAction(ActionController):
