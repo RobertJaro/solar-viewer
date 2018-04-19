@@ -14,7 +14,7 @@ class ContrastController(DataToolController):
     def __init__(self):
         self._view: QtWidgets.QWidget = None
         self._ui: Ui_Contrast = None
-        self._hist: ContrastHist = None
+        self._hist: _ContrastHist = None
         self._model = ContrastModel()
 
         DataToolController.__init__(self)
@@ -33,6 +33,7 @@ class ContrastController(DataToolController):
         self._ui.histo_button.clicked.connect(self.toggleHist)
         self._ui.min_max_button.clicked.connect(self._onAdjustMinMax)
         self._ui.average_button.clicked.connect(self._onAdjustAvg)
+        self._ui.peak_button.clicked.connect(self._onAdjustPeak)
         self._ui.spin_min.valueChanged.connect(self._onMin)
         self._ui.spin_max.valueChanged.connect(self._onMax)
 
@@ -40,8 +41,8 @@ class ContrastController(DataToolController):
         if self._hist:
             self._ui.histo_button.click()
         m = viewer_ctrl.model
-        self._model.min = m.norm.vmin
-        self._model.max = m.norm.vmax
+        self._model.min = m.norm.vmin if m.norm.vmin else 0
+        self._model.max = m.norm.vmax if m.norm.vmax else 0
         self._model.map = m.map
         self._applyValues()
 
@@ -76,8 +77,7 @@ class ContrastController(DataToolController):
             self._hist.close()
             self._hist = None
             return
-        self._hist = ContrastHist(self._model.map)
-        self._drawLines()
+        self._hist = _ContrastHist(self._model.map, self._drawLines)
         self._ui.histo_plot.layout().addWidget(self._hist)
 
     def _applyValues(self):
@@ -133,19 +133,30 @@ class ContrastController(DataToolController):
         self._model.max = np.nanmean(data) + 3 * np.nanstd(data)
         self._applyValues()
 
+    def _onAdjustPeak(self):
+        data = self._model.data
+        hist = np.histogram(data, 300, range=(np.nanmin(data), np.nanmax(data)))
+        peak = hist[1][hist[0].argmax()]
+        width = 3 * np.nanstd(data)
+        self._model.min = peak - width
+        self._model.max = peak + width
+        self._applyValues()
 
-class ContrastHist(PlotWidget):
-    def __init__(self, map):
-        self.map = map
+
+class _ContrastHist(PlotWidget):
+    def __init__(self, map, init):
+        self.data = map.data
         self.ax = None
         PlotWidget.__init__(self)
+        self.init = init
 
     def draw(self):
         min_value = np.nanmin(self.data)
         max_value = np.nanmax(self.data)
 
         self.ax = self.figure.add_subplot(1, 1, 1)
-        self.ax.hist(self.map.data.ravel(), bins=300, range=(min_value, max_value), fc='k', ec='k')
+        self.ax.hist(self.data.ravel(), bins=300, range=(min_value, max_value), fc='k', ec='k')
+        self.init()  # workaround for plot line delay
 
     def plotLine(self, x):
         line = self.ax.axvline(x)

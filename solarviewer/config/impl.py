@@ -30,6 +30,8 @@ class DataToolController(ToolController):
         self._v_id = None
 
         self.setupContent(self._tool_ui.content)
+        self._tool_ui.content.resizeEvent = lambda evt: self._tool_ui.scrollArea.setMinimumWidth(
+            self._tool_ui.content.sizeHint().width() + self._tool_ui.scrollArea.verticalScrollBar().sizeHint().width())
 
         apply_btn = self._tool_ui.button_box.button(QDialogButtonBox.Apply)
         apply_btn.clicked.connect(self._onApply)

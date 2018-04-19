@@ -13,15 +13,47 @@
         <property name="windowTitle">
             <string>Form</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QVBoxLayout">
             <item>
-                <widget class="QWidget" name="content" native="true"/>
+                <widget class="QScrollArea" name="scrollArea">
+                    <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>QFrame::Plain</enum>
+                    </property>
+                    <property name="horizontalScrollBarPolicy">
+                        <enum>Qt::ScrollBarAlwaysOff</enum>
+                    </property>
+                    <property name="sizeAdjustPolicy">
+                        <enum>QAbstractScrollArea::AdjustToContents</enum>
+                    </property>
+                    <property name="widgetResizable">
+                        <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="content">
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>814</width>
+                                <height>602</height>
+                            </rect>
+                        </property>
+                    </widget>
+                </widget>
             </item>
             <item>
-                <widget class="QDialogButtonBox" name="button_box">
-                    <property name="standardButtons">
-                        <set>QDialogButtonBox::Apply</set>
-                    </property>
+                <widget class="QWidget" name="widget" native="true">
+                    <layout class="QVBoxLayout" name="verticalLayout_2">
+                        <item>
+                            <widget class="QDialogButtonBox" name="button_box">
+                                <property name="standardButtons">
+                                    <set>QDialogButtonBox::Apply</set>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
                 </widget>
             </item>
         </layout>
