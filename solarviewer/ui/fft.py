@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_DockWidget(object):
     def setupUi(self, DockWidget):
         DockWidget.setObjectName("DockWidget")
@@ -71,4 +72,3 @@ class Ui_DockWidget(object):
         self.contrast_none.setText(_translate("DockWidget", "None"))
         self.contrast_min_max.setText(_translate("DockWidget", "Min/Max"))
         self.contrast_average.setText(_translate("DockWidget", "Average"))
-

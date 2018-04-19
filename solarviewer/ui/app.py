@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -151,4 +152,3 @@ class Ui_MainWindow(object):
         self.actionImage.setText(_translate("MainWindow", "Image"))
         self.actionOpen_SV_Project.setText(_translate("MainWindow", "Open SV Project"))
         self.default_toolbar.setText(_translate("MainWindow", "Default"))
-

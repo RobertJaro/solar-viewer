@@ -32,6 +32,7 @@ class ContentController(Controller):
         self._model = ContentModel()
 
         self._tab_change_subscribers = {}
+        self._viewer_added_subscribers = {}
         self._data_change_subscribers = {}
 
         self._view = QTabWidget()
@@ -84,6 +85,16 @@ class ContentController(Controller):
         self._tab_change_subscribers[self.sub_id] = action
         return self.sub_id
 
+    def subscribeViewerAdded(self, action):
+        """
+        Subscribe action to viewer added
+        :param action: Callable function of form action(viewer_controller: ViewerController)
+        :return: unique subscription id
+        """
+        self.sub_id += 1
+        self._viewer_added_subscribers[self.sub_id] = action
+        return self.sub_id
+
     def subscribeDataChange(self, v_id, action):
         """
         Subscribe action to data changes
@@ -111,6 +122,7 @@ class ContentController(Controller):
         layout.addWidget(viewer)
         index = self._view.addTab(wrapper, viewer_ctrl.getTitle())
         self._view.setCurrentIndex(index)
+        self._onViewerAdded(viewer_ctrl)
 
     def openViewer(self, ctrl: ViewerController):
         extensions = getExtensionString(ctrl.viewer_config.file_types)
@@ -129,6 +141,10 @@ class ContentController(Controller):
         v = self.getViewerController()
         for sub in self._tab_change_subscribers.values():
             sub(v)
+
+    def _onViewerAdded(self, viewer_controller):
+        for sub in self._viewer_added_subscribers.values():
+            sub(viewer_controller)
 
     def _onDataChanged(self, v_id):
         viewer_ctrl = self.getViewerController(v_id)

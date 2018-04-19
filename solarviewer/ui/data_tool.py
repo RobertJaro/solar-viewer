@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_DataTool(object):
     def setupUi(self, DataTool):
         DataTool.setObjectName("DataTool")
@@ -43,4 +44,3 @@ class Ui_DataTool(object):
     def retranslateUi(self, DataTool):
         _translate = QtCore.QCoreApplication.translate
         DataTool.setWindowTitle(_translate("DataTool", "Form"))
-

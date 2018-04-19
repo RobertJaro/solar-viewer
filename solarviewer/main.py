@@ -51,6 +51,7 @@ def loadResources():
 def prepareImports():
     __import__("solarviewer.app.content", globals(), locals(), ['*'])
     __import__("solarviewer.app.statusbar", globals(), locals(), ['*'])
+    __import__("solarviewer.app.history", globals(), locals(), ['*'])
     __import__("solarviewer.viewer", globals(), locals(), ['*'])
     __import__("solarviewer.tool", globals(), locals(), ['*'])
     __import__("solarviewer.action", globals(), locals(), ['*'])

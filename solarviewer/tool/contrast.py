@@ -74,6 +74,10 @@ class ContrastController(DataToolController):
 
     def toggleHist(self):
         if self._hist:
+            self._model.max_line.remove()
+            self._model.max_line = None
+            self._model.min_line.remove()
+            self._model.min_line = None
             self._hist.close()
             self._hist = None
             return
@@ -104,11 +108,13 @@ class ContrastController(DataToolController):
     def _drawMaxLine(self, *args):
         if self._model.max_line is not None:
             self._model.max_line.remove()
+            self._model.max_line = None
         self._model.max_line = self._hist.plotLine(x=self._model.max)
 
     def _drawMinLine(self, *args):
         if self._model.min_line is not None:
             self._model.min_line.remove()
+            self._model.min_line = None
         self._model.min_line = self._hist.plotLine(x=self._model.min)
 
     def _onMin(self, val):

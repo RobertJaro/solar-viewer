@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Dict
 
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtGui
 
 from solarviewer.config import content_ctrl_name
 from solarviewer.config.ioc import RequiredFeature
@@ -52,6 +52,7 @@ class ItemConfig:
         self.title = ""
         self.supported_data_types = []
         self.supported_viewer_types = []
+        self.shortcut = None
 
     def setMenuPath(self, path: str):
         self.menu_path = path
@@ -75,6 +76,10 @@ class ItemConfig:
 
     def addSupportedViewer(self, viewer_type: ViewerType):
         self.supported_viewer_types.append(viewer_type)
+        return self
+
+    def setShortcut(self, key_sequence: QtGui.QKeySequence):
+        self.shortcut = key_sequence
         return self
 
 

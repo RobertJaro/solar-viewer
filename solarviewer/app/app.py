@@ -1,5 +1,6 @@
 from typing import List
 
+from PyQt5.QtWidgets import QShortcut
 from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.app.content import ContentController
@@ -109,6 +110,8 @@ class AppController(QtWidgets.QMainWindow):
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar, True)
             action.triggered.connect(lambda evt, c=ctrl, a=action: self._toggleTool(c, a))
+            if ctrl.item_config.shortcut:
+                QShortcut(ctrl.item_config.shortcut, self, action.trigger)
 
     def _initDialogs(self):
         for ctrl in self.dlg_ctrls:
@@ -118,6 +121,8 @@ class AppController(QtWidgets.QMainWindow):
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(lambda evt, c=ctrl: self._openDialog(c))
             self._subscribeItemSupportCheck(action, ctrl)
+            if ctrl.item_config.shortcut:
+                QShortcut(ctrl.item_config.shortcut, self, action.trigger)
 
     def _initActions(self):
         for ctrl in self.action_ctrls:
@@ -127,6 +132,8 @@ class AppController(QtWidgets.QMainWindow):
             action = InitUtil.getAction(tree, self.ui.menubar)
             action.triggered.connect(ctrl.onAction)
             self._subscribeItemSupportCheck(action, ctrl)
+            if ctrl.item_config.shortcut:
+                QShortcut(ctrl.item_config.shortcut, self, action.trigger)
 
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:
