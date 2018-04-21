@@ -1,0 +1,322 @@
+# this file serves as an attempt to store all of the keywords used by VSO
+# in one central location to make it easier for User Interfaces to reload,
+# rather than having to hard code everything
+#
+# each line is tab seperated, with the following fields:
+# TYPE	KEYWORD	VALUE
+#
+# The first line that's not a comment or blank line must be 'VERSION' and
+# a number.  If it changes, you should get a human to re-read the header
+# file, as something significant has changed
+#
+# The last non-blank line must be 'END' all on its own.  if it's not,
+# the file is incomplete.
+#
+# (yes, yes, I could've used XML... but this is easier for me to read -Joe)
+#
+# last updated : 2005/05/18
+
+# in theory, we can use this partially for internationalization on some parts.
+# (we'd still have to rework all of the other text in the GUIs)
+
+# PS.  this file is UTF-8 (w/o BOM)
+
+VERSION	1
+
+KEYWORD	KEYWORD	An explaination of what each of the lists mean
+KEYWORD	KEYWORD_LONG	A more detailed explaination of the various lists
+KEYWORD	STATUS	Status codes
+KEYWORD	STATUS_LONG	More detailed explaination for status codes
+KEYWORD	STATUS_TYPE	Lookup for the A in a 'VSO-Axxx' status code format
+KEYWORD	INFO	Information that may be required for a Data Provider to complete a GetData request
+KEYWORD	METHOD_PREFIX	Basic data tranfer methods
+KEYWORD	METHOD_SUFFIX	Data transfer method details
+KEYWORD	PHYSOBS	Physical Observables
+KEYWORD	WAVEUNIT	Acceptable spectral units
+KEYWORD	PROVIDER	Current Data Providers
+KEYWORD	SOURCE	Known Data Sources
+KEYWORD	INSTRUMENT	Known Instruments
+KEYWORD	EXTENT_TYPE	Valid Extent Types
+KEYWORD	HELP	Help documents for the VSO Web Interface
+KEYWORD	DATA_LAYOUT	The physical meaning of the independent variable(s)
+KEYWORD	LINK	Information Links
+
+KEYWORD_LONG	KEYWORD	Each of the lists in this lookup file have been given a name.  This list gives a brief description of the various lists.
+KEYWORD_LONG	KEYWORD_LONG	This list gives a more detailed explaination of the various lists, including what its overall purpose is within VSO.
+KEYWORD_LONG	STATUS	This list gives a short message about the overall intent of the various numerical parts of the status codes.  VSO programmers are suggested to refer to the list or KEYWORD_LONG to find an approriate status code to return for a given problem.
+KEYWORD_LONG	STATUS_LONG	This list gives a more detailed message about the intent of the various VSO status codes.  Please see the API documentation for an explaination of the format of a VSO status message.
+KEYWORD_LONG	STATUS_TYPE	This list provides information to determine which component of VSO generated a status message, to aid in tracking down errors generated.
+KEYWORD_LONG	INFO	This list provides a description of the various types of information that a Data Provider may require to complete a GetData request.  Data Providers should refer to this list to ensure that they are using the keywords in a manner consistent with their intent.  User Interface programmers can use this list to generate more informative prompts.
+KEYWORD_LONG	METHOD_PREFIX	This list provides the list of data transfer methods recognized by VSO.  If a Data Provider has a transfer method that does not fit into one of these categories, please contact the VSO Project maintainers.  User Interface programmers can use this list to generate more informative prompts.  Please see the VSO API documentation for more information about the format of data transfer methods.
+KEYWORD_LONG	METHOD_SUFFIX	This list provides additional qualifiers to the data transfer methods recognized by VSO.  If a Data Provider needs to add more details to describe their data transfer methods, please contact the VSO Project maintainers.  User Interface programmers can use this list to generate more informative prompts.  Please see the VSO API documentation for more information about the format of data transfer methods.
+KEYWORD_LONG	PHYSOBS	This list provides the detailed description of each of the physical observable keywords used to describe data products served by VSO.  Please contact the VSO Project maintainers if you cannot accurately describe your holdings using these terms.
+KEYWORD_LONG	WAVEUNIT	This list provides a short list of the acceptable spectral units to be passed to the VSO core.  User Interfaces must convert their queries to one of these units to search using VSO.  Data Providers are only required to be able to understand these units.	
+KEYWORD_LONG	PROVIDER	This list contains the common name of current (and possibly in development) VSO Data Providers.  More information about the VSO Data Providers may be found within the VSO Registry.  User Interface programmers should note that some names may be encoded as UTF-8.
+KEYWORD_LONG	SOURCE	This list contains the common name of current (and possibly in development) data sources that VSO can search on.  More information about each source may be found within in the VSO Registry.  User Interface programmers should note that some names may be encoded as UTF-8.  Please note that 'source' is used internally by VSO to represent what the VSO Data Model refers to as 'Observatory'.
+KEYWORD_LONG	INSTRUMENT	This list contains the common name of current (and possibly in development) instruments that VSO can search on.  More information about each instrument may be found within the VSO Registry.  User Interface programmers should note that some names may be encoded as UTF-8.
+KEYWORD_LONG	EXTENT_TYPE	This list is not currently in use.  When it is placed into use, it will describe in general terms the observational abilities of a given instrument, or the observed region of a data product.
+KEYWORD_LONG	HELP	This list contains a series of help topics for the VSO Web Interface.  The location of this list may be migrated to some other location, should it become a significant to the size of this file.
+KEYWORD_LONG	DATA_LAYOUT	This list provides the detailed description of each of the data layout keywords used to describe data products served by VSO.  Please contact the VSO Project maintainers if you cannot accurately describe your holdings using these terms.
+KEYWORD_LONG	LINK	This list provides a URL, or space seperated list of multiple URLs to visit for more information.  The key is a concatination of the list name, underscore character, and the keyword being described.
+
+STATUS	200	Success
+STATUS	201	Cached Success
+STATUS	202	Accepted
+STATUS	300	Multiple Choices
+STATUS	400	Bad Request
+STATUS	405	Unknown Method Supplied
+STATUS	412	Missing Required Information
+STATUS	500	Server Error
+STATUS	505	Version not supported
+
+STATUS_LONG	200	The request has been completed without any errors occuring
+STATUS_LONG	201	The request has been completed using cached information
+STATUS_LONG	202	The request has been accepted for processing.  You should receive a message when the process has completed
+STATUS_LONG	300	The request was ambiguous, and needs further clarification
+STATUS_LONG	400	The request was improperly formatted or missing a required element
+STATUS_LONG	405	The request asked for a transfer method that the provider did not support
+STATUS_LONG	412	The request was missing a required information field
+STATUS_LONG	500	The request could not be completed due to a problem at the Data Provider or VSO Instance
+STATUS_LONG	505	The request was not sent using a version that the server could understand
+
+STATUS_TYPE	V	Core
+STATUS_TYPE	R	Registry
+STATUS_TYPE	D	Data Provider
+
+INFO	EMAIL	Email address to contact you
+INFO	ADDRESS	Address to send you postal mail
+INFO	PHONE	A phone number you contact you
+INFO	HOST	Fully qualified domain name, or IP address to connect to
+INFO	USER	User name to login as
+INFO	PASSWORD	Password to login with
+INFO	DIRECTORY	Directory to transfer the files to
+
+METHOD_PREFIX	URL	An immediate Internet link (HTTP, FTP, etc) to the file(s)
+METHOD_PREFIX	STAGING	A non-immediate Internet link (HTTP, FTP, etc) to the file(s)
+METHOD_PREFIX	OFFLINE	Transfer of files through physical mail (tapes, CD, etc)
+METHOD_PREFIX	PUSH	Data provider will push (FTP, SFTP, etc) the files to you
+
+METHOD_SUFFIX	FILE	Packaged as a one-to-one correlation between Data Products and URLs.
+METHOD_SUFFIX	packaged	Packaged as a many-to-one correlation between Data Products and URLs.
+METHOD_SUFFIX	TAR_GZ	Packaged as a gziped tarball of the Data Products
+METHOD_SUFFIX	TAR	Packaged as a tarball of the Data Products
+METHOD_SUFFIX	GZ_TAR	Packaged as a tarball of gziped Data Products
+METHOD_SUFFIX	ZIP	Packaged as a Zip archive of Data Products
+METHOD_SUFFIX	TAR_COMPRESS	Packaged as a compressed tarball of the Data Products
+METHOD_SUFFIX	CD	Written on Compact Disc
+METHOD_SUFFIX	DAT	Written to a 4mm Digital Audio Tape (DAT)
+METHOD_SUFFIX	EXABYTE8200	Written to an Exabyte model 8200 tape
+METHOD_SUFFIX	EXABYTE8500	Written to an Exabyte model 8500 tape
+METHOD_SUFFIX	RCP	Transfered using Remote Copy Protocol (RCP)
+METHOD_SUFFIX	FTP	Transfered using File Transfer Protocol (FTP)
+METHOD_SUFFIX	SCP	Transfered using Secure Copy Protocol (SCP)
+METHOD_SUFFIX	SFTP1	Transfered using Secure File Transfer Protocol (SFTP), version 1
+METHOD_SUFFIX	SFTP2	Transfered using Secure File Transfer Protocol (SFTP), version 2
+
+PHYSOBS	intensity	the direct intensity, either integrated over the spectral observing range or as a function of wavelength (spectral density)
+PHYSOBS	equivalent_width	differences between intensities measured at nerbay wavelengths, typically in line cores, wings, and nearby continuum, whether measured as an intensity difference or an equivalent width
+PHYSOBS	polarization_vector	the net linear polarization
+PHYSOBS	LOS_magnetic_field	the frequency/wavelength Zeeman splitting between opposite circular polarizations of a magnetically-sensitive line
+PHYSOBS	vector_magnetic_field	field strengths and directions inferred from Stokes polarimetry
+PHYSOBS	LOS_velocity	the displacement of line center from rest wavelength/frequency in an arbitrary polarization state
+PHYSOBS	vector_velocity	two- or three-dimesnional velocities, typically inferred from helioseismic inversion or from directly measured velocities transverse to the line of sight, possibly combined with Doppler velocities
+PHYSOBS	wave_power	These all refer to solar internal or atmospheric acoustic-gravity wave measurements. The mode parameters could include frequencies, splittings, amplitudes, widths, etc.
+PHYSOBS	wave_phase	These all refer to solar internal or atmospheric acoustic-gravity wave measurements. The mode parameters could include frequencies, splittings, amplitudes, widths, etc.
+PHYSOBS	oscillation_mode_parameters	These all refer to solar internal or atmospheric acoustic-gravity wave measurements. The mode parameters could include frequencies, splittings, amplitudes, widths, etc.
+PHYSOBS	number_density	in-situ observations
+PHYSOBS	particle_flux	in-situ observations
+PHYSOBS	particle_velocity	in-situ observations
+PHYSOBS	thermal_velocity	in-situ observations
+PHYSOBS	composition	in-situ observations
+
+WAVEUNIT	GHz
+WAVEUNIT	Angstrom
+WAVEUNIT	keV
+
+# need to pull this from the registry
+PROVIDER	HANET	H-alpha Network, Big Bear Lake
+PROVIDER	HAO	High Altitude Observatory, NCAR
+PROVIDER	MSU	Montana State University
+PROVIDER	NSO	National Solar Observatory
+PROVIDER	OVRO	Owens Valley Radio Observatory
+PROVIDER	SDAC	Solar Data Analysis Center, NASA/Goddard
+PROVIDER	SHA	Stanford Helioseismology Archive, Stanford U.
+PROVIDER	OBSPM	Departement d'Astronomie Solaire de l'Observatoire de Paris
+PROVIDER	NGDC	National Geophysical Data Center, NOAA
+PROVIDER	LSSP	Laboratory for Space and Solar Physics, NASA/Goddard
+PROVIDER	SDAC_2	Solar Data Analysis Center, NASA/Goddard (TRACE)
+
+SOURCE	BBSO	Big Bear Solar Observatory
+SOURCE	KANZ	Kanzelhöhe Solar Observatory
+SOURCE	OACT	Osservatorio Astrofisico di Catania
+SOURCE	OBSPM	Departement d'Astronomie Solaire de l'Observatoire de Paris
+SOURCE	YNAO	Yunnan Astronomical Observatory
+SOURCE	MLSO	Mauna Loa Solar Observatory
+SOURCE	YOHKOH	Yohkoh Satellite, Japan
+SOURCE	Evans	Evans Solar Telescope, Sacramento Peak
+SOURCE	KPVT	Kitt Peak Vacuum Tower Telescope
+SOURCE	McMath	McMath Solar Telescope, Kitt Peak
+SOURCE	SOLIS	Synoptic Optical Long-term Investigations of the Sun
+SOURCE	OVRO	Owens Valley Radio Observatory
+SOURCE	SOHO	Solar and Heliospheric Observatory
+SOURCE	GONG	Global Oscillations Network Group
+SOURCE	JSPO	Jeffreys South Pole Observatory
+SOURCE	MtWilson	Mt Wilson Solar Observatory
+SOURCE	TON	Taiwan Oscillations Network
+#SOURCE	MEDN	Observatoire de Paris, Meudon
+SOURCE	Nancay	Nançay Radio Observatory
+SOURCE	Pic du Midi	Observatoire du Pic du Midi
+#SOURCE	PicMidi	Observatoire du Pic du Midi
+SOURCE	GOES-12	Geosyncronous Operational Environmental Satellite - 12
+SOURCE	RHESSI	Reuven Ramaty High Energy Solar Spectroscopic Imager
+SOURCE	TRACE	Transition Region And Coronal Explorer
+
+INSTRUMENT	chp	Chromospheric Helium-I Imaging Photometer
+INSTRUMENT	dpm	Digital Prominence Monitor
+INSTRUMENT	mk4	Mark-IV
+INSTRUMENT	BCS	Bragg Crystal Spectrometer
+INSTRUMENT	HXT	Hard X-Ray Telescope
+INSTRUMENT	WBS	Wide Band Spectrometer
+INSTRUMENT	SXT	Soft X-Ray Telescope
+INSTRUMENT	Spectroheliograph	
+INSTRUMENT	Spectromagnetograph	
+INSTRUMENT	512-channel Magnetograph	
+INSTRUMENT	Solar FTS Spectrometer	
+INSTRUMENT	VSM	Vector SpecroMagnetograph
+INSTRUMENT	OVSA	Owens Valley Solar Array
+INSTRUMENT	CDS	Coronal Diagnostic Spectrometer
+INSTRUMENT	CELIAS	Charge, Element, and Isotope Analysis System
+INSTRUMENT	COSTEP	Comprehensive Suprathermal and Energetic Particle Analyzer
+INSTRUMENT	EIT	Extreme ultraviolet Imaging Telescope
+INSTRUMENT	ERNE	Energetic and Relativistic Nuclei and Electron experiment
+INSTRUMENT	GOLF	Global Oscillations at Low Frequencies
+INSTRUMENT	LASCO	Large Angle and Spectrometric Coronagraph
+INSTRUMENT	MDI	Michelson Doppler Imager
+INSTRUMENT	SUMER	Solar Ultraviolet Measurements of Emitted Radiation
+INSTRUMENT	SWAN	Solar Wind Anisotropies
+INSTRUMENT	UVCS	Ultraviolet Coronagraph Spectrometer
+INSTRUMENT	VIRGO	Variability of Solar Irradiance and Gravity Oscillations
+INSTRUMENT	Big Bear	
+INSTRUMENT	Udaipur	
+INSTRUMENT	Mauna Loa	
+INSTRUMENT	Learmonth	
+INSTRUMENT	El Teide	
+INSTRUMENT	Cerro Tololo	
+INSTRUMENT	MOTH	Magneto Optical filters at Two Heights
+INSTRUMENT	MOF/60	Mt. Wilson 60-Foot Tower Telescope
+INSTRUMENT	Tenerife	
+INSTRUMENT	SXI-0	Solar X-ray Imager
+INSTRUMENT	RHESSI	Reuven Ramaty High Energy Solar Spectroscopic Imager
+
+EXTENT_TYPE	FULLDISK	The Full Solar Disk
+EXTENT_TYPE	CORONA	The Solar Corona
+EXTENT_TYPE	LIMB	The Solar Limb
+EXTENT_TYPE	HIRES	High Resolution (image area << solar area)
+
+DATA_LAYOUT	image	data organized by two dimensions corresponding to angular displacement along the axes; examples include photograms (digital or digitized photographs), spectroheliograms, magnetograms, and Dopplergrams
+DATA_LAYOUT	map	data organized by two dimensions corresponding to spatial displacement along the axes; examples include synoptic charts
+DATA_LAYOUT	time_series	data organized by one dimension corresponding to temporal displacement along the axis; note that this is not the same as a time-tagged set of data records, since it implies sampling uniformity and provision for data gaps
+DATA_LAYOUT	movie	data organized by three dimensions corresponding to spatial or angular displacement along two axes and temporal displacement along the principal (most slowly varying) axis
+DATA_LAYOUT	spectrum	data organized by one dimension corresponding to displacement in electromagnetic wavelength or frequency along the axis
+DATA_LAYOUT	mode_spectrum	data organized by one or more dimensions corresponding to the quantum numbers of oscillations
+DATA_LAYOUT	spectral_temporal	data organized by two dimension corresponding to displacement in wavelength or frequency along one axis and temporal diplacement along the other
+DATA_LAYOUT	spatial_spectral	data organized by two dimensions corresponding to spatial or angular image axes and one corresponding to electromagnetic spectral displacement
+
+# need a better format for storing this ... may have to move 'LINK's to a new file.
+LINK	PROVIDER_NSO	http://www.nso.edu/
+LINK	SOURCE_Evans	http://nsosp.nso.edu/esf/
+LINK	SOURCE_KPVT	http://nsokp.nso.edu/vac/
+LINK	SOURCE_McMath	http://nsokp.nso.edu/mp/mp.html
+LINK	SOURCE_SOLIS	http://solis.nso.edu/
+LINK	INSTRUMENT_Spectroheliograph	http://nsosp.nso.edu/esf/esfpr.html
+LINK	INSTRUMENT_Spectromagnetograph	http://nsokp.nso.edu/vac/aboutspecmag.html
+LINK	INSTRUMENT_512-channel Magnetograph	http://www.opticsinfobase.org/ViewMedia.cfm?id=19902&seq=0
+LINK	INSTRUMENT_Solar FTS Spectrometer	http://nsokp.nso.edu/mp/fts/aboutFTS.html
+LINK	INSTRUMENT_VSM	http://solis.nso.edu/VSMOverview.html
+
+LINK	PROVIDER_SDAC	
+LINK	SOURCE_SOHO	http://sohowww.nascom.nasa.gov/mission/
+LINK	INSTRUMENT_CDS	http://solar.bnsc.rl.ac.uk/software/analysis.shtml
+LINK	INSTRUMENT_CELIAS	http://www.cx.unibe.ch/phim/soho/webnasa.html
+LINK	INSTRUMENT_COSTEP	http://ifkki.kernphysik.uni-kiel.de/SOHO/engl/homepage.htm
+LINK	INSTRUMENT_EIT	http://umbra.nascom.nasa.gov/eit/eit_resources.html
+LINK	INSTRUMENT_ERNE	http://www.srl.utu.fi/erne_data/index_english.html
+LINK	INSTRUMENT_GOLF	http://golfwww.medoc-ias.u-psud.fr/access.html
+LINK	INSTRUMENT_LASCO	http://soho.nascom.nasa.gov/mission/lasco/index.html
+LINK	INSTRUMENT_MDI	http://soi.stanford.edu/
+LINK	INSTRUMENT_SUMER	http://www.linmpi.mpg.de/english/projekte/sumer/text/SUMER-instrument.html
+LINK	INSTRUMENT_SWAN	http://www.fmi.fi/research_space/space_7.html
+LINK	INSTRUMENT_UVCS	http://cfa-www.harvard.edu/uvcs/uvcs_resources
+LINK	INSTRUMENT_VIRGO	http://www.pmodwrc.ch/pmod.php?topic=tsi/virgo/proj_space_virgo
+
+LINK	PROVIDER_SDAC_2	
+LINK	SOURCE_TRACE	http://vestige.lmsal.com/TRACE/Project/Mission/Mission.html
+LINK	INSTRUMENT_TRACE	http://vestige.lmsal.com/TRACE/Project/Instrument/Instrument.html
+
+LINK	PROVIDER_HANET	
+LINK	SOURCE_BBSO	
+LINK	SOURCE_KANZ	
+LINK	SOURCE_OACT	
+LINK	SOURCE_OBSPM	
+LINK	SOURCE_YNAO	
+
+LINK	PROVIDER_HAO	
+LINK	SOURCE_MLSO	
+LINK	INSTRUMENT_chp	
+LINK	INSTRUMENT_dpm	
+LINK	INSTRUMENT_mk4	
+
+LINK	PROVIDER_MSU	
+LINK	SOURCE_YOHKOH	
+LINK	INSTRUMENT_BCS	
+LINK	INSTRUMENT_HXT	
+LINK	INSTRUMENT_WBS	
+LINK	INSTRUMENT_SXT	
+
+LINK	PROVIDER_OVRO	
+LINK	SOURCE_OVRO	
+LINK	INSTRUMENT_OVSA	
+
+LINK	PROVIDER_SHA	
+LINK	SOURCE_GONG	http://gong.nso.edu/
+LINK	INSTRUMENT_Big Bear	http://gong.nso.edu/sites/
+LINK	INSTRUMENT_Udaipur	http://gong.nso.edu/sites/
+LINK	INSTRUMENT_Mauna Loa	http://gong.nso.edu/sites/
+LINK	INSTRUMENT_Learmonth	http://gong.nso.edu/sites/
+LINK	INSTRUMENT_El Teide	http://gong.nso.edu/sites/
+LINK	INSTRUMENT_Cerro Tololo	http://gong.nso.edu/sites/
+LINK	SOURCE_JSPO	
+LINK	INSTRUMENT_MOTH	
+LINK	SOURCE_MtWilson	
+LINK	INSTRUMENT_MOF/60	
+LINK	SOURCE_TON	
+LINK	INSTRUMENT_Tenerife	
+
+LINK	PROVIDER_OBSPM	
+LINK	SOURCE_Nancay	
+LINK	SOURCE_Pic du Midi	
+
+LINK	PROVIDER_NGDC	
+LINK	SOURCE_GOES-12	
+LINK	INSTRUMENT_SXI-0	
+
+LINK	PROVIDER_LSSP	
+LINK	SOURCE_RHESSI	
+LINK	INSTRUMENT_RHESSI	
+
+
+HELP	SORT	Sort and Rearrange	<p>The Sort and Rearrange box allows you to organize the data in some manner other than the default views.</p><p>The option 'sort' will sort the records returned by VSO, represented by rows in the table.</p><p>The option 'rearrange' will change the order of the fields, represented by columns in the table.</p>
+HELP	VIEWS	Views	<p>The Views box allows you to quickly switch between a prefined set of columns</p><p>The 'Basic' view will display fields that the VSO maintainers believe are useful to a wide segment of the community to filter the results from VSO.</p><p>The 'Thumbs' view will display a small image containing quicklook data to assist researchers in filtering their results.</p><p>The 'Links' view provides a clickable URL to retrieve the individual data sets, should one be available.</p><p>The 'Long' view displays everything that is defined in the VSO Data Model, and is currently being returned from the providers.</p>
+HELP	COMMENTS	Comments vs. Help us improve	<p>Many people have asked about two links at the bottom of most VSO web pages.</p><p>'Comments?' can be used to give general/complaints/etc.</p><p>'Help us improve VSO' links to a voluntary questionaire about what the users would like to see implemented in VSO.</p>
+HELP	CHECKBOX	CheckBox Tools	<p>The 'CheckBox Tools' box provides options to allow you to quickly select multiple congruent record sets.</p><p>You can click the 'Select All' button, if you wish to pare down the list, as opposed to selecting every record that you wish to get.</p><p>'All Above this box' and 'All Below this box' will cause all boxes above or below the checkbox (along with that checkbox that you clicked on) to be selected or deselected.  This allows you to select a range by using 'All Below this box', then clicking the first record you want, and the record one after the last one you want.</p>
+HELP	RETURNED	Rows Returned	<p>The Rows Returned box contains information about the responses from the VSO Data Providers that were queried.</p><p>Data Providers may place an limit on the number of records returned in a single query.</p><p>This will keep the user from waiting for the results of a search that matched more than was suitable for that Data Provider.  (eg, a year's worth of data is suitable for an instrument that has one data product per day, but it could result in an instrument that generates a products at a higher cadence, such as once per minute.)</p>
+HELP	NEWSEARCH	New Search	<p>This link will take you back to the search form.</p>
+HELP	NEWTIMESEARCH	New Time Search	<p>This link will allow you to specify a new time range, while keeping the other search parameters unchanged.</p>
+HELP	EDITQUERY	Edit Query	<p>This link will take you back to the original search form, re-populated with the search terms that were used, so that you may adjust them.</p>
+HELP	STATUS	Search Status	<p>This box contains any error messages that were returned from the VSO, or individual VSO Data Providers.</p>
+HELP	JAVASCRIPT	JavaScript	<p>Some features may require the use of JavaScript.</p><p>We have attempted to ensure that the VSO web-based interface is useable without the use of JavaScript.</p><p>If you experience something that would make you believe otherwise, please let us know by following the 'Comments?' link at the bottom of the page.</p>
+HELP	TIMESELECT	Time Selection	<p>If you have JavaScript enabled, it will ensure that you do not set the start time after the end time.</p><p><b>Tip:</b> Because of this, you can save time by moving the start time if you want to increase a number, and the end time if you want to decrease a number.</p>
+
+
+
+END

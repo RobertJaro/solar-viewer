@@ -1,1 +1,1 @@
-__all__ = ["contrast"]
+__all__ = ["contrast", "download", "download_result"]

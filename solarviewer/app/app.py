@@ -73,7 +73,7 @@ class AppController(QtWidgets.QMainWindow):
             dock.setWidget(ctrl.view)
             if action:
                 dock.closeEvent = lambda evt, a=action: a.setChecked(False)
-            self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock)
+            self.addDockWidget(ctrl.item_config.orientation, dock)
             self.active_tools[ctrl.name] = dock
         else:
             self.active_tools.pop(ctrl.name).close()
@@ -111,7 +111,7 @@ class AppController(QtWidgets.QMainWindow):
             action = InitUtil.getAction(tree, self.ui.menubar, True)
             action.triggered.connect(lambda evt, c=ctrl, a=action: self._toggleTool(c, a))
             if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, action.trigger)
+                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger if action.isEnabled() else None)
 
     def _initDialogs(self):
         for ctrl in self.dlg_ctrls:
@@ -122,7 +122,7 @@ class AppController(QtWidgets.QMainWindow):
             action.triggered.connect(lambda evt, c=ctrl: self._openDialog(c))
             self._subscribeItemSupportCheck(action, ctrl)
             if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, action.trigger)
+                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger if action.isEnabled() else None)
 
     def _initActions(self):
         for ctrl in self.action_ctrls:
@@ -133,7 +133,7 @@ class AppController(QtWidgets.QMainWindow):
             action.triggered.connect(ctrl.onAction)
             self._subscribeItemSupportCheck(action, ctrl)
             if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, action.trigger)
+                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger if action.isEnabled() else None)
 
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:

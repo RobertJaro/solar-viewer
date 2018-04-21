@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Dict
 
-from qtpy import QtWidgets, QtGui
+from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.config import content_ctrl_name
 from solarviewer.config.ioc import RequiredFeature
@@ -53,6 +53,7 @@ class ItemConfig:
         self.supported_data_types = []
         self.supported_viewer_types = []
         self.shortcut = None
+        self.orientation = QtCore.Qt.LeftDockWidgetArea
 
     def setMenuPath(self, path: str):
         self.menu_path = path
@@ -60,6 +61,10 @@ class ItemConfig:
 
     def setTitle(self, title: str):
         self.title = title
+        return self
+
+    def setOrientation(self, orientation: QtCore.Qt.DockWidgetArea):
+        self.orientation = orientation
         return self
 
     def setSupportedData(self, data_types: List[DataType]):
