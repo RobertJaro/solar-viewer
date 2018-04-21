@@ -9,7 +9,7 @@ setup(
     provides=find_packages(),
     install_requires=['sunpy==0.8.5', 'qtpy', 'pywavelets', 'scikit-image'],
     python_requires='>=3',
-    package_data={'solarviewer.resource': ['*.png', '*.txt', '*.pkl']},
+    package_data={'solarviewer.resource': ['*.png', '*.txt'], 'solarviewer.resource.vso': ['*.pkl']},
     entry_points={
         'gui_scripts': ['solarviewer=solarviewer.main:main'],
     }
