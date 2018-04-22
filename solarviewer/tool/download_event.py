@@ -87,7 +87,7 @@ class EventController(ToolController):  #
             self.table.setItem(index, 6, QtWidgets.QTableWidgetItem(item["obs_channelid"]))
             self.table.setItem(index, 7, QtWidgets.QTableWidgetItem(item["frm_name"]))
         self._ui.search_button.setEnabled(True)
-        self._ui.search_button.setText("Search...")
+        self._ui.search_button.setText("Search")
 
     def _createLocation(self, item):
         event_coordunit = item["event_coordunit"]
