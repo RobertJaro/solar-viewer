@@ -40,7 +40,7 @@ def main():
     # start application
     app_ctrl = AppController()
     features.Provide(AppController.__name__, app_ctrl)
-    app_ctrl.show()
+    app_ctrl.showMaximized()
     sys.exit(app.exec_())
 
 

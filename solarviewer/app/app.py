@@ -41,6 +41,7 @@ class AppController(QtWidgets.QMainWindow):
         self.setStatusBar(self.status_bar_ctrl.view)
 
         self.ui.default_toolbar.trigger()
+        self.ui.actionQuit.triggered.connect(lambda evt: self.close())
 
     def openController(self, controller_name: str):
         """
