@@ -1,9 +1,12 @@
+import time
+from threading import Thread
 from typing import Callable
 
-from PyQt5.QtWidgets import QTabWidget, QFileDialog, QWidget
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QTabWidget, QWidget
 from qtpy import QtWidgets
 
-from solarviewer.app.util import getExtensionString
 from solarviewer.config.base import ViewerController, Controller, DataModel
 
 
@@ -31,16 +34,17 @@ class ContentController(Controller):
     def __init__(self):
         self._model = ContentModel()
 
-        self._tab_change_subscribers = {}
+        self._viewer_changed_subscribers = {}
         self._viewer_added_subscribers = {}
-        self._data_change_subscribers = {}
+        self._viewer_closed_subscribers = {}
+        self._data_changed_subscribers = {}
 
         self._view = QTabWidget()
         self._view.setTabsClosable(True)
         self._view.setMovable(True)
         self._view.setObjectName("tabWidget")
 
-        self._view.currentChanged.connect(self._onTabChanged)
+        self._view.currentChanged.connect(self._onViewerChanged)
         self._view.tabCloseRequested.connect(self._onCloseTab)
 
     @property
@@ -75,14 +79,14 @@ class ContentController(Controller):
         wrapper = self._view.currentWidget()
         return wrapper.v_id if wrapper is not None else -1
 
-    def subscribeTabChange(self, action: Callable) -> int:
+    def subscribeViewerChanged(self, action: Callable) -> int:
         """
         Subscribes action to tab changes
         :param action: Callable function of form action(viewer_controller: ViewerController)
         :return: unique subscription id
         """
         self.sub_id += 1
-        self._tab_change_subscribers[self.sub_id] = action
+        self._viewer_changed_subscribers[self.sub_id] = action
         return self.sub_id
 
     def subscribeViewerAdded(self, action):
@@ -95,6 +99,16 @@ class ContentController(Controller):
         self._viewer_added_subscribers[self.sub_id] = action
         return self.sub_id
 
+    def subscribeViewerClosed(self, action):
+        """
+        Subscribe action to viewer added
+        :param action: Callable function of form action(viewer_controller: ViewerController)
+        :return: unique subscription id
+        """
+        self.sub_id += 1
+        self._viewer_closed_subscribers[self.sub_id] = action
+        return self.sub_id
+
     def subscribeDataChange(self, v_id, action):
         """
         Subscribe action to data changes
@@ -104,10 +118,10 @@ class ContentController(Controller):
         """
         self.sub_id += 1
         v_dict = {}
-        if self._data_change_subscribers.get(v_id, None):
-            v_dict = self._data_change_subscribers[v_id]
+        if self._data_changed_subscribers.get(v_id, None):
+            v_dict = self._data_changed_subscribers[v_id]
         else:
-            self._data_change_subscribers[v_id] = v_dict
+            self._data_changed_subscribers[v_id] = v_dict
 
         v_dict[self.sub_id] = action
         return self.sub_id
@@ -124,44 +138,62 @@ class ContentController(Controller):
         self._view.setCurrentIndex(index)
         self._onViewerAdded(viewer_ctrl)
 
-    def openViewer(self, ctrl: ViewerController):
-        extensions = getExtensionString(ctrl.viewer_config.file_types)
-        files, _ = QFileDialog.getOpenFileNames(None, "Open File", "", extensions)
-        if not files:
-            return
-        if ctrl.viewer_config.multi_file:
-            viewer = ctrl.fromFile(files)
-            self.addViewerCtrl(viewer)
-            return
-        for f in files:
-            viewer = ctrl.fromFile(f)
-            self.addViewerCtrl(viewer)
-
-    def _onTabChanged(self, index):
+    def _onViewerChanged(self, *args):
         v = self.getViewerController()
-        for sub in self._tab_change_subscribers.values():
-            sub(v)
+        self._notifySubscribers(v, self._viewer_changed_subscribers)
 
     def _onViewerAdded(self, viewer_controller):
-        for sub in self._viewer_added_subscribers.values():
+        self._notifySubscribers(viewer_controller, self._viewer_added_subscribers)
+
+    def _onViewerClosed(self, viewer_controller):
+        for sub in self._viewer_closed_subscribers.values():
             sub(viewer_controller)
+        self._data_changed_subscribers.pop(viewer_controller.v_id)
 
     def _onDataChanged(self, v_id):
         viewer_ctrl = self.getViewerController(v_id)
-        for sub in self._data_change_subscribers.get(v_id, {}).values():
-            sub(viewer_ctrl)
+        self._notifySubscribers(viewer_ctrl, self._data_changed_subscribers.get(v_id, {}))
+
+    def _notifySubscribers(self, viewer_controller, subscribers):
+        def notify(s=subscribers, v=viewer_controller):
+            for sub in s.values():
+                sub(v)
+
+        thread = _RenderDelayThread(viewer_controller)
+        thread.finished.connect(notify)
+        thread.start()
 
     def _onCloseTab(self, index):
         v_id = self._view.widget(index).v_id
         ctrl = self._model.getViewerCtrl(v_id)
+        self._onViewerClosed(ctrl)
         ctrl.close()
         self._view.removeTab(index)
+        if self._view.count() == 0:
+            self._onViewerChanged()
 
     def unsubscribe(self, sub_id):
-        removed = self._tab_change_subscribers.pop(sub_id, None)
+        removed = self._viewer_changed_subscribers.pop(sub_id, None)
         if removed is not None:
             return
-        for d in self._data_change_subscribers.values():
+        removed = self._viewer_closed_subscribers.pop(sub_id, None)
+        if removed is not None:
+            return
+        for d in self._data_changed_subscribers.values():
             removed = d.pop(sub_id, None)
             if removed is not None:
                 return
+
+
+class _RenderDelayThread(QtCore.QObject, Thread):
+    finished = pyqtSignal()
+
+    def __init__(self, viewer_ctrl):
+        QtCore.QObject.__init__(self)
+        Thread.__init__(self)
+        self.viewer_ctrl = viewer_ctrl
+
+    def run(self):
+        while self.viewer_ctrl is not None and not self.viewer_ctrl.view.rendered:
+            time.sleep(0.001)
+        self.finished.emit()

@@ -4,7 +4,7 @@ from astropy import units as u
 from sunpy.map import Map
 
 from solarviewer.app.plot import PlotWidget
-from solarviewer.config.base import ViewerController, DataType, ViewerType, ViewerConfig, DataModel
+from solarviewer.config.base import ViewerController, DataType, ViewerType, ViewerConfig, DataModel, Viewer
 from solarviewer.util import classproperty
 from solarviewer.viewer.util import MPLCoordinatesMixin
 
@@ -66,7 +66,7 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
         return cls(model)
 
     @property
-    def view(self):
+    def view(self) -> Viewer:
         return self._view
 
     @property

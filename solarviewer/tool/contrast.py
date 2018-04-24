@@ -41,9 +41,9 @@ class ContrastController(DataToolController):
         if self._hist:
             self._ui.histo_button.click()
         m = viewer_ctrl.model
-        self._model.min = m.norm.vmin if m.norm.vmin else 0
-        self._model.max = m.norm.vmax if m.norm.vmax else 0
         self._model.map = m.map
+        self._model.min = m.norm.vmin if m.norm.vmin else np.nanmin(self._model.data)
+        self._model.max = m.norm.vmax if m.norm.vmax else np.nanmax(self._model.data)
         self._applyValues()
 
         over = viewer_ctrl.model.cmap_preferences["over"]

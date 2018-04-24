@@ -12,6 +12,7 @@ from solarviewer.config.base import ViewerController, DataModel, ActionControlle
     ToolbarConfig
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.data_tool import Ui_DataTool
+from solarviewer.ui.viewer_tool import Ui_ViewerTool
 
 
 class DataToolController(ToolController):
@@ -59,7 +60,7 @@ class DataToolController(ToolController):
         viewer_ctrl = self.content_ctrl.getViewerController()
         self._onTabChanged(viewer_ctrl)
 
-        self._tab_sub_id = self.content_ctrl.subscribeTabChange(self._onTabChanged)
+        self._tab_sub_id = self.content_ctrl.subscribeViewerChanged(self._onTabChanged)
         self._tool_view.closeEvent = self._onClose
         return self._tool_view
 
@@ -87,9 +88,10 @@ class DataToolController(ToolController):
 
         self._handleDataChanged(viewer_ctrl)
 
-    def _onClose(self):
-        self.content_ctrl.unsubscribe(self._sub_id)
+    def _onClose(self, *args):
         self.content_ctrl.unsubscribe(self._tab_sub_id)
+        if self._sub_id:
+            self.content_ctrl.unsubscribe(self._sub_id)
 
     def _handleDataChanged(self, viewer_ctrl):
         if viewer_ctrl is None or not supported(viewer_ctrl.data_type, viewer_ctrl.viewer_type,
@@ -156,7 +158,7 @@ class ToolbarController(Controller):
         viewer_ctrl = self.content_ctrl.getViewerController()
         self._onTabChanged(viewer_ctrl)
 
-        self._tab_sub_id = self.content_ctrl.subscribeTabChange(self._onTabChanged)
+        self._tab_sub_id = self.content_ctrl.subscribeViewerChanged(self._onTabChanged)
         self._toolbar_view.closeEvent = self._onClose
         return self._toolbar_view
 
@@ -173,8 +175,9 @@ class ToolbarController(Controller):
 
     def _onClose(self, *args):
         self.clearViewerController()
-        self.content_ctrl.unsubscribe(self._sub_id)
         self.content_ctrl.unsubscribe(self._tab_sub_id)
+        if self._sub_id:
+            self.content_ctrl.unsubscribe(self._sub_id)
 
     def _onDataChanged(self, viewer_ctrl):
         if viewer_ctrl is None or not supported(viewer_ctrl.data_type, viewer_ctrl.viewer_type,
@@ -184,4 +187,73 @@ class ToolbarController(Controller):
             self.clearViewerController()
         else:
             self._toolbar_view.setEnabled(True)
+            self.manageViewerController(viewer_ctrl)
+
+
+class ViewerToolController(ToolController):
+    """Base Class for viewer aware tool controllers"""
+    content_ctrl: ContentController = RequiredFeature(content_ctrl_name)
+
+    def __init__(self):
+        ToolController.__init__(self)
+
+        self._tool_view = QWidget()
+        self._tool_ui = Ui_ViewerTool()
+        self._tool_ui.setupUi(self._tool_view)
+
+        self._sub_id = None
+        self._tab_sub_id = None
+
+        self.setupContent(self._tool_ui.content)
+        self._tool_ui.content.resizeEvent = lambda evt: self._tool_ui.scrollArea.setMinimumWidth(
+            self._tool_ui.content.sizeHint().width() + self._tool_ui.scrollArea.verticalScrollBar().sizeHint().width())
+
+    @abstractmethod
+    def setupContent(self, content_widget):
+        raise NotImplementedError
+
+    @abstractmethod
+    def manageViewerController(self, viewer_ctrl: ViewerController):
+        """Add triggered actions to new viewer"""
+        raise NotImplementedError
+
+    @abstractmethod
+    def clearViewerController(self):
+        """Disconnect all connections to the current viewer"""
+        raise NotImplementedError
+
+    @property
+    def view(self) -> QtWidgets.QWidget:
+        viewer_ctrl = self.content_ctrl.getViewerController()
+        self._onViewerChanged(viewer_ctrl)
+
+        self._tab_sub_id = self.content_ctrl.subscribeViewerChanged(self._onViewerChanged)
+        self._tool_view.closeEvent = self._onClose
+        return self._tool_view
+
+    def _onViewerChanged(self, viewer_ctrl: ViewerController):
+        if self._sub_id is not None:
+            self.content_ctrl.unsubscribe(self._sub_id)
+
+        if viewer_ctrl is None:
+            self._sub_id = None
+        else:
+            self._sub_id = self.content_ctrl.subscribeDataChange(viewer_ctrl.v_id, self._onDataChanged(viewer_ctrl))
+
+        self._onDataChanged(viewer_ctrl)
+
+    def _onClose(self, *args):
+        self.clearViewerController()
+        self.content_ctrl.unsubscribe(self._tab_sub_id)
+        if self._sub_id:
+            self.content_ctrl.unsubscribe(self._sub_id)
+
+    def _onDataChanged(self, viewer_ctrl):
+        if viewer_ctrl is None or not supported(viewer_ctrl.data_type, viewer_ctrl.viewer_type,
+                                                self.item_config.supported_data_types,
+                                                self.item_config.supported_viewer_types):
+            self._tool_view.setEnabled(False)
+            self.clearViewerController()
+        else:
+            self._tool_view.setEnabled(True)
             self.manageViewerController(viewer_ctrl)

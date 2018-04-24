@@ -1,11 +1,11 @@
 from typing import List
 
-from PyQt5.QtWidgets import QShortcut
+from PyQt5.QtWidgets import QShortcut, QFileDialog
 from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.app.content import ContentController
 from solarviewer.app.statusbar import StatusBarController
-from solarviewer.app.util import InitUtil, supported
+from solarviewer.app.util import InitUtil, supported, getExtensionString
 from solarviewer.config import content_ctrl_name, viewers_name
 from solarviewer.config.base import ToolController, DialogController, ActionController, ViewerController
 from solarviewer.config.impl import ToolbarController
@@ -68,16 +68,40 @@ class AppController(QtWidgets.QMainWindow):
                 self._toggleToolbar(ctrl)
                 return
 
+    def _openViewer(self, ctrl: ViewerController):
+        extensions = getExtensionString(ctrl.viewer_config.file_types)
+        files, _ = QFileDialog.getOpenFileNames(None, "Open File", "", extensions)
+        if not files:
+            return
+        if ctrl.viewer_config.multi_file:
+            viewer = ctrl.fromFile(files)
+            self.content_ctrl.addViewerCtrl(viewer)
+            return
+        for f in files:
+            viewer = ctrl.fromFile(f)
+            self.content_ctrl.addViewerCtrl(viewer)
+
     def _toggleTool(self, ctrl: ToolController, action=None):
         if ctrl.name not in self.active_tools:
             dock = QtWidgets.QDockWidget(ctrl.item_config.title)
-            dock.setWidget(ctrl.view)
-            if action:
-                dock.closeEvent = lambda evt, a=action: a.setChecked(False)
+            content = ctrl.view
+            dock.setWidget(content)
+            self._setCloseAction(action, content, dock, ctrl.name)
             self.addDockWidget(ctrl.item_config.orientation, dock)
             self.active_tools[ctrl.name] = dock
         else:
             self.active_tools.pop(ctrl.name).close()
+
+    def _setCloseAction(self, action, content, dock, name):
+        if action:
+            def f(evt, a=action, c=content, n=name):
+                a.setChecked(False)
+                self.active_tools.pop(n, None)
+                c.close()
+
+            dock.closeEvent = f
+        else:
+            dock.closeEvent = lambda evt, c=content: c.closeEvent()
 
     def _toggleToolbar(self, ctrl: ToolbarController):
         if ctrl.name not in self.active_toolbars:
@@ -102,7 +126,7 @@ class AppController(QtWidgets.QMainWindow):
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar)
-            action.triggered.connect(lambda evt, c=v_ctrl: self.content_ctrl.openViewer(c))
+            action.triggered.connect(lambda evt, c=v_ctrl: self._openViewer(c))
 
     def _initTools(self):
         for ctrl in self.tool_ctrls:
@@ -151,5 +175,5 @@ class AppController(QtWidgets.QMainWindow):
             enabled = supported(dt, vt, c.item_config.supported_data_types, c.item_config.supported_viewer_types)
             a.setEnabled(enabled)
 
-        self.content_ctrl.subscribeTabChange(f)
+        self.content_ctrl.subscribeViewerChanged(f)
         f(None)  # initial

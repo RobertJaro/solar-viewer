@@ -1,15 +1,17 @@
 from abc import abstractmethod
 from threading import Thread
 
+from PyQt5.QtCore import pyqtSignal
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtCore
 
+from solarviewer.config.base import Viewer
 from solarviewer.ui.plot import Ui_Plot
 
 
-class PlotWidget(QtWidgets.QWidget):
+class PlotWidget(Viewer):
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.ui = Ui_Plot()
@@ -32,16 +34,33 @@ class PlotWidget(QtWidgets.QWidget):
         self.ui.verticalLayout.addWidget(self.canvas)
 
     def redraw(self):
-        Thread(target=self._onRedraw).start()
-
-    def _onRedraw(self):
+        self.rendered = False
         self.canvas.hide()
         self.ui.progress.show()
-        self.draw()
-        self.canvas.draw()
+        thread = RedrawThread(self)
+        thread.finished.connect(self._afterRedraw)
+        thread.start()
+
+    def _afterRedraw(self):
         self.ui.progress.hide()
         self.canvas.show()
+        self.rendered = True
 
     @abstractmethod
     def draw(self):
         raise NotImplementedError
+
+
+class RedrawThread(QtCore.QObject, Thread):
+    finished = pyqtSignal()
+
+    def __init__(self, plot_widget):
+        self.plot_widget = plot_widget
+
+        QtCore.QObject.__init__(self)
+        Thread.__init__(self)
+
+    def run(self):
+        self.plot_widget.draw()
+        self.plot_widget.canvas.draw()
+        self.finished.emit()

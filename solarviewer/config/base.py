@@ -143,6 +143,10 @@ class DataModel(ABC):
     path = None
 
 
+class Viewer(QtWidgets.QWidget):
+    """Base class for the displayed widget"""
+    rendered = True
+
 class Controller(ABC):
     """Base class for registering controllers"""
 
@@ -183,7 +187,7 @@ class ViewerController(ABC):
 
     @property
     @abstractmethod
-    def view(self) -> QtWidgets.QWidget:
+    def view(self) -> Viewer:
         raise NotImplementedError
 
     @abstractmethod

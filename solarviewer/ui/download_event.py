@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_DownloadEvent(object):
     def setupUi(self, DownloadEvent):
         DownloadEvent.setObjectName("DownloadEvent")
@@ -95,6 +94,7 @@ class Ui_DownloadEvent(object):
         self.horizontalLayout_4.addWidget(self.search_button)
         self.verticalLayout.addWidget(self.widget_3)
         self.table = QtWidgets.QTableWidget(DownloadEvent)
+        self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.table.setObjectName("table")
@@ -160,3 +160,4 @@ class Ui_DownloadEvent(object):
         item = self.table.horizontalHeaderItem(6)
         item.setText(_translate("DownloadEvent", "FRM"))
         self.query_button.setText(_translate("DownloadEvent", "Query"))
+

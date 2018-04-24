@@ -7,7 +7,7 @@ setup(
     author='Robert Jarolim',
     packages=find_packages(),
     provides=find_packages(),
-    install_requires=['sunpy==0.8.5', 'qtpy==1.4.0', 'pywavelets', 'scikit-image'],
+    install_requires=['sunpy==0.9.0', 'qtpy==1.4.0'],
     python_requires='>=3',
     package_data={'solarviewer.resource': ['*.png', '*.txt'], 'solarviewer.resource.vso': ['*.pkl']},
     entry_points={

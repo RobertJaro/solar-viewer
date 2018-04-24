@@ -14,6 +14,7 @@ class HistoryController(Controller):
 
     def __init__(self):
         self.content_ctrl.subscribeViewerAdded(self.onViewerAdded)
+        self.content_ctrl.subscribeViewerClosed(self.onViewerClosed)
 
     def undo(self, id):
         history = self.viewers[id]
@@ -23,6 +24,9 @@ class HistoryController(Controller):
         # change event will be triggered by undo
         self.skip_next_change = True
         self.content_ctrl.setDataModel(copy.deepcopy(history[-1]), id)
+
+    def onViewerClosed(self, viewer_ctrl):
+        del self.viewers[viewer_ctrl.v_id]
 
     def onViewerAdded(self, viewer_ctrl):
         self.viewers[viewer_ctrl.v_id] = [viewer_ctrl.model]

@@ -1,8 +1,7 @@
-from qtpy import QtWidgets
 from sunpy.timeseries import TimeSeries
 
 from solarviewer.app.plot import PlotWidget
-from solarviewer.config.base import ViewerController, DataModel, ViewerConfig, DataType, ViewerType
+from solarviewer.config.base import ViewerController, DataModel, ViewerConfig, DataType, ViewerType, Viewer
 from solarviewer.util import classproperty
 from solarviewer.viewer.util import MPLCoordinatesMixin
 
@@ -44,7 +43,7 @@ class TimeSeriesViewerController(ViewerController, MPLCoordinatesMixin):
         return self._model
 
     @property
-    def view(self) -> QtWidgets.QWidget:
+    def view(self) -> Viewer:
         return self._view
 
     def updateModel(self, model):
