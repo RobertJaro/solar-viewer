@@ -1,9 +1,5 @@
-import time
-from threading import Thread
 from typing import Callable
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QTabWidget, QWidget
 from qtpy import QtWidgets
 
@@ -159,9 +155,10 @@ class ContentController(Controller):
             for sub in s.values():
                 sub(v)
 
-        thread = _RenderDelayThread(viewer_controller)
-        thread.finished.connect(notify)
-        thread.start()
+        if viewer_controller is None or viewer_controller.view.rendered:
+            notify()
+        else:
+            viewer_controller.view.finished.connect(notify)
 
     def _onCloseTab(self, index):
         v_id = self._view.widget(index).v_id
@@ -183,17 +180,3 @@ class ContentController(Controller):
             removed = d.pop(sub_id, None)
             if removed is not None:
                 return
-
-
-class _RenderDelayThread(QtCore.QObject, Thread):
-    finished = pyqtSignal()
-
-    def __init__(self, viewer_ctrl):
-        QtCore.QObject.__init__(self)
-        Thread.__init__(self)
-        self.viewer_ctrl = viewer_ctrl
-
-    def run(self):
-        while self.viewer_ctrl is not None and not self.viewer_ctrl.view.rendered:
-            time.sleep(0.001)
-        self.finished.emit()

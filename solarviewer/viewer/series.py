@@ -20,7 +20,8 @@ class TimeSeriesViewerController(ViewerController, MPLCoordinatesMixin):
         ViewerController.__init__(self)
 
         self._model = model
-        self._view = TimeSeriesViewer(model)
+        self._view = TimeSeriesViewer()
+        self._view.updateModel(model)
 
         MPLCoordinatesMixin.__init__(self)
 
@@ -48,6 +49,7 @@ class TimeSeriesViewerController(ViewerController, MPLCoordinatesMixin):
 
     def updateModel(self, model):
         self.model = model
+        self._view.updateModel(model)
 
     def getTitle(self) -> str:
         return self._model.title
@@ -55,10 +57,10 @@ class TimeSeriesViewerController(ViewerController, MPLCoordinatesMixin):
 
 class TimeSeriesViewer(PlotWidget):
 
-    def __init__(self, model: TimeSeriesModel):
-        self.series = model.series
+    def __init__(self):
         PlotWidget.__init__(self)
 
-    def draw(self):
+    def draw(self, model: TimeSeriesModel):
+        series = model.series
         ax = self.figure.gca()
-        self.series.plot(axes=ax)
+        series.plot(axes=ax)

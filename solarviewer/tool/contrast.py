@@ -42,8 +42,8 @@ class ContrastController(DataToolController):
             self._ui.histo_button.click()
         m = viewer_ctrl.model
         self._model.map = m.map
-        self._model.min = m.norm.vmin if m.norm.vmin else np.nanmin(self._model.data)
-        self._model.max = m.norm.vmax if m.norm.vmax else np.nanmax(self._model.data)
+        self._model.min = m.norm.vmin if m.norm.vmin is not None else np.nanmin(self._model.data)
+        self._model.max = m.norm.vmax if m.norm.vmax is not None else np.nanmax(self._model.data)
         self._applyValues()
 
         over = viewer_ctrl.model.cmap_preferences["over"]
@@ -81,7 +81,10 @@ class ContrastController(DataToolController):
             self._hist.close()
             self._hist = None
             return
-        self._hist = _ContrastHist(self._model.map, self._drawLines)
+        self._hist = _ContrastHist()
+        self._hist.finished.connect(self._drawLines)
+        self._hist.updateModel(self._model)
+
         self._ui.histo_plot.layout().addWidget(self._hist)
 
     def _applyValues(self):
@@ -150,19 +153,18 @@ class ContrastController(DataToolController):
 
 
 class _ContrastHist(PlotWidget):
-    def __init__(self, map, init):
-        self.data = map.data
+    def __init__(self):
         self.ax = None
         PlotWidget.__init__(self)
-        self.init = init
 
-    def draw(self):
-        min_value = np.nanmin(self.data)
-        max_value = np.nanmax(self.data)
+    def draw(self, model):
+        data = model.data
+
+        min_value = np.nanmin(data)
+        max_value = np.nanmax(data)
 
         self.ax = self.figure.add_subplot(1, 1, 1)
-        self.ax.hist(self.data.ravel(), bins=300, range=(min_value, max_value), fc='k', ec='k')
-        self.init()  # workaround for plot line delay
+        self.ax.hist(data.ravel(), bins=300, range=(min_value, max_value), fc='k', ec='k')
 
     def plotLine(self, x):
         line = self.ax.axvline(x)

@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List, Dict
 
+from PyQt5.QtCore import pyqtSignal
 from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.config import content_ctrl_name
@@ -36,7 +37,6 @@ class ViewerType(Enum):
     MPL = "Matplotlib"
     GINGA = "Ginga"
     ANY = "Any"
-    NONE = ""
 
 
 class FileType(Enum):
@@ -146,6 +146,12 @@ class DataModel(ABC):
 class Viewer(QtWidgets.QWidget):
     """Base class for the displayed widget"""
     rendered = True
+    finished = pyqtSignal()
+
+    @abstractmethod
+    def updateModel(self, model: DataModel):
+        raise NotImplementedError
+
 
 class Controller(ABC):
     """Base class for registering controllers"""
@@ -158,8 +164,6 @@ class Controller(ABC):
 
 class ViewerController(ABC):
     """Base class for viewer controllers"""
-    _data_type = DataType.NONE
-    _viewer_type = ViewerType.NONE
     _v_id = None
 
     def __init__(self):
@@ -203,12 +207,14 @@ class ViewerController(ABC):
         return self._v_id
 
     @property
+    @abstractmethod
     def data_type(self) -> str:
-        return self._data_type
+        raise NotImplementedError
 
     @property
+    @abstractmethod
     def viewer_type(self) -> str:
-        return self._viewer_type
+        raise NotImplementedError
 
     def close(self):
         self.view.deleteLater()

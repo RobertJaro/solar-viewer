@@ -45,7 +45,8 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
         ViewerController.__init__(self)
 
         self._model = model
-        self._view = MapViewer(model)
+        self._view = MapViewer()
+        self._view.updateModel(model)
 
         MPLCoordinatesMixin.__init__(self)
 
@@ -75,8 +76,7 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
 
     def updateModel(self, model):
         self._model = model
-        self._view.model = model
-        self._view.redraw()
+        self._view.updateModel(model)
 
     def getTitle(self):
         return self._model.title
@@ -87,18 +87,17 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
 
 class MapViewer(PlotWidget):
 
-    def __init__(self, model: SunPyMapModel):
-        self.model = model
+    def __init__(self):
         PlotWidget.__init__(self)
 
-    def draw(self):
+    def draw(self, model):
         self.figure.clear()
         try:
-            s_map = self.model.map
+            s_map = model.map
             ax = self.figure.add_subplot(111, projection=s_map)
-            image = ax.imshow(self.model.data, cmap=self._initCMap(), norm=self.model.norm,
-                              interpolation=self.model.interpolation, origin=self.model.origin)
-            plot_preferences = self.model.plot_preferences
+            image = ax.imshow(model.data, cmap=self._initCMap(model), norm=model.norm,
+                              interpolation=model.interpolation, origin=model.origin)
+            plot_preferences = model.plot_preferences
             if plot_preferences["show_colorbar"]:
                 self.figure.colorbar(image)
             if plot_preferences["show_limb"]:
@@ -111,10 +110,10 @@ class MapViewer(PlotWidget):
             self.figure.clear()
             self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")
 
-    def _initCMap(self):
-        cmap = copy(self.model.cmap)
-        over = self.model.cmap_preferences["over"]
-        under = self.model.cmap_preferences["under"]
+    def _initCMap(self, model):
+        cmap = copy(model.cmap)
+        over = model.cmap_preferences["over"]
+        under = model.cmap_preferences["under"]
         if over:
             cmap.set_over(over)
         if under:

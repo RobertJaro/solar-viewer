@@ -34,7 +34,7 @@ class InitUtil:
 
 def supported(data_type, viewer_type, supported_types, supported_viewers):
     from solarviewer.config.base import DataType, ViewerType
-    if ViewerType.NONE in supported_viewers or len(supported_viewers) == 0:
+    if len(supported_viewers) == 0:
         return True
     if data_type is None or viewer_type is None:
         return False
