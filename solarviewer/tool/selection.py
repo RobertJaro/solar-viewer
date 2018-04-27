@@ -80,7 +80,7 @@ class SelectionController(ViewerToolController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setTitle("Highlight Values").setMenuPath("Tools\\Highlight Values").addSupportedData(
+        return ItemConfig().setTitle("Highlight Values").setMenuPath("Tools/Highlight Values").addSupportedData(
             DataType.MAP).addSupportedViewer(ViewerType.MPL)
 
     def onFigureClick(self, event):

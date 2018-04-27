@@ -82,7 +82,7 @@ class DownloadController(ToolController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setTitle("Download Tool").setMenuPath("File\\Download Data")
+        return ItemConfig().setTitle("Download Tool").setMenuPath("File/Download Data")
 
     @property
     def view(self) -> QtWidgets:

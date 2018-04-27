@@ -40,7 +40,7 @@ class EventController(ToolController):  #
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setTitle("Event Download Tool").setMenuPath("File\\HEK")
+        return ItemConfig().setTitle("Event Download Tool").setMenuPath("File/HEK")
 
     @property
     def view(self) -> QtWidgets:

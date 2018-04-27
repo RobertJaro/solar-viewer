@@ -37,7 +37,7 @@ class TimeSeriesViewerController(ViewerController, MPLCoordinatesMixin):
 
     @classproperty
     def viewer_config(self) -> ViewerConfig:
-        return ViewerConfig().setMenuPath("File\\Open SunPy Timeseries")
+        return ViewerConfig().setMenuPath("File/Open SunPy Timeseries")
 
     @property
     def model(self) -> DataModel:

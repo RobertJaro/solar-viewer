@@ -22,7 +22,7 @@ class DBDialog(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setMenuPath("File\\Change DB Settings")
+        return ItemConfig().setMenuPath("File/Change DB Settings")
 
     def onAction(self):
         self._ui.url.setText(sunpy.config.get("database", "url"))

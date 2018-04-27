@@ -13,7 +13,7 @@ class CmapController(DialogController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setTitle("Select Coloramap").setMenuPath("Edit\\Change Colormap").addSupportedViewer(
+        return ItemConfig().setTitle("Select Coloramap").setMenuPath("Edit/Change Colormap").addSupportedViewer(
             ViewerType.MPL).addSupportedData(DataType.MAP).addSupportedData(DataType.PLAIN_2D)
 
     def setupContent(self, content_widget):

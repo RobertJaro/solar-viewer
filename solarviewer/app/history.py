@@ -51,7 +51,7 @@ class UndoAction(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setTitle("History").setMenuPath("Edit\\Undo").addSupportedData(
+        return ItemConfig().setTitle("History").setMenuPath("Edit/Undo").addSupportedData(
             DataType.ANY).addSupportedViewer(ViewerType.ANY).setShortcut(QtGui.QKeySequence("Ctrl+Z"))
 
     def onAction(self):

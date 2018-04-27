@@ -24,7 +24,7 @@ class SaveProjectAction(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setMenuPath("File\\Save").addSupportedData(DataType.ANY).addSupportedViewer(ViewerType.ANY)
+        return ItemConfig().setMenuPath("File/Save").addSupportedData(DataType.ANY).addSupportedViewer(ViewerType.ANY)
 
     def onAction(self):
         ctrl = self.content_ctrl.getViewerController()
@@ -50,7 +50,7 @@ class SaveAsProjectAction(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setMenuPath("File\\Save As..").addSupportedData(DataType.ANY).addSupportedViewer(
+        return ItemConfig().setMenuPath("File/Save As..").addSupportedData(DataType.ANY).addSupportedViewer(
             ViewerType.ANY)
 
     def onAction(self):
@@ -74,7 +74,7 @@ class OpenProjectAction(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setMenuPath("File\\Open SV Project")
+        return ItemConfig().setMenuPath("File/Open SV Project")
 
     def onAction(self):
         file, _ = QtWidgets.QFileDialog.getOpenFileName(filter="Solar Viewer Project (*.svp)")
@@ -93,7 +93,7 @@ class SaveFitsAction(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setMenuPath("File\\Export\\FITS").addSupportedData(DataType.MAP).addSupportedViewer(
+        return ItemConfig().setMenuPath("File/Export/FITS").addSupportedData(DataType.MAP).addSupportedViewer(
             ViewerType.ANY)
 
     def onAction(self):
@@ -106,7 +106,7 @@ class SaveImageController(ActionController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setMenuPath("File\\Export\\Image").addSupportedData(DataType.ANY).addSupportedViewer(
+        return ItemConfig().setMenuPath("File/Export/Image").addSupportedData(DataType.ANY).addSupportedViewer(
             ViewerType.MPL)
 
     def onAction(self):

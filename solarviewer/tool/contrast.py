@@ -21,7 +21,7 @@ class ContrastController(DataToolController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().setTitle("Contrast Adjustment").setMenuPath("Tools\\Contrast").addSupportedViewer(
+        return ItemConfig().setTitle("Contrast Adjustment").setMenuPath("Tools/Contrast").addSupportedViewer(
             ViewerType.MPL).addSupportedData(DataType.MAP)
 
     def setupContent(self, content_widget):

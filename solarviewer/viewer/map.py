@@ -52,7 +52,7 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
 
     @classproperty
     def viewer_config(self) -> ViewerConfig:
-        return ViewerConfig().setMenuPath("File\\Open SunPy Map\\MPL")
+        return ViewerConfig().setMenuPath("File/Open SunPy Map/MPL")
 
     @classmethod
     def fromFile(cls, file):

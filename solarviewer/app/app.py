@@ -122,7 +122,7 @@ class AppController(QtWidgets.QMainWindow):
 
     def _initViewers(self):
         for v_ctrl in self.viewers:
-            tree = v_ctrl.viewer_config.menu_path.split("\\")
+            tree = v_ctrl.viewer_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar)
@@ -130,7 +130,7 @@ class AppController(QtWidgets.QMainWindow):
 
     def _initTools(self):
         for ctrl in self.tool_ctrls:
-            tree = ctrl.item_config.menu_path.split("\\")
+            tree = ctrl.item_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar, True)
@@ -140,7 +140,7 @@ class AppController(QtWidgets.QMainWindow):
 
     def _initDialogs(self):
         for ctrl in self.dlg_ctrls:
-            tree = ctrl.item_config.menu_path.split("\\")
+            tree = ctrl.item_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar)
@@ -151,7 +151,7 @@ class AppController(QtWidgets.QMainWindow):
 
     def _initActions(self):
         for ctrl in self.action_ctrls:
-            tree = ctrl.item_config.menu_path.split("\\")
+            tree = ctrl.item_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar)
@@ -162,7 +162,7 @@ class AppController(QtWidgets.QMainWindow):
 
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:
-            tree = ctrl.item_config.menu_path.split("\\")
+            tree = ctrl.item_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar, checkable=True)

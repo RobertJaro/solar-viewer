@@ -12,7 +12,7 @@ class MplToolbarController(ToolbarController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ToolbarConfig().setMenuPath("View\\Toolbar\\Default").addSupportedViewer(
+        return ToolbarConfig().setMenuPath("View/Toolbar/Default").addSupportedViewer(
             ViewerType.MPL).addSupportedData(DataType.ANY)
 
     def setup(self, toolbar_widget: QtWidgets.QToolBar):
