@@ -25,7 +25,7 @@ class WaveletController(DataControllerMixin, ToolController):
 
         WC = pywt.wavedec2(data=d, wavelet=wavelet, level=level)
 
-        threshold = noiseSigma * np.sqrt(2 * np.log2(d.size))
+        threshold = noiseSigma * np.sqrt(2 * np.log(d.size))
 
         NWC = map(lambda x: pywt.threshold(x, threshold), WC)
         data._data = pywt.waverec2(list(NWC), wavelet=self.wavelet_choice.GetStringSelection())

@@ -3,10 +3,10 @@ import time
 from abc import abstractmethod
 
 import wx
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_wx import wxc
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
-from matplotlib.figure import Figure
 
 from sunpyviewer.util.data import saveFigure
 
@@ -35,7 +35,7 @@ class PlotPanel(wx.Panel):
         self.progress.Pulse()
 
     def initMainCanvas(self):
-        self.figure = Figure()
+        self.figure = plt.figure()
         self.canvas = FigureCanvas(self, wx.NewId(), self.figure)
         self.toolbar = Toolbar(self.canvas)
         self.toolbar.Realize()

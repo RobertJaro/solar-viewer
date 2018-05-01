@@ -21,11 +21,10 @@ class AdjustAlphaController(DataControllerMixin, ToolController):
 
     def modifyData(self, data, data_type):
         alpha_list = [a.GetValue() for a in self.alpha_inputs]
-        maps = data._maps
-        for i, map in enumerate(maps):
-            map.alpha = alpha_list[i]
         order_list = [o.GetValue() for o in self.order_inputs]
-        maps.sort(key=dict(zip(maps, order_list)).get)  # sort
+        for i in range(len(data._maps)):
+            data.set_alpha(i, alpha_list[i])
+            data.set_zorder(i, order_list[i])
         return data
 
     def getContentView(self, parent):
@@ -59,7 +58,7 @@ class AdjustAlphaController(DataControllerMixin, ToolController):
         panel = self.panel
         panel.Hide()
         grid_sizer = self.grid_sizer
-        maps = data._maps
+        length = len(data._maps)
         # remove old data
         for child in list(panel.GetChildren())[3:]:
             grid_sizer.Detach(child)
@@ -67,10 +66,10 @@ class AdjustAlphaController(DataControllerMixin, ToolController):
         self.alpha_inputs = []
         self.order_inputs = []
         # add new data
-        for i, map in enumerate(maps):
-            order_input = wx.SpinCtrl(panel, min=1, max=len(maps), value=str(i + 1))
-            alpha_input = wx.SpinCtrlDouble(panel, min=0, max=1, inc=0.01, value=str(map.alpha))
-            image_panel = wx.StaticText(panel, label=map.name)
+        for i in range(length):
+            order_input = wx.SpinCtrl(panel, min=1, max=100, value=str(data.get_zorder(i)))
+            alpha_input = wx.SpinCtrlDouble(panel, min=0, max=1, inc=0.01, value=str(data.get_alpha(i)))
+            image_panel = wx.StaticText(panel, label=data.get_map(i).name)
             grid_sizer.Add(order_input, 0, wx.ALIGN_CENTER)
             grid_sizer.Add(alpha_input, 0, wx.ALIGN_CENTER)
             grid_sizer.Add(image_panel, 1, wx.ALIGN_CENTER)

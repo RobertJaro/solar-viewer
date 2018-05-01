@@ -1,13 +1,14 @@
-import os.path
 import threading
 from abc import abstractmethod, ABC
 from enum import Enum
 
+import os.path
 import sunpy.map
 import sunpy.timeseries
 import wx
 from astropy import units as u
 from astropy.wcs import WCS
+from matplotlib import pyplot as plt
 from matplotlib.colors import Normalize
 from wx import aui
 from wx.lib.pubsub import pub
@@ -378,20 +379,9 @@ class CompositeMapViewer(PlotPanel):
 
     def draw(self):
         self.figure.clear()
-        axes = self.figure.add_subplot(111, projection=self.comp_map.get_map(0))
-        for m in self.comp_map._maps:
-            params = {
-                "origin": "lower",
-                # "extent": list(m.xrange.value) + list(m.yrange.value),
-                "cmap": m.plot_settings['cmap'],
-                "norm": m.plot_settings['norm'],
-                "alpha": m.alpha,
-                "zorder": m.zorder,
-            }
-            if m.levels is False:
-                axes.imshow(m.data, **params)
-            else:
-                axes.contour(m.data, m.levels, **params)
+        plt.figure(self.figure.number)
+        axes = self.figure.gca()
+        self.comp_map.plot(axes=axes, title="")
 
 
 class TimeSeriesViewerController(AbstractViewerController, MPLControllerMixin):

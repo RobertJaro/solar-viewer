@@ -34,9 +34,9 @@ class FFTController(DataControllerMixin, ToolController):
         grid_sizer = wx.FlexGridSizer(2, 10, 15)
 
         self.h_check = wx.CheckBox(filter_panel, label="Highpass")
-        self.h_spiner = wx.SpinCtrlDouble(filter_panel, value="0.2", max=10000, inc=0.01)
+        self.h_spiner = wx.SpinCtrlDouble(filter_panel, value="0.001", max=1, inc=0.001)
         self.l_check = wx.CheckBox(filter_panel, label="Lowpass")
-        self.l_spiner = wx.SpinCtrlDouble(filter_panel, value="100", max=10000, inc=0.01)
+        self.l_spiner = wx.SpinCtrlDouble(filter_panel, value="0.7", max=1, inc=0.001)
         contrast_text = wx.StaticText(filter_panel)
         contrast_text.SetLabel("Adjust Contrast")
         self.contrast_check = wx.CheckBox(filter_panel, style=wx.ALIGN_LEFT)
@@ -72,6 +72,9 @@ class FFTController(DataControllerMixin, ToolController):
 
     def createFilter(self, h_val, highpass, l_val, lowpass, shape):
         filt = None
+        r = np.sqrt((shape[0] / 2) ** 2 + (shape[1] / 2) ** 2)
+        l_val *= r
+        h_val *= r
         if highpass and lowpass:
             filt = butter2d_bp(shape, l_val, h_val)
         else:
