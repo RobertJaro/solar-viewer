@@ -75,11 +75,11 @@ class AppController(QtWidgets.QMainWindow):
             return
         if ctrl.viewer_config.multi_file:
             viewer = ctrl.fromFile(files)
-            self.content_ctrl.addViewerCtrl(viewer)
+            self.content_ctrl.addViewerController(viewer)
             return
         for f in files:
             viewer = ctrl.fromFile(f)
-            self.content_ctrl.addViewerCtrl(viewer)
+            self.content_ctrl.addViewerController(viewer)
 
     def _toggleTool(self, ctrl: ToolController, action=None):
         if ctrl.name not in self.active_tools:
@@ -93,15 +93,13 @@ class AppController(QtWidgets.QMainWindow):
             self.active_tools.pop(ctrl.name).close()
 
     def _setCloseAction(self, action, content, dock, name):
-        if action:
-            def f(evt, a=action, c=content, n=name):
+        def f(evt, a=action, c=content, n=name):
+            if action:
                 a.setChecked(False)
-                self.active_tools.pop(n, None)
-                c.close()
+            self.active_tools.pop(n, None)
+            c.close()
 
-            dock.closeEvent = f
-        else:
-            dock.closeEvent = lambda evt, c=content: c.closeEvent()
+        dock.closeEvent = f
 
     def _toggleToolbar(self, ctrl: ToolbarController):
         if ctrl.name not in self.active_toolbars:

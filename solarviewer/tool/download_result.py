@@ -102,7 +102,7 @@ class DownloadResultController(ToolController):
 
     def _onOpen(self, f_id):
         viewer = MapViewerController.fromFile(self.loaded[f_id])
-        self.content_ctrl.addViewerCtrl(viewer)
+        self.content_ctrl.addViewerController(viewer)
 
     def _onRemoveTab(self, index):
         tab = self._ui.tabs.widget(index)

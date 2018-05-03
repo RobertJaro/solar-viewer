@@ -1,5 +1,6 @@
 import numpy as np
 from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QWidget
 from qtpy import QtWidgets
 
 from solarviewer.app.plot import PlotWidget
@@ -24,7 +25,7 @@ class ContrastController(DataToolController):
         return ItemConfig().setTitle("Contrast Adjustment").setMenuPath("Tools/Contrast").addSupportedViewer(
             ViewerType.MPL).addSupportedData(DataType.MAP)
 
-    def setupContent(self, content_widget):
+    def setupContent(self, content_widget: QWidget):
         self._view = content_widget
         self._ui = Ui_Contrast()
         self._ui.setupUi(content_widget)

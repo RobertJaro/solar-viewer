@@ -30,7 +30,7 @@ class HistoryController(Controller):
 
     def onViewerAdded(self, viewer_ctrl):
         self.viewers[viewer_ctrl.v_id] = [viewer_ctrl.model]
-        self.content_ctrl.subscribeDataChange(viewer_ctrl.v_id, self.onDataChanged)
+        self.content_ctrl.subscribeDataChanged(viewer_ctrl.v_id, self.onDataChanged)
 
     def onDataChanged(self, viewer_ctrl):
         if self.skip_next_change:

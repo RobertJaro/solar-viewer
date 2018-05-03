@@ -38,7 +38,7 @@ class DataToolController(ToolController):
         apply_btn.clicked.connect(self._onApply)
 
     @abstractmethod
-    def setupContent(self, content_widget):
+    def setupContent(self, content_widget: QWidget):
         raise NotImplementedError
 
     @abstractmethod
@@ -83,7 +83,7 @@ class DataToolController(ToolController):
             self._sub_id = None
             self._v_id = None
         else:
-            self._sub_id = self.content_ctrl.subscribeDataChange(viewer_ctrl.v_id, self._handleDataChanged)
+            self._sub_id = self.content_ctrl.subscribeDataChanged(viewer_ctrl.v_id, self._handleDataChanged)
             self._v_id = viewer_ctrl.v_id
 
         self._handleDataChanged(viewer_ctrl)
@@ -169,7 +169,7 @@ class ToolbarController(Controller):
         if viewer_ctrl is None:
             self._sub_id = None
         else:
-            self._sub_id = self.content_ctrl.subscribeDataChange(viewer_ctrl.v_id, self._onDataChanged)
+            self._sub_id = self.content_ctrl.subscribeDataChanged(viewer_ctrl.v_id, self._onDataChanged)
 
         self._onDataChanged(viewer_ctrl)
 
@@ -238,7 +238,7 @@ class ViewerToolController(ToolController):
         if viewer_ctrl is None:
             self._sub_id = None
         else:
-            self._sub_id = self.content_ctrl.subscribeDataChange(viewer_ctrl.v_id, self._onDataChanged(viewer_ctrl))
+            self._sub_id = self.content_ctrl.subscribeDataChanged(viewer_ctrl.v_id, self._onDataChanged(viewer_ctrl))
 
         self._onDataChanged(viewer_ctrl)
 

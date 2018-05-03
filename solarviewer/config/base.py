@@ -5,6 +5,7 @@ from enum import Enum
 from typing import List, Dict
 
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget
 from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.config import content_ctrl_name
@@ -164,24 +165,43 @@ class Controller(ABC):
 
 class ViewerController(ABC):
     """Base class for viewer controllers"""
-    _v_id = None
+    _v_id: int = None
 
     def __init__(self):
         self._v_id = generateVId()
 
     @classmethod
     @abstractmethod
-    def fromFile(cls, file) -> 'ViewerController':
+    def fromFile(cls, file: str) -> 'ViewerController':
+        """
+        Create new ViewerController from file
+        :param file: file path to the data
+        :type file: str
+        :return: the initialized ViewerController
+        :rtype: ViewerController
+        """
         raise NotImplementedError
 
     @classmethod
     @abstractmethod
     def fromModel(cls, model: DataModel) -> 'ViewerController':
+        """
+        Create new ViewerController from existing model
+        :param model: data model
+        :type model: DataModel
+        :return: the initialized ViewerController
+        :rtype: ViewerController
+        """
         raise NotImplementedError
 
     @classproperty
     @abstractmethod
     def viewer_config(self) -> ViewerConfig:
+        """
+        Create the Configuration
+        Responsible for the representation in the application
+        :return: ViewerConfig
+        """
         raise NotImplementedError
 
     @property
@@ -289,5 +309,5 @@ class ToolController(Controller):
 
     @property
     @abstractmethod
-    def view(self) -> QtWidgets:
+    def view(self) -> QWidget:
         raise NotImplementedError

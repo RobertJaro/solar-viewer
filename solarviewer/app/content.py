@@ -105,7 +105,7 @@ class ContentController(Controller):
         self._viewer_closed_subscribers[self.sub_id] = action
         return self.sub_id
 
-    def subscribeDataChange(self, v_id, action):
+    def subscribeDataChanged(self, v_id, action):
         """
         Subscribe action to data changes
         :param v_id: the id of the viewer controller
@@ -122,7 +122,7 @@ class ContentController(Controller):
         v_dict[self.sub_id] = action
         return self.sub_id
 
-    def addViewerCtrl(self, viewer_ctrl):
+    def addViewerController(self, viewer_ctrl):
         self._model.addViewerCtrl(viewer_ctrl)
         v_id = viewer_ctrl.v_id
         viewer = viewer_ctrl.view

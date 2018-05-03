@@ -84,7 +84,7 @@ class OpenProjectAction(ActionController):
         bin_file = open(file, mode="rb")
         wrapper = pickle.load(bin_file)
         ctrl = wrapper.viewer_ctrl_type.fromModel(wrapper.model)
-        self.content_ctrl.addViewerCtrl(ctrl)
+        self.content_ctrl.addViewerController(ctrl)
         bin_file.close()
 
 
