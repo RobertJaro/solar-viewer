@@ -94,7 +94,7 @@ class AppController(QtWidgets.QMainWindow):
 
     def _setCloseAction(self, action, content, dock, name):
         def f(evt, a=action, c=content, n=name):
-            if action:
+            if a:
                 a.setChecked(False)
             self.active_tools.pop(n, None)
             c.close()
