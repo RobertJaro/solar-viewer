@@ -68,13 +68,12 @@ class SelectionController(ViewerToolController):
 
         QtWidgets.QShortcut(QtGui.QKeySequence(Qt.Key_Delete, Qt.Key_Backspace), self.table, self.onRemoveSelected)
 
-    def manageViewerController(self, viewer_ctrl: ViewerController):
-        self.clearViewerController()
+    def connect(self, viewer_ctrl: ViewerController):
         self.model.view = viewer_ctrl.view
         self.model.map = viewer_ctrl.model.map
         self._initListener()
 
-    def clearViewerController(self):
+    def disconnect(self, viewer_ctrl: ViewerController):
         self._removeCursor()
         self.onClear()
 

@@ -1,13 +1,16 @@
+from PyQt5.QtWidgets import QAction
 from qtpy import QtWidgets, QtCore, QtGui
 
+from solarviewer.app.connect import ViewerLock, ViewerConnectionController
 from solarviewer.config.base import ItemConfig, ToolbarConfig, ViewerController, ViewerType, DataType
 from solarviewer.config.impl import ToolbarController
+from solarviewer.config.ioc import RequiredFeature
 
 
 class MplToolbarController(ToolbarController):
+    connection_ctrl: ViewerConnectionController = RequiredFeature(ViewerConnectionController.name)
 
     def __init__(self):
-        self.toolbar = None
         ToolbarController.__init__(self)
 
     @property
@@ -36,8 +39,6 @@ class MplToolbarController(ToolbarController):
             if checked:
                 a.setChecked(False)
 
-        pan.triggered.connect(lambda checked, a=zoom: f(checked, a))
-        zoom.triggered.connect(lambda checked, a=pan: f(checked, a))
         pan.triggered.connect(self._onPan)
         zoom.triggered.connect(self._onZoom)
         reset.triggered.connect(self._onReset)
@@ -45,28 +46,58 @@ class MplToolbarController(ToolbarController):
         self.pan_action = pan
         self.zoom_action = zoom
 
-    def manageViewerController(self, viewer_ctrl: ViewerController):
-        self.clearViewerController()
-        self.toolbar = viewer_ctrl.view.toolbar
-        if self.pan_action.isChecked():
-            self.toolbar.pan()
-        if self.zoom_action.isChecked():
-            self.toolbar.zoom()
-
-    def clearViewerController(self):
-        if not self.toolbar:
-            return
-        if self.pan_action.isChecked():
-            self.toolbar.pan()
-        if self.zoom_action.isChecked():
-            self.toolbar.zoom()
-        self.toolbar = None
+    def onClose(self):
+        if self.pan_action.isChecked() or self.zoom_action.isChecked():
+            self.connection_ctrl.remove_lock()
 
     def _onPan(self):
-        self.toolbar.pan()
+        if not self.pan_action.isChecked():
+            self.connection_ctrl.remove_lock()
+            return
+        pan_lock = _PanLock(self.item_config, self.pan_action)
+        self.connection_ctrl.add_lock(pan_lock)
 
     def _onZoom(self):
-        self.toolbar.zoom()
+        if not self.zoom_action.isChecked():
+            self.connection_ctrl.remove_lock()
+            return
+        zoom_lock = _ZoomLock(self.item_config, self.zoom_action)
+        self.connection_ctrl.add_lock(zoom_lock)
 
     def _onReset(self):
-        self.toolbar.home()
+        view = self.content_ctrl.getViewer()
+        view.toolbar.home()
+
+
+class _PanLock(ViewerLock):
+    def __init__(self, config, pan: QAction):
+        ViewerLock.__init__(self, config.supported_viewer_types, config.supported_data_types)
+        self.pan = pan
+
+    def release(self):
+        self.pan.setChecked(False)
+
+    def connect(self, viewer_ctrl: ViewerController):
+        toolbar = viewer_ctrl.view.toolbar
+        toolbar.pan()
+
+    def disconnect(self, viewer_ctrl: ViewerController):
+        toolbar = viewer_ctrl.view.toolbar
+        toolbar.pan()
+
+
+class _ZoomLock(ViewerLock):
+    def __init__(self, config, zoom: QAction):
+        ViewerLock.__init__(self, config.supported_viewer_types, config.supported_data_types)
+        self.zoom = zoom
+
+    def release(self):
+        self.zoom.setChecked(False)
+
+    def connect(self, viewer_ctrl: ViewerController):
+        toolbar = viewer_ctrl.view.toolbar
+        toolbar.zoom()
+
+    def disconnect(self, viewer_ctrl: ViewerController):
+        toolbar = viewer_ctrl.view.toolbar
+        toolbar.zoom()

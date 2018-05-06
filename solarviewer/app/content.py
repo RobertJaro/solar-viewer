@@ -3,7 +3,7 @@ from typing import Callable
 from PyQt5.QtWidgets import QTabWidget, QWidget
 from qtpy import QtWidgets
 
-from solarviewer.config.base import ViewerController, Controller, DataModel
+from solarviewer.config.base import ViewerController, Controller, DataModel, Viewer
 
 
 class ContentModel:
@@ -48,7 +48,11 @@ class ContentController(Controller):
         return self._view
 
     def getViewerController(self, v_id=-1) -> ViewerController:
-        """Returns data model of viewer with id=v_id. If id is -1 the currently viewed data model will be returned."""
+        """
+        Returns the viewer controller with id=v_id. When no id is provided the active viewer controller is returned.
+        :param v_id: the unique identifier
+        :return: ViewerController
+        """
         if v_id == -1:
             v_id = self.getCurrentId()
         if v_id == -1:  # No tab open
@@ -56,8 +60,23 @@ class ContentController(Controller):
         viewer_ctrl = self._model.getViewerCtrl(v_id)
         return viewer_ctrl
 
+    def getViewer(self, v_id=-1) -> Viewer:
+        """
+        Returns the viewer with id=v_id. When no id is provided the active viewer is returned.
+        :param v_id: the unique identifier
+        :return: Viewer
+        """
+        viewer_ctrl = self.getViewerController(v_id)
+        if viewer_ctrl is None:
+            return None
+        return viewer_ctrl.view
+
     def getDataModel(self, v_id=-1) -> DataModel:
-        """Returns data model of viewer with id=v_id. If id is -1 the currently viewed data model will be returned."""
+        """
+        Returns the data model with id=v_id. When no id is provided the active data model is returned.
+        :param v_id: the unique identifier
+        :return: DataModel
+        """
         viewer_ctrl = self.getViewerController(v_id)
         if viewer_ctrl is None:
             return None
