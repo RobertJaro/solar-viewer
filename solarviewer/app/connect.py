@@ -7,25 +7,59 @@ from solarviewer.config.ioc import RequiredFeature
 
 
 class ConnectionMixin(ABC):
+    """
+    Mixin for components managed by the connection controller.
+    Use with ViewerConnectionController subscribe.
+    """
 
     @abstractmethod
     def connect(self, viewer_ctrl: ViewerController):
+        """
+        Connects to the viewer controller.
+        Enable all view relevant components (e.g., courser, dots)
+
+        :param viewer_ctrl: the viewer controller to connect
+        :return: None
+        """
         raise NotImplementedError
 
     @abstractmethod
     def disconnect(self, viewer_ctrl: ViewerController):
+        """
+        Disconnects from the viewer controller.
+        Remove all components added in connect.
+
+        :param viewer_ctrl: the viewer controller to connect
+        :return: None
+        """
         raise NotImplementedError
 
     @abstractmethod
     def supports(self, viewer_ctrl: ViewerController) -> bool:
+        """
+        Checks if the connection to the viewer controller is possible
+
+        :param viewer_ctrl: the viewer controller to check
+        :return: True if supported, False otherwise
+        """
         raise NotImplementedError
 
     @abstractmethod
     def enabled(self, value: bool):
+        """
+        Sets the current component state.
+
+        :param value: True if enabled, False for disabled
+        :return: None
+        """
         raise NotImplementedError
 
 
 class ViewerLock(ABC):
+    """
+    Lock for the the view. Enable with ViewerConnectionController add_lock.
+    Released with ViewerConnectionController remove_lock.
+    """
 
     def __init__(self, supported_viewer_types, supported_data_types):
         self.supported_data_types = supported_data_types
@@ -33,23 +67,51 @@ class ViewerLock(ABC):
 
     @abstractmethod
     def release(self):
+        """
+        Triggered action on release.
+
+        :return: None
+        """
         raise NotImplementedError
 
     @abstractmethod
     def connect(self, viewer_ctrl: ViewerController):
+        """
+        Connects to the viewer controller.
+        Enable all view relevant components (e.g., courser, dots)
+
+        :param viewer_ctrl: the viewer controller to connect
+        :return: None
+        """
         raise NotImplementedError
 
     @abstractmethod
     def disconnect(self, viewer_ctrl: ViewerController):
+        """
+        Disconnects from the viewer controller.
+        Remove all components added in connect.
+
+        :param viewer_ctrl: the viewer controller to connect
+        :return: None
+        """
         raise NotImplementedError
 
     def supports(self, viewer_ctrl: ViewerController) -> bool:
+        """
+        Checks if the connection to the viewer controller is possible
+
+        :param viewer_ctrl: the viewer controller to check
+        :return: True if supported, False otherwise
+        """
         return viewer_ctrl is not None and supported(viewer_ctrl.data_type, viewer_ctrl.viewer_type,
                                                      self.supported_data_types,
                                                      self.supported_viewer_types)
 
 
 class ViewerConnectionController(Controller):
+    """
+    Main controller for connection handling to the active viewer.
+    """
     content_ctrl: ContentController = RequiredFeature(ContentController.name)
 
     def __init__(self):
@@ -66,6 +128,12 @@ class ViewerConnectionController(Controller):
         self.content_ctrl.subscribeViewerChanged(self._connect)
 
     def subscribe(self, sub: ConnectionMixin):
+        """
+        Subscribe a controller to the connection managing
+
+        :param sub: The subscribed controller
+        :return: The unique connection id
+        """
         self.sub_id += 1
         self.subscribers[self.sub_id] = sub
 
@@ -77,17 +145,34 @@ class ViewerConnectionController(Controller):
         return self.sub_id
 
     def unsubscribe(self, s_id):
+        """
+        Removes the subscription from the connection managing and
+        stops active connections of this subscription.
+
+        :param s_id: The unique connection id
+        :return: None
+        """
         self.subscribers.pop(s_id)
         self._connect(self.content_ctrl.getViewerController(self.active_id))
 
     def add_lock(self, lock: ViewerLock):
+        """
+        Adds a viewer lock. This disconnects currently active lock.
+
+        :param lock: The viewer lock implementation
+        :return: None
+        """
         if self.lock:
             self.lock.release()
         self.lock = lock
         self._connect(self.content_ctrl.getViewerController())
-        return self.lock
 
     def remove_lock(self):
+        """
+        Removes the active viewer lock.
+
+        :return: None
+        """
         if self.lock:
             self.lock.release()
         self.lock = None

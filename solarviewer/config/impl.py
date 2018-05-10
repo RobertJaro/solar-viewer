@@ -126,7 +126,7 @@ class DataActionController(ActionController):
 
 
 class ToolbarController(Controller):
-    """Base Class for toolbars"""
+    """Base class for toolbars"""
     content_ctrl: ContentController = RequiredFeature(content_ctrl_name)
 
     def __init__(self):
@@ -190,7 +190,7 @@ class ToolbarController(Controller):
 
 
 class ViewerToolController(ToolController, ConnectionMixin):
-    """Base Class for viewer aware tool controllers"""
+    """Base class for viewer aware tool controllers"""
     connection_ctrl: ViewerConnectionController = RequiredFeature(ViewerConnectionController.name)
 
     def __init__(self):
