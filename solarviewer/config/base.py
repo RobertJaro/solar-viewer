@@ -2,9 +2,9 @@
 import copy
 from abc import ABC, abstractmethod
 from enum import Enum
+from threading import Event
 from typing import List, Dict
 
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget
 from qtpy import QtWidgets, QtGui, QtCore
 
@@ -146,8 +146,7 @@ class DataModel(ABC):
 
 class Viewer(QtWidgets.QWidget):
     """Base class for the displayed widget"""
-    rendered = True
-    finished = pyqtSignal()
+    rendered = Event()
 
     @abstractmethod
     def updateModel(self, model: DataModel):

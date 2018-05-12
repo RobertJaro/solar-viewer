@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from typing import Dict
 
 from solarviewer.app.content import ContentController
 from solarviewer.app.util import supported
@@ -115,7 +116,7 @@ class ViewerConnectionController(Controller):
     content_ctrl: ContentController = RequiredFeature(ContentController.name)
 
     def __init__(self):
-        self.subscribers = {}
+        self.subscribers: Dict[int, ConnectionMixin] = {}
         self.connections = {}
 
         self.sub_vc_id = None
@@ -126,6 +127,7 @@ class ViewerConnectionController(Controller):
         self.active_sub: ConnectionMixin = None
 
         self.content_ctrl.subscribeViewerChanged(self._connect)
+        self.content_ctrl.subscribeViewerClosed(self._closed)
 
     def subscribe(self, sub: ConnectionMixin):
         """
@@ -186,6 +188,11 @@ class ViewerConnectionController(Controller):
             if self.active_sub:
                 self.active_sub.connect(viewer_ctrl)
         self._setEnabled()
+
+    def _closed(self, viewer_ctrl: ViewerController):
+        if not self.active_id == viewer_ctrl.v_id:
+            return
+        self.active_sub = None
 
     def _setEnabled(self):
         for sub in self.subscribers.values():

@@ -1,26 +1,59 @@
-from typing import Callable
+from typing import Callable, List, Dict
 
-from PyQt5.QtWidgets import QTabWidget, QWidget
-from qtpy import QtWidgets
+from PyQt5.QtWidgets import QTabWidget
+from qtpy import QtWidgets, QtCore
 
 from solarviewer.config.base import ViewerController, Controller, DataModel, Viewer
+from solarviewer.util import executeWaitTask
 
 
 class ContentModel:
     def __init__(self):
         self._viewers = {}
+        self._tabs = {}
+        self._active_viewer = None
 
-    def addViewerCtrl(self, viewer):
+    def getActiveViewer(self) -> ViewerController:
+        return self._active_viewer
+
+    def setActiveViewer(self, viewer: ViewerController):
+        self._active_viewer = viewer
+
+    def addViewerCtrl(self, viewer: ViewerController):
         self._viewers[viewer.v_id] = viewer
 
-    def setData(self, v_id, model):
+    def setData(self, v_id: int, model: DataModel):
         self._viewers[v_id].setModel(model)
 
-    def getViewerCtrl(self, v_id) -> ViewerController:
+    def getViewerCtrl(self, v_id: int) -> ViewerController:
         return self._viewers.get(v_id, None)
 
-    def getViewerCtrls(self):
+    def getViewerCtrls(self) -> List[ViewerController]:
         return self._viewers
+
+    def addTab(self, v_id: int, dock: QtWidgets.QDockWidget):
+        self._tabs[v_id] = dock
+
+    def getTabs(self) -> Dict[int, QtWidgets.QDockWidget]:
+        return self._tabs
+
+    def getActiveTab(self) -> QtWidgets.QDockWidget:
+        if self._active_viewer is None:
+            return None
+        return self._tabs[self._active_viewer.v_id]
+
+    def remove(self, v_id):
+        ctrl = self._viewers.pop(v_id)
+        tab = self._tabs.pop(v_id)
+        return ctrl, tab
+
+    def count(self):
+        return len(self._viewers.keys())
+
+    def isActive(self, v_id):
+        if self._active_viewer is None:
+            return False
+        return self._active_viewer.v_id == v_id
 
 
 class ContentController(Controller):
@@ -28,20 +61,20 @@ class ContentController(Controller):
     sub_id = 0
 
     def __init__(self):
-        self._model = ContentModel()
+        self._model: ContentModel = ContentModel()
 
         self._viewer_changed_subscribers = {}
         self._viewer_added_subscribers = {}
         self._viewer_closed_subscribers = {}
         self._data_changed_subscribers = {}
 
-        self._view = QTabWidget()
-        self._view.setTabsClosable(True)
-        self._view.setMovable(True)
-        self._view.setObjectName("tabWidget")
-
-        self._view.currentChanged.connect(self._onViewerChanged)
-        self._view.tabCloseRequested.connect(self._onCloseTab)
+        self._view = QtWidgets.QMainWindow()
+        self._view.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QTabWidget.North)
+        self._view.setCentralWidget(None)
+        self._view.setDockOptions(
+            QtWidgets.QMainWindow.AllowNestedDocks | QtWidgets.QMainWindow.AllowTabbedDocks | QtWidgets.QMainWindow.AnimatedDocks)
+        self._view.tabifiedDockWidgetActivated.connect(lambda x: x.setFocus())
+        self._view.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
 
     @property
     def view(self) -> QTabWidget:
@@ -91,8 +124,8 @@ class ContentController(Controller):
         self._onDataChanged(v_id)
 
     def getCurrentId(self):
-        wrapper = self._view.currentWidget()
-        return wrapper.v_id if wrapper is not None else -1
+        viewer = self._model.getActiveViewer()
+        return viewer.v_id if viewer is not None else -1
 
     def subscribeViewerChanged(self, action: Callable) -> int:
         """
@@ -143,18 +176,48 @@ class ContentController(Controller):
 
     def addViewerController(self, viewer_ctrl):
         self._model.addViewerCtrl(viewer_ctrl)
-        v_id = viewer_ctrl.v_id
-        viewer = viewer_ctrl.view
-        wrapper = QWidget()
-        wrapper.v_id = v_id
-        layout = QtWidgets.QHBoxLayout(wrapper)
-        layout.addWidget(viewer)
-        index = self._view.addTab(wrapper, viewer_ctrl.getTitle())
-        self._view.setCurrentIndex(index)
-        self._onViewerAdded(viewer_ctrl)
 
-    def _onViewerChanged(self, *args):
-        v = self.getViewerController()
+        wrapper = QtWidgets.QDockWidget(viewer_ctrl.getTitle())
+        wrapper.setWidget(viewer_ctrl.view)
+
+        wrapper.setFocusPolicy(QtCore.Qt.ClickFocus)
+        wrapper.focusInEvent = lambda x, v=viewer_ctrl.v_id, dock=wrapper: self._onViewerChanged(v, dock)
+        wrapper.closeEvent = lambda evt, v=viewer_ctrl.v_id: self._onTabClosed(v)
+        wrapper.setFeatures(
+            QtWidgets.QDockWidget.DockWidgetVerticalTitleBar | QtWidgets.QDockWidget.DockWidgetClosable | QtWidgets.QDockWidget.DockWidgetFloatable | QtWidgets.QDockWidget.DockWidgetMovable)
+        wrapper.setMinimumSize(300, 300)
+
+        self._view.addDockWidget(self._getDefaultDockArea(), wrapper)
+        self._tabify(wrapper)
+
+        self._model.addTab(viewer_ctrl.v_id, wrapper)
+        self._onViewerAdded(viewer_ctrl)
+        wrapper.setFocus()  # triggers _onViewerChanged
+
+    def _getDefaultDockArea(self):
+        if self._model.getActiveTab():
+            return self._view.dockWidgetArea(self._model.getActiveTab())
+        return QtCore.Qt.TopDockWidgetArea
+
+    def _tabify(self, dock):
+        for d in self._model.getTabs().values():
+            if self._view.dockWidgetArea(d) == self._view.dockWidgetArea(dock):
+                self._view.tabifyDockWidget(d, dock)
+        dock.show()
+        dock.raise_()
+
+    def _onViewerChanged(self, v_id, dock: QtWidgets.QDockWidget):
+        if self._model.isActive(v_id):
+            return
+        if self._model.getActiveTab():
+            old_dock = self._model.getActiveTab()
+            title = old_dock.windowTitle()
+            title = title.replace(" <<", "")
+            old_dock.setWindowTitle(title)
+
+        v = self._model.getViewerCtrl(v_id)
+        self._model.setActiveViewer(v)
+        dock.setWindowTitle("{} <<".format(dock.windowTitle()))
         self._notifySubscribers(v, self._viewer_changed_subscribers)
 
     def _onViewerAdded(self, viewer_controller):
@@ -174,19 +237,24 @@ class ContentController(Controller):
             for sub in s.values():
                 sub(v)
 
-        if viewer_controller is None or viewer_controller.view.rendered:
+        if viewer_controller is None:
             notify()
         else:
-            viewer_controller.view.finished.connect(notify)
+            executeWaitTask(viewer_controller.view.rendered, notify, [subscribers, viewer_controller])
 
-    def _onCloseTab(self, index):
-        v_id = self._view.widget(index).v_id
-        ctrl = self._model.getViewerCtrl(v_id)
-        self._onViewerClosed(ctrl)
+    def _onTabClosed(self, v_id):
+        ctrl, tabs = self._model.remove(v_id)
         ctrl.close()
-        self._view.removeTab(index)
-        if self._view.count() == 0:
-            self._onViewerChanged()
+        self._onViewerClosed(ctrl)
+
+        if self._model.getActiveViewer() is ctrl:
+            self._model.setActiveViewer(None)
+            if self._model.count() != 0:  # activate another tab
+                tab = list(self._model.getTabs().values())[0]
+                tab.raise_()
+                tab.setFocus()
+        if self._model.count() == 0:
+            self._notifySubscribers(None, self._viewer_changed_subscribers)
 
     def unsubscribe(self, sub_id):
         removed = self._viewer_changed_subscribers.pop(sub_id, None)

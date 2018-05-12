@@ -19,6 +19,7 @@ class PlotWidget(Viewer):
         self.ui.setupUi(self)
 
         self.initMainCanvas()
+        self.rendered.clear()
 
     def initMainCanvas(self):
         self.figure = Figure()
@@ -37,7 +38,7 @@ class PlotWidget(Viewer):
         self.redraw()
 
     def redraw(self):
-        self.rendered = False
+        self.rendered.clear()
         self.canvas.hide()
         self.ui.progress.show()
         thread = RedrawThread(self, self._model)
@@ -47,8 +48,7 @@ class PlotWidget(Viewer):
     def _afterRedraw(self):
         self.ui.progress.hide()
         self.canvas.show()
-        self.rendered = True
-        self.finished.emit()
+        self.rendered.set()
 
     @abstractmethod
     def draw(self, data_model: DataModel):

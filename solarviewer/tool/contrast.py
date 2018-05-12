@@ -7,6 +7,7 @@ from solarviewer.app.plot import PlotWidget
 from solarviewer.config.base import ItemConfig, ViewerType, DataType, DataModel
 from solarviewer.config.impl import DataToolController
 from solarviewer.ui.contrast import Ui_Contrast
+from solarviewer.util import executeWaitTask
 from solarviewer.viewer.map import SunPyMapModel, MapViewerController
 
 
@@ -83,7 +84,7 @@ class ContrastController(DataToolController):
             self._hist = None
             return
         self._hist = _ContrastHist()
-        self._hist.finished.connect(self._drawLines)
+        executeWaitTask(self._hist.rendered, self._drawLines)
         self._hist.updateModel(self._model)
 
         self._ui.histo_plot.layout().addWidget(self._hist)

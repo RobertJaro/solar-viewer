@@ -145,7 +145,7 @@ class AppController(QtWidgets.QMainWindow):
             action.triggered.connect(lambda evt, c=ctrl: self._openDialog(c))
             self._subscribeItemSupportCheck(action, ctrl)
             if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger if action.isEnabled() else None)
+                QShortcut(ctrl.item_config.shortcut, self, lambda a=action: a.trigger() if action.isEnabled() else None)
 
     def _initActions(self):
         for ctrl in self.action_ctrls:
@@ -156,7 +156,7 @@ class AppController(QtWidgets.QMainWindow):
             action.triggered.connect(ctrl.onAction)
             self._subscribeItemSupportCheck(action, ctrl)
             if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger if action.isEnabled() else None)
+                QShortcut(ctrl.item_config.shortcut, self, lambda a=action: a.trigger() if action.isEnabled() else None)
 
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:

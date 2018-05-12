@@ -2,8 +2,9 @@ import copy
 import threading
 from abc import abstractmethod
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QDialogButtonBox
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtCore
 
 from solarviewer.app.connect import ViewerConnectionController, ConnectionMixin
 from solarviewer.app.content import ContentController
@@ -69,12 +70,13 @@ class DataToolController(ToolController):
         if not self._v_id:
             return
         data_model = self.content_ctrl.getDataModel(self._v_id)
-        threading.Thread(target=self._apply, args=[data_model]).start()
+        thread = _ApplyThread(self._apply, [data_model])
+        thread.finished.connect(lambda result: self.content_ctrl.setDataModel(result))
+        thread.start()
 
     def _apply(self, data_model):
         data_copy = copy.deepcopy(data_model)
-        modified = self.modifyData(data_copy)
-        self.content_ctrl.setDataModel(modified)
+        return self.modifyData(data_copy)
 
     def _onTabChanged(self, viewer_ctrl: ViewerController):
         if self._sub_id is not None:
@@ -227,3 +229,18 @@ class ViewerToolController(ToolController, ConnectionMixin):
 
     def _onClose(self, *args):
         self.connection_ctrl.unsubscribe(self._sub_id)
+
+
+class _ApplyThread(QtCore.QObject, threading.Thread):
+    finished = pyqtSignal(object)
+
+    def __init__(self, execution, args):
+        self.execution = execution
+        self.args = args
+
+        QtCore.QObject.__init__(self)
+        threading.Thread.__init__(self)
+
+    def run(self):
+        result = self.execution(*self.args)
+        self.finished.emit(result)

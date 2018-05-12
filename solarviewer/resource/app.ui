@@ -13,6 +13,11 @@
         <property name="windowTitle">
             <string>Solar Viewer</string>
         </property>
+        <property name="dockOptions">
+            <set>
+                QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging
+            </set>
+        </property>
         <widget class="QWidget" name="centralwidget">
             <layout class="QHBoxLayout" name="horizontalLayout"/>
         </widget>
