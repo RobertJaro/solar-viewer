@@ -26,7 +26,7 @@ def generateVId():
 class DataType(Enum):
     """Default data types"""
     MAP = "SunPy Map"
-    MAP_CUBE = "SunPy Composite Map"
+    MAP_COMPOSITE = "SunPy Composite Map"
     SERIES = "SunPy Series"
     PLAIN_2D = "2D FITS"
     ANY = "Any"

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'download.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -59,7 +59,6 @@ class Ui_Download(object):
         self.content.setGeometry(QtCore.QRect(0, 0, 540, 601))
         self.content.setObjectName("content")
         self.content_layout = QtWidgets.QVBoxLayout(self.content)
-        self.content_layout.setContentsMargins(0, 0, 0, 0)
         self.content_layout.setObjectName("content_layout")
         self.groupBox = QtWidgets.QGroupBox(self.content)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
@@ -82,7 +81,6 @@ class Ui_Download(object):
         self.widget = QtWidgets.QWidget(Download)
         self.widget.setObjectName("widget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)

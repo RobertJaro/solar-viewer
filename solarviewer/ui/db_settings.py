@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'db_settings.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -17,7 +17,6 @@ class Ui_DBSettings(object):
         self.widget = QtWidgets.QWidget(DBSettings)
         self.widget.setObjectName("widget")
         self.formLayout = QtWidgets.QFormLayout(self.widget)
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
         self.formLayout.setObjectName("formLayout")
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setObjectName("label")
@@ -28,7 +27,7 @@ class Ui_DBSettings(object):
         self.widget_2 = QtWidgets.QWidget(self.widget)
         self.widget_2.setObjectName("widget_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget_2)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setContentsMargins(0, 0, -1, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.file_path = QtWidgets.QLineEdit(self.widget_2)
         self.file_path.setEnabled(False)

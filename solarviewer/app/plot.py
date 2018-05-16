@@ -2,9 +2,9 @@ from abc import abstractmethod
 from threading import Thread
 
 from PyQt5.QtCore import pyqtSignal
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
 from qtpy import QtWidgets, QtCore
 
 from solarviewer.config.base import Viewer, DataModel
@@ -22,7 +22,7 @@ class PlotWidget(Viewer):
         self.rendered.clear()
 
     def initMainCanvas(self):
-        self.figure = Figure()
+        self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
         self.toolbar.setVisible(False)

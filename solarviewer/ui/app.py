@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'app.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,6 +12,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(864, 610)
+        MainWindow.setTabShape(QtWidgets.QTabWidget.Triangular)
         MainWindow.setDockOptions(
             QtWidgets.QMainWindow.AllowNestedDocks | QtWidgets.QMainWindow.AllowTabbedDocks | QtWidgets.QMainWindow.AnimatedDocks | QtWidgets.QMainWindow.GroupedDragging)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -101,6 +102,8 @@ class Ui_MainWindow(object):
         self.default_toolbar = QtWidgets.QAction(MainWindow)
         self.default_toolbar.setCheckable(True)
         self.default_toolbar.setObjectName("default_toolbar")
+        self.actionOpen_SunPy_Composite_Map = QtWidgets.QAction(MainWindow)
+        self.actionOpen_SunPy_Composite_Map.setObjectName("actionOpen_SunPy_Composite_Map")
         self.openMap.addAction(self.openMapMPL)
         self.openMap.addAction(self.openMapGinga)
         self.open2D.addAction(self.open2DMPL)
@@ -112,6 +115,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionSave_As)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.openMap.menuAction())
+        self.menuFile.addAction(self.actionOpen_SunPy_Composite_Map)
         self.menuFile.addAction(self.openSeries)
         self.menuFile.addAction(self.open2D.menuAction())
         self.menuFile.addSeparator()
@@ -153,4 +157,4 @@ class Ui_MainWindow(object):
         self.actionImage.setText(_translate("MainWindow", "Image"))
         self.actionOpen_SV_Project.setText(_translate("MainWindow", "Open SV Project"))
         self.default_toolbar.setText(_translate("MainWindow", "Default"))
-
+        self.actionOpen_SunPy_Composite_Map.setText(_translate("MainWindow", "Open SunPy Composite Map"))

@@ -13,6 +13,9 @@
         <property name="windowTitle">
             <string>Solar Viewer</string>
         </property>
+        <property name="tabShape">
+            <enum>QTabWidget::Triangular</enum>
+        </property>
         <property name="dockOptions">
             <set>
                 QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::GroupedDragging
@@ -69,6 +72,7 @@
                 <addaction name="actionSave_As"/>
                 <addaction name="separator"/>
                 <addaction name="openMap"/>
+                <addaction name="actionOpen_SunPy_Composite_Map"/>
                 <addaction name="openSeries"/>
                 <addaction name="open2D"/>
                 <addaction name="separator"/>
@@ -224,6 +228,11 @@
             </property>
             <property name="text">
                 <string>Default</string>
+            </property>
+        </action>
+        <action name="actionOpen_SunPy_Composite_Map">
+            <property name="text">
+                <string>Open SunPy Composite Map</string>
             </property>
         </action>
     </widget>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'download_event.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -85,7 +85,6 @@ class Ui_DownloadEvent(object):
         self.widget_3 = QtWidgets.QWidget(DownloadEvent)
         self.widget_3.setObjectName("widget_3")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.widget_3)
-        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem)
@@ -118,7 +117,6 @@ class Ui_DownloadEvent(object):
         self.widget = QtWidgets.QWidget(DownloadEvent)
         self.widget.setObjectName("widget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)

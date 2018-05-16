@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'data_tool.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -29,7 +29,6 @@ class Ui_DataTool(object):
         self.widget = QtWidgets.QWidget(DataTool)
         self.widget.setObjectName("widget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget)
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.button_box = QtWidgets.QDialogButtonBox(self.widget)
         self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Apply)

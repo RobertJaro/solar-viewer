@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'fft.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -15,7 +15,6 @@ class Ui_DockWidget(object):
         self.dockWidgetContents = QtWidgets.QWidget()
         self.dockWidgetContents.setObjectName("dockWidgetContents")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.dockWidgetContents)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox_2 = QtWidgets.QGroupBox(self.dockWidgetContents)
         self.groupBox_2.setObjectName("groupBox_2")
