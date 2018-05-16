@@ -8,7 +8,7 @@ from solarviewer.config.base import ItemConfig, ViewerType, DataType, DataModel
 from solarviewer.config.impl import DataToolController
 from solarviewer.ui.contrast import Ui_Contrast
 from solarviewer.util import executeWaitTask
-from solarviewer.viewer.map import SunPyMapModel, MapViewerController
+from solarviewer.viewer.map import MapModel, MapViewerController
 
 
 class ContrastController(DataToolController):
@@ -58,7 +58,7 @@ class ContrastController(DataToolController):
         self._ui.under_check.setChecked(under is not None)
         self._ui.color_clipped.setChecked(over is not None or under is not None)
 
-    def modifyData(self, data_model: SunPyMapModel) -> DataModel:
+    def modifyData(self, data_model: MapModel) -> DataModel:
         data_model.norm.vmin = self._model.min
         data_model.norm.vmax = self._model.max
 

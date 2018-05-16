@@ -9,7 +9,7 @@ from solarviewer.util import classproperty
 from solarviewer.viewer.util import MPLCoordinatesMixin
 
 
-class SunPyMapModel(DataModel):
+class MapModel(DataModel):
     def __init__(self, s_map):
         self._plot_preferences = {"show_colorbar": False, "show_limb": False, "draw_contours": False,
                                   "draw_grid": False}
@@ -59,7 +59,7 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
         s_map = Map(file)
         s_map.path = file
 
-        model = SunPyMapModel(s_map)
+        model = MapModel(s_map)
         return cls(model)
 
     @classmethod
@@ -71,7 +71,7 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
         return self._view
 
     @property
-    def model(self) -> SunPyMapModel:
+    def model(self) -> MapModel:
         return self._model
 
     def updateModel(self, model):
