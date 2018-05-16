@@ -1,6 +1,4 @@
-from threading import Thread
-
-from PyQt5.QtCore import QDateTime, pyqtSignal
+from PyQt5.QtCore import QDateTime
 from qtpy import QtWidgets, QtCore
 from sunpy.net import hek
 from sunpy.net.hek2vso import hek2vso
@@ -9,6 +7,7 @@ from solarviewer.config.base import ToolController, ItemConfig
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.tool.download_result import DownloadResultController
 from solarviewer.ui.download_event import Ui_DownloadEvent
+from solarviewer.util import executeTask
 
 
 class EventController(ToolController):  #
@@ -58,9 +57,7 @@ class EventController(ToolController):  #
             end = self._ui.to_date.dateTime().toString(QtCore.Qt.ISODate)
             event = self._ui.event_type.currentText()
             attrs = [hek.attrs.Time(start=start, end=end), hek.attrs.EventType(event)]
-            thread = _SearchThread(attrs)
-            thread.finished.connect(self._onSearchResult)
-            thread.start()
+            executeTask(self.client.search, attrs, self._onSearchResult)
         except Exception as ex:
             self._ui.message_label.setText("Invalid Query: " + str(ex))
             self._ui.message_box.show()
@@ -102,18 +99,3 @@ class EventController(ToolController):  #
             location += ", " + str(item["event_coord3"])
         location += " ) " + event_coordunit
         return location
-
-
-class _SearchThread(QtCore.QObject, Thread):
-    finished = pyqtSignal(object)
-
-    def __init__(self, attrs):
-        self.attrs = attrs
-        self.client = hek.HEKClient()
-
-        QtCore.QObject.__init__(self)
-        Thread.__init__(self)
-
-    def run(self):
-        query = self.client.search(*self.attrs)
-        self.finished.emit(query)

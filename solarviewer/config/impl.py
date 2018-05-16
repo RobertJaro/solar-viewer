@@ -1,10 +1,8 @@
 import copy
-import threading
 from abc import abstractmethod
 
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QDialogButtonBox
-from qtpy import QtWidgets, QtCore
+from qtpy import QtWidgets
 
 from solarviewer.app.connect import ViewerConnectionController, ConnectionMixin
 from solarviewer.app.content import ContentController
@@ -15,6 +13,7 @@ from solarviewer.config.base import ViewerController, DataModel, ActionControlle
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.data_tool import Ui_DataTool
 from solarviewer.ui.viewer_tool import Ui_ViewerTool
+from solarviewer.util import executeTask
 
 
 class DataToolController(ToolController):
@@ -70,9 +69,7 @@ class DataToolController(ToolController):
         if not self._v_id:
             return
         data_model = self.content_ctrl.getDataModel(self._v_id)
-        thread = _ApplyThread(self._apply, [data_model])
-        thread.finished.connect(lambda result: self.content_ctrl.setDataModel(result))
-        thread.start()
+        executeTask(self._apply, [data_model], self.content_ctrl.setDataModel)
 
     def _apply(self, data_model):
         data_copy = copy.deepcopy(data_model)
@@ -115,7 +112,7 @@ class DataActionController(ActionController):
 
     def onAction(self):
         data_model = self.content_ctrl.getDataModel()
-        threading.Thread(target=self._action, args=[data_model]).start()
+        executeTask(self._action, [data_model])
 
     def _action(self, data_model):
         data_copy = copy.deepcopy(data_model)
@@ -229,18 +226,3 @@ class ViewerToolController(ToolController, ConnectionMixin):
 
     def _onClose(self, *args):
         self.connection_ctrl.unsubscribe(self._sub_id)
-
-
-class _ApplyThread(QtCore.QObject, threading.Thread):
-    finished = pyqtSignal(object)
-
-    def __init__(self, execution, args):
-        self.execution = execution
-        self.args = args
-
-        QtCore.QObject.__init__(self)
-        threading.Thread.__init__(self)
-
-    def run(self):
-        result = self.execution(*self.args)
-        self.finished.emit(result)

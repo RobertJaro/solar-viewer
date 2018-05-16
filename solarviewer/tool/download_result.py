@@ -1,7 +1,6 @@
 import copy
-from threading import Thread
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QTableWidgetItem
 from dateutil import parser
 from qtpy import QtWidgets, QtCore
@@ -14,6 +13,7 @@ from solarviewer.config.base import ToolController, ItemConfig
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.download_result import Ui_DownloadResult
 from solarviewer.ui.result_tab import Ui_ResultTab
+from solarviewer.util import executeTask
 from solarviewer.viewer.map import MapViewerController
 
 columns = [
@@ -66,14 +66,12 @@ class DownloadResultController(ToolController):
         index = self._ui.tabs.addTab(tab, "Query " + str(self.query_id))
         self._ui.tabs.setCurrentIndex(index)
         # start query
-        thread = _QueryThread(*attrs)
-        thread.query_finished.connect(lambda query, id=self.query_id: self._onQueryResult(id, query))
-        thread.start()
+        executeTask(Fido.search, attrs, self._onQueryResult, [self.query_id])
         # register events
         tab.download.connect(lambda f_id, q_id=self.query_id: self.download(q_id, f_id))
         tab.open.connect(lambda f_id: self._onOpen(f_id))
 
-    def _onQueryResult(self, id, query):
+    def _onQueryResult(self, query, id):
         if id not in self.tabs:
             return
         query_model = self._convertQuery(query)
@@ -89,11 +87,10 @@ class DownloadResultController(ToolController):
             resp[:] = [item for item in resp if item.fileid == f_id]
 
         self._addLoading([f_id])
-        thread = _DownloadThread(req)
-        thread.download_finished.connect(lambda path, f=f_id, r=req: self._onDownloadResult(f_id, path[0], req))
-        thread.start()
+        executeTask(Fido.fetch, [req], self._onDownloadResult, [f_id, req])
 
-    def _onDownloadResult(self, f_id, path, request):
+    def _onDownloadResult(self, paths, f_id, request):
+        path = paths[0]
         entry = list(tables.entries_from_fido_search_result(request, self.database.default_waveunit))[0]
         entry.path = path
         self.database.add(entry)
@@ -147,32 +144,6 @@ class DownloadResultController(ToolController):
     @property
     def view(self) -> QtWidgets:
         return self._view
-
-
-class _QueryThread(QObject, Thread):
-    query_finished = pyqtSignal(object)
-
-    def __init__(self, *attrs):
-        self.attrs = attrs
-        Thread.__init__(self)
-        QObject.__init__(self)
-
-    def run(self):
-        query = Fido.search(*self.attrs)
-        self.query_finished.emit(query)
-
-
-class _DownloadThread(QObject, Thread):
-    download_finished = pyqtSignal(object)
-
-    def __init__(self, request):
-        self.request = request
-        Thread.__init__(self)
-        QObject.__init__(self)
-
-    def run(self):
-        paths = Fido.fetch(self.request)
-        self.download_finished.emit(paths)
 
 
 class ResultTab(QtWidgets.QWidget):
