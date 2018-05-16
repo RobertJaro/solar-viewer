@@ -71,8 +71,10 @@ class ContentController(Controller):
         self._view = QtWidgets.QMainWindow()
         self._view.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QTabWidget.North)
         self._view.setCentralWidget(None)
-        self._view.setDockOptions(
-            QtWidgets.QMainWindow.AllowNestedDocks | QtWidgets.QMainWindow.AllowTabbedDocks | QtWidgets.QMainWindow.AnimatedDocks)
+        self._view.setDockOptions(QtWidgets.QMainWindow.AnimatedDocks |
+                                  QtWidgets.QMainWindow.AllowNestedDocks |
+                                  QtWidgets.QMainWindow.AllowTabbedDocks |
+                                  QtWidgets.QMainWindow.GroupedDragging)
         self._view.tabifiedDockWidgetActivated.connect(lambda x: x.setFocus())
         self._view.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
 
