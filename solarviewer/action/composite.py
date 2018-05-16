@@ -3,11 +3,10 @@ from qtpy import QtWidgets, QtCore
 from sunpy.map import Map
 
 from solarviewer.app.content import ContentController
-from solarviewer.config.base import ItemConfig, ActionController
+from solarviewer.config.base import ItemConfig, ActionController, DataType
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.open_composite import Ui_OpenComposite
 from solarviewer.viewer.composite import CompositeMapModel, CompositeMapViewerController
-from solarviewer.viewer.map import MapViewerController
 
 
 class CreateCompositeMapTool(ActionController):
@@ -23,7 +22,7 @@ class CreateCompositeMapTool(ActionController):
         ui.setupUi(dlg)
 
         model = QStandardItemModel()
-        viewer_ctrls = self.content_ctrl.getViewerControllers(MapViewerController)
+        viewer_ctrls = self.content_ctrl.getViewerControllers(DataType.MAP)
         for v in viewer_ctrls:
             item = QStandardItem("{}: {}".format(v.v_id, v.getTitle()))
             item.setCheckable(True)

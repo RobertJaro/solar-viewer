@@ -11,6 +11,7 @@ from solarviewer.config.base import ToolController, DialogController, ActionCont
 from solarviewer.config.impl import ToolbarController
 from solarviewer.config.ioc import RequiredFeature, MatchingFeatures, IsInstanceOf
 from solarviewer.ui.app import Ui_MainWindow
+from solarviewer.util import installMissingAndExecute
 
 
 class AppController(QtWidgets.QMainWindow):
@@ -124,7 +125,8 @@ class AppController(QtWidgets.QMainWindow):
             if len(tree) == 1:
                 continue
             action = InitUtil.getAction(tree, self.ui.menubar)
-            action.triggered.connect(lambda evt, c=v_ctrl: self._openViewer(c))
+            action.triggered.connect(
+                lambda evt, c=v_ctrl: installMissingAndExecute(c.viewer_config.required_pkg, self._openViewer, [c]))
 
     def _initTools(self):
         for ctrl in self.tool_ctrls:

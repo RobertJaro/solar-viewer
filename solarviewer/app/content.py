@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict, Type
+from typing import Callable, List, Dict
 
 from PyQt5.QtWidgets import QTabWidget
 from qtpy import QtWidgets, QtCore
@@ -82,12 +82,14 @@ class ContentController(Controller):
     def view(self) -> QTabWidget:
         return self._view
 
-    def getViewerControllers(self, type: Type) -> List[ViewerController]:
+    def getViewerControllers(self, data_type: str = None) -> List[ViewerController]:
         """
-        Returns the all viewer controllers of the selected type. If none is specified all viewers are returned.
+        Returns all viewer controllers with the matching data_type. If none is specified all viewers are returned.
         :return: List[ViewerController]
         """
-        return [v for v in self._model.getViewerCtrls().values() if isinstance(v, type)]
+        if data_type:
+            return [v for v in self._model.getViewerCtrls().values() if v.data_type == data_type]
+        return self._model.getViewerCtrls().value()
 
     def getViewerController(self, v_id=-1) -> ViewerController:
         """

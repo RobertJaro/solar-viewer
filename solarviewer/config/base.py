@@ -125,6 +125,7 @@ class ViewerConfig:
         self.menu_path = ""
         self.multi_file = False
         self.file_types = FileType.FITS.value
+        self.required_pkg = []
 
     def setMenuPath(self, path: str):
         self.menu_path = path
@@ -136,6 +137,10 @@ class ViewerConfig:
 
     def setFileType(self, value: Dict[str, List[str]]):
         self.file_types = value
+        return self
+
+    def addRequiredPackage(self, package: str):
+        self.required_pkg.append(package)
         return self
 
 

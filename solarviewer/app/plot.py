@@ -13,7 +13,7 @@ from solarviewer.util import executeTask
 class PlotWidget(Viewer):
 
     def __init__(self):
-        QtWidgets.QWidget.__init__(self)
+        Viewer.__init__(self)
         self.ui = Ui_Plot()
         self.ui.setupUi(self)
 
