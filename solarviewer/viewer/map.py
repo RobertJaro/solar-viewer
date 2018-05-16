@@ -15,7 +15,7 @@ class MapModel(DataModel):
                                   "draw_grid": False}
         self.map = s_map
 
-        self.cmap = s_map.plot_settings.get("cmap", None)
+        self._cmap = s_map.plot_settings.get("cmap", None)
         self.cmap_preferences = {"over": None, "under": None}
         self.norm = s_map.plot_settings.get("norm", None)
         self.interpolation = s_map.plot_settings.get("interpolation", None)
@@ -35,6 +35,20 @@ class MapModel(DataModel):
     @property
     def plot_preferences(self):
         return self._plot_preferences
+
+    def setCMap(self, cmap):
+        self._cmap = cmap
+
+    @property
+    def cmap(self):
+        cmap = copy(self._cmap)
+        over = self.cmap_preferences["over"]
+        under = self.cmap_preferences["under"]
+        if over:
+            cmap.set_over(over)
+        if under:
+            cmap.set_under(under)
+        return cmap
 
 
 class MapViewerController(ViewerController, MPLCoordinatesMixin):
@@ -95,7 +109,7 @@ class MapViewer(PlotWidget):
         try:
             s_map = model.map
             ax = self.figure.add_subplot(111, projection=s_map)
-            image = ax.imshow(model.data, cmap=self._initCMap(model), norm=model.norm,
+            image = ax.imshow(model.data, cmap=model.cmap, norm=model.norm,
                               interpolation=model.interpolation, origin=model.origin)
             plot_preferences = model.plot_preferences
             if plot_preferences["show_colorbar"]:
@@ -109,14 +123,3 @@ class MapViewer(PlotWidget):
         except Exception as ex:
             self.figure.clear()
             self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")
-
-    def _initCMap(self, model):
-        cmap = copy(model.cmap)
-        over = model.cmap_preferences["over"]
-        under = model.cmap_preferences["under"]
-        if over:
-            cmap.set_over(over)
-        if under:
-            cmap.set_under(under)
-
-        return cmap

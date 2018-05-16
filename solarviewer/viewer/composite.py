@@ -27,7 +27,7 @@ class CompositeMapViewerController(ViewerController, MPLCoordinatesMixin):
 
     @classproperty
     def viewer_config(self) -> ViewerConfig:
-        return ViewerConfig().setMenuPath("File/Open SunPy Composite Map").setMultiFile(True)
+        return ViewerConfig().setMenuPath("File/Open SunPy Composite Map/From File").setMultiFile(True)
 
     @classmethod
     def fromFile(cls, files):

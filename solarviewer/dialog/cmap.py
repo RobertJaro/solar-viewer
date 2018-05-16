@@ -48,7 +48,7 @@ class CmapController(DialogController):
         self._ui.color_clipped.setChecked(over is not None or under is not None)
 
     def modifyData(self, model: DataModel):
-        model.cmap = self.cmaps[self._ui.cmap_combo.currentText()]
+        model.setCMap(self.cmaps[self._ui.cmap_combo.currentText()])
         model.cmap_preferences["over"] = None
         model.cmap_preferences["under"] = None
         if self._ui.color_clipped.isChecked():

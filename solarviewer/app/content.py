@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Type
 
 from PyQt5.QtWidgets import QTabWidget
 from qtpy import QtWidgets, QtCore
@@ -81,6 +81,13 @@ class ContentController(Controller):
     @property
     def view(self) -> QTabWidget:
         return self._view
+
+    def getViewerControllers(self, type: Type) -> List[ViewerController]:
+        """
+        Returns the all viewer controllers of the selected type. If none is specified all viewers are returned.
+        :return: List[ViewerController]
+        """
+        return [v for v in self._model.getViewerCtrls().values() if isinstance(v, type)]
 
     def getViewerController(self, v_id=-1) -> ViewerController:
         """
@@ -179,7 +186,7 @@ class ContentController(Controller):
     def addViewerController(self, viewer_ctrl):
         self._model.addViewerCtrl(viewer_ctrl)
 
-        wrapper = QtWidgets.QDockWidget(viewer_ctrl.getTitle())
+        wrapper = QtWidgets.QDockWidget("{}: {}".format(viewer_ctrl.v_id, viewer_ctrl.getTitle()))
         wrapper.setWidget(viewer_ctrl.view)
 
         wrapper.setFocusPolicy(QtCore.Qt.ClickFocus)

@@ -67,12 +67,19 @@
                     <addaction name="actionFITS"/>
                     <addaction name="actionImage"/>
                 </widget>
+                <widget class="QMenu" name="menuOpen_SunPy_Composite_Map">
+                    <property name="title">
+                        <string>Open SunPy Composite Map</string>
+                    </property>
+                    <addaction name="actionFrom_File"/>
+                    <addaction name="actionFrom_Active"/>
+                </widget>
                 <addaction name="actionOpen_SV_Project"/>
                 <addaction name="actionSave_2"/>
                 <addaction name="actionSave_As"/>
                 <addaction name="separator"/>
                 <addaction name="openMap"/>
-                <addaction name="actionOpen_SunPy_Composite_Map"/>
+                <addaction name="menuOpen_SunPy_Composite_Map"/>
                 <addaction name="openSeries"/>
                 <addaction name="open2D"/>
                 <addaction name="separator"/>
@@ -230,9 +237,14 @@
                 <string>Default</string>
             </property>
         </action>
-        <action name="actionOpen_SunPy_Composite_Map">
+        <action name="actionFrom_File">
             <property name="text">
-                <string>Open SunPy Composite Map</string>
+                <string>From File</string>
+            </property>
+        </action>
+        <action name="actionFrom_Active">
+            <property name="text">
+                <string>From Active</string>
             </property>
         </action>
     </widget>
