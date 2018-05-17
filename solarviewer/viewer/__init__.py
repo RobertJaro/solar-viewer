@@ -1,1 +1,1 @@
-__all__ = ["map", "series", "composite", "ginga"]
+__all__ = ["map", "series", "composite", "ginga", "astropy"]

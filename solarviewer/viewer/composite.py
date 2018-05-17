@@ -56,7 +56,7 @@ class CompositeMapViewerController(ViewerController, MPLCoordinatesMixin):
         self._view.updateModel(model)
 
     def getTitle(self):
-        return "Composite Map {}".format(self.v_id)
+        return "Composite Map"
 
 
 class CompositeMapViewer(PlotWidget):
