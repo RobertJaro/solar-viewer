@@ -77,6 +77,7 @@ class ContentController(Controller):
                                   QtWidgets.QMainWindow.GroupedDragging)
         self._view.tabifiedDockWidgetActivated.connect(lambda x: x.setFocus())
         self._view.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self._view.setStyleSheet("background-color: white;")
 
     @property
     def view(self) -> QTabWidget:

@@ -18,6 +18,8 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setContentsMargins(0, 7, 0, 0)
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -166,3 +168,4 @@ class Ui_MainWindow(object):
         self.default_toolbar.setText(_translate("MainWindow", "Default"))
         self.actionFrom_File.setText(_translate("MainWindow", "From File"))
         self.actionFrom_Active.setText(_translate("MainWindow", "From Active"))
+
