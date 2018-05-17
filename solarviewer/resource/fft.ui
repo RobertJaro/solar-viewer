@@ -1,100 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>DockWidget</class>
-    <widget class="QDockWidget" name="DockWidget">
+    <class>FFT</class>
+    <widget class="QWidget" name="FFT">
         <property name="geometry">
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>484</width>
-                <height>403</height>
+                <width>382</width>
+                <height>522</height>
             </rect>
         </property>
         <property name="windowTitle">
-            <string>DockWidget</string>
+            <string>Form</string>
         </property>
-        <widget class="QWidget" name="dockWidgetContents">
-            <layout class="QVBoxLayout" name="verticalLayout">
-                <item>
-                    <widget class="QGroupBox" name="groupBox_2">
-                        <property name="title">
-                            <string>Filter Parameters</string>
-                        </property>
-                        <layout class="QFormLayout" name="formLayout">
-                            <item row="0" column="0">
-                                <widget class="QCheckBox" name="checkBox">
-                                    <property name="text">
-                                        <string>Highpass</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="0" column="1">
-                                <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-                            </item>
-                            <item row="1" column="0">
-                                <widget class="QCheckBox" name="checkBox_2">
-                                    <property name="text">
-                                        <string>Lowpass</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="1" column="1">
-                                <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QGroupBox" name="groupBox">
-                        <property name="title">
-                            <string>Contrast Adjustment</string>
-                        </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_3">
-                            <item>
-                                <widget class="QRadioButton" name="contrast_none">
-                                    <property name="locale">
-                                        <locale language="English" country="UnitedStates"/>
-                                    </property>
-                                    <property name="text">
-                                        <string>None</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QRadioButton" name="contrast_min_max">
-                                    <property name="locale">
-                                        <locale language="English" country="UnitedStates"/>
-                                    </property>
-                                    <property name="text">
-                                        <string>Min/Max</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QRadioButton" name="contrast_average">
-                                    <property name="locale">
-                                        <locale language="English" country="UnitedStates"/>
-                                    </property>
-                                    <property name="text">
-                                        <string>Average</string>
-                                    </property>
-                                </widget>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QDialogButtonBox" name="buttonBox">
-                        <property name="locale">
-                            <locale language="English" country="UnitedStates"/>
-                        </property>
-                        <property name="standardButtons">
-                            <set>QDialogButtonBox::Apply</set>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <widget class="QGroupBox" name="groupBox_2">
+                    <property name="title">
+                        <string>Filter Parameters</string>
+                    </property>
+                    <layout class="QFormLayout" name="formLayout">
+                        <item row="0" column="0">
+                            <widget class="QCheckBox" name="highpass_check">
+                                <property name="text">
+                                    <string>Highpass</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>true</bool>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="0" column="1">
+                            <widget class="QDoubleSpinBox" name="highpass_spin">
+                                <property name="suffix">
+                                    <string>%</string>
+                                </property>
+                                <property name="decimals">
+                                    <number>3</number>
+                                </property>
+                                <property name="singleStep">
+                                    <double>0.100000000000000</double>
+                                </property>
+                                <property name="value">
+                                    <double>0.100000000000000</double>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="0">
+                            <widget class="QCheckBox" name="lowpass_check">
+                                <property name="text">
+                                    <string>Lowpass</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="1">
+                            <widget class="QDoubleSpinBox" name="lowpass_spin">
+                                <property name="suffix">
+                                    <string>%</string>
+                                </property>
+                                <property name="decimals">
+                                    <number>3</number>
+                                </property>
+                                <property name="singleStep">
+                                    <double>0.100000000000000</double>
+                                </property>
+                                <property name="value">
+                                    <double>70.000000000000000</double>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="groupBox">
+                    <property name="title">
+                        <string>Filter</string>
+                    </property>
+                    <layout class="QFormLayout" name="formLayout_2">
+                        <item row="0" column="0">
+                            <widget class="QRadioButton" name="ideal_radio">
+                                <property name="locale">
+                                    <locale language="English" country="UnitedStates"/>
+                                </property>
+                                <property name="text">
+                                    <string>Ideal Filter</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="1">
+                            <layout class="QHBoxLayout" name="horizontalLayout_2">
+                                <item>
+                                    <widget class="QLabel" name="label">
+                                        <property name="text">
+                                            <string>Order:</string>
+                                        </property>
+                                        <property name="alignment">
+                                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QSpinBox" name="butter_order_spin">
+                                        <property name="value">
+                                            <number>2</number>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item row="1" column="0">
+                            <widget class="QRadioButton" name="butter_radio">
+                                <property name="text">
+                                    <string>Butterworth Fitler</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>true</bool>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
     </widget>
     <resources/>
     <connections/>

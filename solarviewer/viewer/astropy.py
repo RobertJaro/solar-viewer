@@ -20,6 +20,9 @@ class Plain2DModel(DataModel):
     def data(self):
         return self._data
 
+    def setData(self, data):
+        self._data = data
+
 
 class AstroPyViewer(PlotWidget):
 

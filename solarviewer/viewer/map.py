@@ -25,6 +25,9 @@ class MapModel(DataModel):
     def data(self):
         return self.map.data
 
+    def setData(self, data):
+        self.map._data = data
+
     @property
     def title(self):
         try:
