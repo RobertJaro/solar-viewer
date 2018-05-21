@@ -1,1 +1,1 @@
-__all__ = ["cmap"]
+__all__ = ["cmap", "plot_settings"]

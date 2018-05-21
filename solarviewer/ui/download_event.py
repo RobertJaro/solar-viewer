@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_DownloadEvent(object):
     def setupUi(self, DownloadEvent):
         DownloadEvent.setObjectName("DownloadEvent")
@@ -158,4 +159,3 @@ class Ui_DownloadEvent(object):
         item = self.table.horizontalHeaderItem(6)
         item.setText(_translate("DownloadEvent", "FRM"))
         self.query_button.setText(_translate("DownloadEvent", "Query"))
-

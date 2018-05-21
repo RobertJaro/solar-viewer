@@ -11,8 +11,8 @@ from solarviewer.viewer.util import MPLCoordinatesMixin
 
 class MapModel(DataModel):
     def __init__(self, s_map):
-        self._plot_preferences = {"show_colorbar": False, "show_limb": False, "draw_contours": False,
-                                  "draw_grid": False}
+        self.plot_preferences = {"show_colorbar": False, "show_limb": False, "contours": False,
+                                 "draw_grid": False}
         self.map = s_map
 
         self._cmap = s_map.plot_settings.get("cmap", None)
@@ -34,10 +34,6 @@ class MapModel(DataModel):
             return self.map.name
         except:
             return "Map"
-
-    @property
-    def plot_preferences(self):
-        return self._plot_preferences
 
     def setCMap(self, cmap):
         self._cmap = cmap
@@ -119,8 +115,9 @@ class MapViewer(PlotWidget):
                 self.figure.colorbar(image)
             if plot_preferences["show_limb"]:
                 s_map.draw_limb(axes=ax)
-            if plot_preferences["draw_contours"]:
-                s_map.draw_contours([10, 20, 30, 40, 50, 60, 70, 80, 90] * u.percent, axes=ax)
+            if plot_preferences["contours"]:
+                levels = sorted(plot_preferences["contours"])
+                s_map.draw_contours(levels * u.percent, axes=ax)
             if plot_preferences["draw_grid"]:
                 s_map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
         except Exception as ex:

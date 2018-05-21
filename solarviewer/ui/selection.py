@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_Selection(object):
     def setupUi(self, Selection):
         Selection.setObjectName("Selection")
@@ -83,5 +84,6 @@ class Ui_Selection(object):
         self.groupBox_2.setTitle(_translate("Selection", "Style"))
         self.label.setText(_translate("Selection", "Marker Colour:"))
         self.label_2.setText(_translate("Selection", "Text Colour:"))
+
 
 from solarviewer.ui.util import QColorButton

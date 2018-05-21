@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_WaveRange(object):
     def setupUi(self, WaveRange):
         WaveRange.setObjectName("WaveRange")
@@ -31,4 +32,3 @@ class Ui_WaveRange(object):
         _translate = QtCore.QCoreApplication.translate
         WaveRange.setWindowTitle(_translate("WaveRange", "Form"))
         self.label.setText(_translate("WaveRange", "-"))
-

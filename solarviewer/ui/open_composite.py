@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_OpenComposite(object):
     def setupUi(self, OpenComposite):
         OpenComposite.setObjectName("OpenComposite")
@@ -35,4 +36,3 @@ class Ui_OpenComposite(object):
         _translate = QtCore.QCoreApplication.translate
         OpenComposite.setWindowTitle(_translate("OpenComposite", "Dialog"))
         self.label.setText(_translate("OpenComposite", "Select Maps:"))
-

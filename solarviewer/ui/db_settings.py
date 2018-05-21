@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_DBSettings(object):
     def setupUi(self, DBSettings):
         DBSettings.setObjectName("DBSettings")
@@ -58,4 +59,3 @@ class Ui_DBSettings(object):
         self.label.setText(_translate("DBSettings", "DB-URL:"))
         self.file_select.setText(_translate("DBSettings", "..."))
         self.label_2.setText(_translate("DBSettings", "Download Directory:"))
-
