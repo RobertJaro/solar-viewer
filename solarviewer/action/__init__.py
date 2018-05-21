@@ -1,1 +1,1 @@
-__all__ = ["save", "settings", "composite"]
+__all__ = ["save", "settings", "composite", "snr"]

@@ -97,6 +97,19 @@ class MapViewerController(ViewerController, MPLCoordinatesMixin):
     def redraw(self):
         self._view.redraw()
 
+    def getZoomedMap(self):
+        x = self.view.figure.axes[0].get_xlim()
+        y = self.view.figure.axes[0].get_ylim()
+        bl = [x[0], y[0]]
+        tr = [x[1], y[1]]
+        current_map = self.model.map
+        sub_map = current_map.submap(bl * u.pixel, tr * u.pixel)
+        sub_map.plot_settings = current_map.plot_settings  # preserve settings
+        return sub_map
+
+    def getZoomedData(self):
+        return self.getZoomedMap().data
+
 
 class MapViewer(PlotWidget):
 
