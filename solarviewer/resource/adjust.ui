@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>AdjustData</class>
+    <widget class="QWidget" name="AdjustData">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>376</width>
+                <height>107</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Form</string>
+        </property>
+        <layout class="QFormLayout" name="formLayout">
+            <item row="0" column="0">
+                <widget class="QRadioButton" name="clip_radio">
+                    <property name="text">
+                        <string>Clip Below</string>
+                    </property>
+                    <property name="checked">
+                        <bool>true</bool>
+                    </property>
+                </widget>
+            </item>
+            <item row="1" column="0">
+                <widget class="QRadioButton" name="offset_radio">
+                    <property name="text">
+                        <string>Shift to Value</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="2" column="0">
+                <widget class="QRadioButton" name="range_radio">
+                    <property name="text">
+                        <string>Clip to Range</string>
+                    </property>
+                </widget>
+            </item>
+            <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="offset_spin">
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="minimum">
+                        <double>-10000.000000000000000</double>
+                    </property>
+                    <property name="maximum">
+                        <double>10000.000000000000000</double>
+                    </property>
+                </widget>
+            </item>
+            <item row="2" column="1">
+                <widget class="QWidget" name="range_widget" native="true">
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                        <property name="spacing">
+                            <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                            <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                            <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                            <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                            <number>0</number>
+                        </property>
+                        <item>
+                            <widget class="QDoubleSpinBox" name="range_min_spin">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QLabel" name="label">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="text">
+                                    <string>-</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QDoubleSpinBox" name="range_max_spin">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                    <zorder>horizontalLayoutWidget</zorder>
+                    <zorder>range_max_spin</zorder>
+                    <zorder>range_min_spin</zorder>
+                    <zorder>label</zorder>
+                </widget>
+            </item>
+            <item row="0" column="1">
+                <widget class="QSpinBox" name="clip_spin"/>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections>
+        <connection>
+            <sender>offset_radio</sender>
+            <signal>toggled(bool)</signal>
+            <receiver>offset_spin</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>50</x>
+                    <y>50</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>175</x>
+                    <y>52</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>range_radio</sender>
+            <signal>toggled(bool)</signal>
+            <receiver>range_widget</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>62</x>
+                    <y>76</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>280</x>
+                    <y>77</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>clip_radio</sender>
+            <signal>toggled(bool)</signal>
+            <receiver>clip_spin</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>69</x>
+                    <y>19</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>148</x>
+                    <y>21</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
+</ui>
