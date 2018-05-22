@@ -1,6 +1,5 @@
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from qtpy import QtWidgets, QtCore
-from sunpy.map import Map
 
 from solarviewer.app.content import ContentController
 from solarviewer.config.base import ItemConfig, ActionController, DataType
@@ -37,21 +36,19 @@ class CreateCompositeMapTool(ActionController):
         if len(map_models) == 0:
             return
 
-        c_map = self._createCompositeMap(map_models)
-        model = CompositeMapModel(c_map)
+        model = self._createModel(map_models)
         ctrl = CompositeMapViewerController.fromModel(model)
         self.content_ctrl.addViewerController(ctrl)
 
-    def _createCompositeMap(self, models):
-        maps = [m.map for m in models]
-        c_map = Map(maps, composite=True)
-
+    def _createModel(self, models):
+        # preserve plot settings
         for i, model in enumerate(models):
-            c_map.set_alpha(i, 0.5)
             settings = {"cmap": model.cmap, "norm": model.norm, "interpolation": model.interpolation,
                         "origin": model.origin}
-            c_map.set_plot_settings(i, settings)
-        return c_map
+            model.map.plot_settings = settings
+
+        comp_model = CompositeMapModel([model.map for model in models])
+        return comp_model
 
     def _getSelectedDataModels(self, model):
         checked_ids = []

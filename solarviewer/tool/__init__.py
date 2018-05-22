@@ -1,1 +1,1 @@
-__all__ = ["contrast", "download", "download_result", "download_event", "selection", "fft"]
+__all__ = ["contrast", "download", "download_result", "download_event", "selection", "fft", "composite_settings"]

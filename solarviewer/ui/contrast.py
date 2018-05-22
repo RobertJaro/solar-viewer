@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Contrast(object):
     def setupUi(self, Contrast):
         Contrast.setObjectName("Contrast")
@@ -20,8 +19,7 @@ class Ui_Contrast(object):
         self.histo_button.setObjectName("histo_button")
         self.verticalLayout.addWidget(self.histo_button)
         self.histo_plot = QtWidgets.QFrame(Contrast)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.histo_plot.sizePolicy().hasHeightForWidth())
@@ -104,6 +102,5 @@ class Ui_Contrast(object):
         self.color_clipped.setTitle(_translate("Contrast", "Color Clipped Values"))
         self.over_check.setText(_translate("Contrast", "Over"))
         self.under_check.setText(_translate("Contrast", "Under"))
-
 
 from solarviewer.ui.util import QColorButton

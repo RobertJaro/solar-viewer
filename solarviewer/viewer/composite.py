@@ -8,8 +8,27 @@ from solarviewer.viewer.util import MPLCoordinatesMixin
 
 
 class CompositeMapModel(DataModel):
-    def __init__(self, c_map):
-        self.composite_map = c_map
+    c_id = 0
+
+    def __init__(self, maps):
+        self.maps = {self._generateId(): (map, self._defaultSettings()) for map in maps}
+
+    @property
+    def composite_map(self):
+        comp_map = Map(composite=True)
+        for i, (c_id, (m, settings)) in enumerate(self.maps.items()):
+            comp_map.add_map(m, settings["zorder"], settings["alpha"] / 100)
+            if settings["levels"]:
+                comp_map.set_levels(i, sorted(settings["levels"]), True)
+        return comp_map
+
+    def _defaultSettings(self):
+        settings = {"zorder": 0, "alpha": 50, "levels": False}
+        return settings
+
+    def _generateId(self):
+        self.c_id += 1
+        return self.c_id
 
 
 class CompositeMapViewerController(ViewerController, MPLCoordinatesMixin):
@@ -31,12 +50,8 @@ class CompositeMapViewerController(ViewerController, MPLCoordinatesMixin):
 
     @classmethod
     def fromFile(cls, files):
-        comp_map = Map(files, composite=True)
-        a = 0.5
-        for i in range(len(files)):
-            comp_map.set_alpha(i, a)
-
-        model = CompositeMapModel(comp_map)
+        maps = [Map(file) for file in files]
+        model = CompositeMapModel(maps)
         return cls(model)
 
     @classmethod

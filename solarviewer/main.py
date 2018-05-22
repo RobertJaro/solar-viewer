@@ -9,6 +9,7 @@ from solarviewer.app.app import AppController
 from solarviewer.config import viewers_name
 from solarviewer.config.base import ViewerController, Controller
 from solarviewer.config.ioc import features
+from solarviewer.ui.resources_rc import qInitResources
 
 
 def addExceptionHook():
@@ -45,7 +46,7 @@ def main():
 
 
 def loadResources():
-    __import__("solarviewer.ui.resources_rc", globals(), locals())
+    qInitResources()
 
 
 def prepareImports():

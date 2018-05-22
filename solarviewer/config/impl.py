@@ -73,7 +73,8 @@ class DataToolController(ToolController):
 
     def _apply(self, data_model):
         data_copy = copy.deepcopy(data_model)
-        return self.modifyData(data_copy)
+        result = self.modifyData(data_copy)
+        return result if result else data_copy
 
     def _onTabChanged(self, viewer_ctrl: ViewerController):
         if self._sub_id is not None:

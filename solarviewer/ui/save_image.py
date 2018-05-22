@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_SaveImage(object):
     def setupUi(self, SaveImage):
@@ -53,7 +52,7 @@ class Ui_SaveImage(object):
         self.verticalLayout.addWidget(self.widget)
         self.button_box = QtWidgets.QDialogButtonBox(SaveImage)
         self.button_box.setOrientation(QtCore.Qt.Horizontal)
-        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.button_box.setObjectName("button_box")
         self.verticalLayout.addWidget(self.button_box)
 
@@ -70,3 +69,4 @@ class Ui_SaveImage(object):
         self.file_select.setText(_translate("SaveImage", "..."))
         self.dpi_check.setText(_translate("SaveImage", "DPI:"))
         self.label_2.setText(_translate("SaveImage", "Transparent Background"))
+

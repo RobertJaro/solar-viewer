@@ -21,18 +21,15 @@ class MplToolbarController(ToolbarController):
     def setup(self, toolbar_widget: QtWidgets.QToolBar):
         toolbar_widget.setOrientation(QtCore.Qt.Vertical)
 
-        pan_icon = QtGui.QIcon()
-        pan_icon.addPixmap(QtGui.QPixmap(":/image/pan.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        pan_icon = QtGui.QIcon(":/image/pan.png")
         pan = toolbar_widget.addAction(pan_icon, "Pan")
         pan.setCheckable(True)
 
-        zoom_icon = QtGui.QIcon()
-        zoom_icon.addPixmap(QtGui.QPixmap(":/image/zoom.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        zoom_icon = QtGui.QIcon(":/image/zoom.png")
         zoom = toolbar_widget.addAction(zoom_icon, "Zoom")
         zoom.setCheckable(True)
 
-        reset_icon = QtGui.QIcon()
-        reset_icon.addPixmap(QtGui.QPixmap(":/image/home.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        reset_icon = QtGui.QIcon(":/image/home.png")
         reset = toolbar_widget.addAction(reset_icon, "Reset")
 
         def f(checked, a):

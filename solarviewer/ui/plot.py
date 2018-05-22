@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Plot(object):
     def setupUi(self, Plot):
@@ -29,3 +28,4 @@ class Ui_Plot(object):
     def retranslateUi(self, Plot):
         _translate = QtCore.QCoreApplication.translate
         Plot.setWindowTitle(_translate("Plot", "Form"))
+

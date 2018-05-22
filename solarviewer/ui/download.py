@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Download(object):
     def setupUi(self, Download):
         Download.setObjectName("Download")
@@ -104,3 +103,4 @@ class Ui_Download(object):
         self.groupBox.setTitle(_translate("Download", "Filter"))
         self.add_filter_button.setText(_translate("Download", "Add Filter"))
         self.query_button.setText(_translate("Download", "Query"))
+

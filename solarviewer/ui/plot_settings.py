@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_PlotSettings(object):
     def setupUi(self, PlotSettings):
@@ -53,3 +52,4 @@ class Ui_PlotSettings(object):
         self.contours.setTitle(_translate("PlotSettings", "Contours"))
         self.contours_list.setInputMask(_translate("PlotSettings", "00 00 00 00 00 00 00 00 00 00 00 00"))
         self.contours_list.setText(_translate("PlotSettings", "10 20 30 40 50 60 70 80 90   "))
+
