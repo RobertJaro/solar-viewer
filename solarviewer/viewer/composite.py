@@ -30,6 +30,18 @@ class CompositeMapModel(DataModel):
         self.c_id += 1
         return self.c_id
 
+    def updateMaps(self, maps):
+        for i, c_id in enumerate(self.maps.keys()):
+            settings = self.maps[c_id][1]
+            self.maps[c_id] = (maps[i], settings)
+
+    def setMap(self, c_id, m):
+        settings = self.maps[c_id][1]
+        self.maps[c_id] = (m, settings)
+
+    def getMaps(self):
+        return [m for m, s in self.maps.values()]
+
 
 class CompositeMapViewerController(ViewerController, MPLCoordinatesMixin):
     data_type = DataType.MAP_COMPOSITE

@@ -1,11 +1,43 @@
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from qtpy import QtWidgets, QtCore
+from sunpy.image.coalignment import mapcube_coalign_by_match_template
+from sunpy.map import Map
+from sunpy.physics.solar_rotation import mapcube_solar_derotate
 
 from solarviewer.app.content import ContentController
-from solarviewer.config.base import ItemConfig, ActionController, DataType
+from solarviewer.config.base import ItemConfig, ActionController, DataType, DataModel, ViewerType
+from solarviewer.config.impl import DataActionController
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.open_composite import Ui_OpenComposite
 from solarviewer.viewer.composite import CompositeMapModel, CompositeMapViewerController
+
+
+class DerotateController(DataActionController):
+
+    def modifyData(self, data_model: CompositeMapModel) -> DataModel:
+        mc = Map(data_model.getMaps(), cube=True)
+        derotated = mapcube_solar_derotate(mc)
+        data_model.updateMaps(derotated.maps)
+        return data_model
+
+    @property
+    def item_config(self) -> ItemConfig:
+        return ItemConfig().setMenuPath("Edit/Composite Map/Derotate").addSupportedViewer(
+            ViewerType.ANY).addSupportedData(DataType.MAP_COMPOSITE)
+
+
+class CoalignController(DataActionController):
+
+    @property
+    def item_config(self) -> ItemConfig:
+        return ItemConfig().setMenuPath("Edit/Composite Map/Coalign").addSupportedViewer(
+            ViewerType.ANY).addSupportedData(DataType.MAP_COMPOSITE)
+
+    def modifyData(self, data_model: CompositeMapModel) -> DataModel:
+        mc = Map(data_model.getMaps(), cube=True)
+        coaligned = mapcube_coalign_by_match_template(mc)
+        data_model.updateMaps(coaligned.maps)
+        return data_model
 
 
 class CreateCompositeMapTool(ActionController):

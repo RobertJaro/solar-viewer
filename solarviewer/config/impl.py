@@ -13,7 +13,7 @@ from solarviewer.config.base import ViewerController, DataModel, ActionControlle
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.data_tool import Ui_DataTool
 from solarviewer.ui.viewer_tool import Ui_ViewerTool
-from solarviewer.util import executeTask
+from solarviewer.util import executeTask, executeLongRunningTask
 
 
 class DataToolController(ToolController):
@@ -106,19 +106,17 @@ class DataToolController(ToolController):
 
 class DataActionController(ActionController):
     """Base class for actions related to the currently viewed data"""
-
-    def __init__(self):
-        self.content_ctrl = RequiredFeature(ContentController.name)
-        super(ActionController, self).__init__()
+    content_ctrl = RequiredFeature(ContentController.name)
 
     def onAction(self):
         data_model = self.content_ctrl.getDataModel()
-        executeTask(self._action, [data_model])
+        call_after = lambda result: self.content_ctrl.setDataModel(result)
+        executeLongRunningTask(self._action, [data_model], "Action in Progress", call_after)
 
     def _action(self, data_model):
         data_copy = copy.deepcopy(data_model)
         modified = self.modifyData(data_copy)
-        self.content_ctrl.setDataModel(modified)
+        return modified
 
     @abstractmethod
     def modifyData(self, data_model: DataModel) -> DataModel:
