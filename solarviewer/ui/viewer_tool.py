@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_ViewerTool(object):
     def setupUi(self, ViewerTool):
@@ -33,4 +34,3 @@ class Ui_ViewerTool(object):
     def retranslateUi(self, ViewerTool):
         _translate = QtCore.QCoreApplication.translate
         ViewerTool.setWindowTitle(_translate("ViewerTool", "Form"))
-

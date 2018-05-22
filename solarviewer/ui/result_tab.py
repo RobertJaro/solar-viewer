@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_ResultTab(object):
     def setupUi(self, ResultTab):
@@ -35,4 +36,3 @@ class Ui_ResultTab(object):
     def retranslateUi(self, ResultTab):
         _translate = QtCore.QCoreApplication.translate
         ResultTab.setWindowTitle(_translate("ResultTab", "Form"))
-

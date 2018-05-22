@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_DBSettings(object):
     def setupUi(self, DBSettings):
@@ -43,7 +44,7 @@ class Ui_DBSettings(object):
         self.verticalLayout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(DBSettings)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
 
@@ -58,4 +59,3 @@ class Ui_DBSettings(object):
         self.label.setText(_translate("DBSettings", "DB-URL:"))
         self.file_select.setText(_translate("DBSettings", "..."))
         self.label_2.setText(_translate("DBSettings", "Download Directory:"))
-

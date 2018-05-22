@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_CompositeForm(object):
     def setupUi(self, CompositeForm):
@@ -49,4 +50,3 @@ class Ui_CompositeForm(object):
         self.levels_check.setText(_translate("CompositeForm", "Levels:"))
         self.levels_list.setInputMask(_translate("CompositeForm", "00 00 00 00 00 00 00 00 00 00 00 00"))
         self.levels_list.setText(_translate("CompositeForm", "10 20 30 40 50 60 70 80 90   "))
-

@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_WaveSelect(object):
     def setupUi(self, WaveSelect):
@@ -28,4 +29,3 @@ class Ui_WaveSelect(object):
     def retranslateUi(self, WaveSelect):
         _translate = QtCore.QCoreApplication.translate
         WaveSelect.setWindowTitle(_translate("WaveSelect", "Form"))
-

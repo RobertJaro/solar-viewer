@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_FFT(object):
     def setupUi(self, FFT):
@@ -49,7 +50,7 @@ class Ui_FFT(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.label = QtWidgets.QLabel(self.groupBox)
-        self.label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.horizontalLayout_2.addWidget(self.label)
         self.butter_order_spin = QtWidgets.QSpinBox(self.groupBox)
@@ -78,4 +79,3 @@ class Ui_FFT(object):
         self.ideal_radio.setText(_translate("FFT", "Ideal Filter"))
         self.label.setText(_translate("FFT", "Order:"))
         self.butter_radio.setText(_translate("FFT", "Butterworth Fitler"))
-

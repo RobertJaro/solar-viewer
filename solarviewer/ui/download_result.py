@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_DownloadResult(object):
     def setupUi(self, DownloadResult):
@@ -51,4 +52,3 @@ class Ui_DownloadResult(object):
         self.tabs.setTabText(self.tabs.indexOf(self.tab_2), _translate("DownloadResult", "Tab 2"))
         self.download_button.setText(_translate("DownloadResult", "Download"))
         self.open_button.setText(_translate("DownloadResult", "Open"))
-

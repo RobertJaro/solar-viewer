@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_OpenComposite(object):
     def setupUi(self, OpenComposite):
@@ -22,7 +23,7 @@ class Ui_OpenComposite(object):
         self.verticalLayout.addWidget(self.list)
         self.button_box = QtWidgets.QDialogButtonBox(OpenComposite)
         self.button_box.setOrientation(QtCore.Qt.Horizontal)
-        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.button_box.setObjectName("button_box")
         self.verticalLayout.addWidget(self.button_box)
 
@@ -35,4 +36,3 @@ class Ui_OpenComposite(object):
         _translate = QtCore.QCoreApplication.translate
         OpenComposite.setWindowTitle(_translate("OpenComposite", "Dialog"))
         self.label.setText(_translate("OpenComposite", "Select Maps:"))
-
