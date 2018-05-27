@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_Colormap(object):
     def setupUi(self, Colormap):
         Colormap.setObjectName("Colormap")
@@ -58,6 +57,5 @@ class Ui_Colormap(object):
         self.color_clipped.setTitle(_translate("Colormap", "Color Clipped Values"))
         self.over_check.setText(_translate("Colormap", "Over"))
         self.under_check.setText(_translate("Colormap", "Under"))
-
 
 from solarviewer.ui.util import QColorButton

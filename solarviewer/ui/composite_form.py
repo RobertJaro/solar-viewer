@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_CompositeForm(object):
     def setupUi(self, CompositeForm):
         CompositeForm.setObjectName("CompositeForm")
@@ -47,6 +46,8 @@ class Ui_CompositeForm(object):
         CompositeForm.setWindowTitle(_translate("CompositeForm", "Form"))
         self.label_2.setText(_translate("CompositeForm", "Z-Order:"))
         self.label.setText(_translate("CompositeForm", "Alpha:"))
-        self.levels_check.setText(_translate("CompositeForm", "Levels:"))
+        self.alpha_spin.setSuffix(_translate("CompositeForm", "%"))
+        self.levels_check.setText(_translate("CompositeForm", "Levels (in %):"))
         self.levels_list.setInputMask(_translate("CompositeForm", "00 00 00 00 00 00 00 00 00 00 00 00"))
         self.levels_list.setText(_translate("CompositeForm", "10 20 30 40 50 60 70 80 90   "))
+

@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_TimeRange(object):
     def setupUi(self, TimeRange):
         TimeRange.setObjectName("TimeRange")
@@ -37,3 +36,4 @@ class Ui_TimeRange(object):
         self.from_time.setDisplayFormat(_translate("TimeRange", "yyyy-MM-dd hh:mm"))
         self.label.setText(_translate("TimeRange", "-"))
         self.to_time.setDisplayFormat(_translate("TimeRange", "yyyy-MM-dd hh:mm"))
+

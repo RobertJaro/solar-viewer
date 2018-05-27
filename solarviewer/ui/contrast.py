@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Contrast(object):
     def setupUi(self, Contrast):
         Contrast.setObjectName("Contrast")
@@ -104,6 +103,5 @@ class Ui_Contrast(object):
         self.color_clipped.setTitle(_translate("Contrast", "Color Clipped Values"))
         self.over_check.setText(_translate("Contrast", "Over"))
         self.under_check.setText(_translate("Contrast", "Under"))
-
 
 from solarviewer.ui.util import QColorButton

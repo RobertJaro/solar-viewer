@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_SaveImage(object):
     def setupUi(self, SaveImage):
         SaveImage.setObjectName("SaveImage")
@@ -70,3 +69,4 @@ class Ui_SaveImage(object):
         self.file_select.setText(_translate("SaveImage", "..."))
         self.dpi_check.setText(_translate("SaveImage", "DPI:"))
         self.label_2.setText(_translate("SaveImage", "Transparent Background"))
+

@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -169,3 +168,4 @@ class Ui_MainWindow(object):
         self.default_toolbar.setText(_translate("MainWindow", "Default"))
         self.actionFrom_File.setText(_translate("MainWindow", "From File"))
         self.actionFrom_Active.setText(_translate("MainWindow", "From Active"))
+

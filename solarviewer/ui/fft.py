@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_FFT(object):
     def setupUi(self, FFT):
         FFT.setObjectName("FFT")
@@ -79,3 +78,4 @@ class Ui_FFT(object):
         self.ideal_radio.setText(_translate("FFT", "Ideal Filter"))
         self.label.setText(_translate("FFT", "Order:"))
         self.butter_radio.setText(_translate("FFT", "Butterworth Fitler"))
+

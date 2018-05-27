@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_WaveSelect(object):
     def setupUi(self, WaveSelect):
         WaveSelect.setObjectName("WaveSelect")
@@ -29,3 +28,4 @@ class Ui_WaveSelect(object):
     def retranslateUi(self, WaveSelect):
         _translate = QtCore.QCoreApplication.translate
         WaveSelect.setWindowTitle(_translate("WaveSelect", "Form"))
+

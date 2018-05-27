@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_Rotate(object):
     def setupUi(self, Rotate):
         Rotate.setObjectName("Rotate")
@@ -32,3 +31,4 @@ class Ui_Rotate(object):
         Rotate.setWindowTitle(_translate("Rotate", "Form"))
         self.angle_spin.setSuffix(_translate("Rotate", "°"))
         self.label.setText(_translate("Rotate", "Angle:"))
+

@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-
 class Ui_AdjustData(object):
     def setupUi(self, AdjustData):
         AdjustData.setObjectName("AdjustData")
@@ -83,3 +82,4 @@ class Ui_AdjustData(object):
         self.offset_radio.setText(_translate("AdjustData", "Shift to Value"))
         self.range_radio.setText(_translate("AdjustData", "Clip to Range"))
         self.label.setText(_translate("AdjustData", "-"))
+
