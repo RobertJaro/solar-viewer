@@ -12,7 +12,7 @@ from solarviewer.viewer.util import MPLCoordinatesMixin
 class MapModel(DataModel):
     def __init__(self, s_map):
         self.plot_preferences = {"show_colorbar": False, "show_limb": False, "contours": False,
-                                 "draw_grid": False}
+                                 "draw_grid": False, "mask": False}
         self.map = s_map
 
         self._cmap = s_map.plot_settings.get("cmap", None)
@@ -121,8 +121,8 @@ class MapViewer(PlotWidget):
         try:
             s_map = model.map
             ax = self.figure.add_subplot(111, projection=s_map)
-            image = ax.imshow(model.data, cmap=model.cmap, norm=model.norm,
-                              interpolation=model.interpolation, origin=model.origin)
+            image = s_map.plot(axes=ax, title=False, cmap=model.cmap, norm=model.norm,
+                               interpolation=model.interpolation, origin=model.origin)
             plot_preferences = model.plot_preferences
             if plot_preferences["show_colorbar"]:
                 self.figure.colorbar(image)

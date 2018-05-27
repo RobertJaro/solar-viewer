@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtWidgets
 class Ui_PlotSettings(object):
     def setupUi(self, PlotSettings):
         PlotSettings.setObjectName("PlotSettings")
-        PlotSettings.resize(273, 265)
+        PlotSettings.resize(427, 319)
         self.verticalLayout = QtWidgets.QVBoxLayout(PlotSettings)
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox = QtWidgets.QGroupBox(PlotSettings)
@@ -27,6 +27,9 @@ class Ui_PlotSettings(object):
         self.limb = QtWidgets.QCheckBox(self.groupBox)
         self.limb.setObjectName("limb")
         self.verticalLayout_2.addWidget(self.limb)
+        self.mask = QtWidgets.QCheckBox(self.groupBox)
+        self.mask.setObjectName("mask")
+        self.verticalLayout_2.addWidget(self.mask)
         self.verticalLayout.addWidget(self.groupBox)
         self.contours = QtWidgets.QGroupBox(PlotSettings)
         self.contours.setCheckable(True)
@@ -49,7 +52,7 @@ class Ui_PlotSettings(object):
         self.color_bar.setText(_translate("PlotSettings", "Colorbar"))
         self.grid.setText(_translate("PlotSettings", "Grid"))
         self.limb.setText(_translate("PlotSettings", "Limb"))
+        self.mask.setText(_translate("PlotSettings", "Mask Solar Disk"))
         self.contours.setTitle(_translate("PlotSettings", "Contours"))
         self.contours_list.setInputMask(_translate("PlotSettings", "00 00 00 00 00 00 00 00 00 00 00 00"))
         self.contours_list.setText(_translate("PlotSettings", "10 20 30 40 50 60 70 80 90   "))
-
