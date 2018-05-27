@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>Profile</class>
+    <widget class="QWidget" name="Profile">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>465</width>
+                <height>587</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Form</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <widget class="QFrame" name="profile_box">
+                    <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="frameShape">
+                        <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout"/>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="groupBox_2">
+                    <property name="title">
+                        <string>Mode</string>
+                    </property>
+                    <layout class="QFormLayout" name="formLayout">
+                        <item row="0" column="0">
+                            <widget class="QRadioButton" name="none_radio">
+                                <property name="text">
+                                    <string>None</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>true</bool>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="1" column="0">
+                            <widget class="QRadioButton" name="horizontal_radio">
+                                <property name="text">
+                                    <string>Horizontal</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="2" column="0">
+                            <widget class="QRadioButton" name="vertical_radio">
+                                <property name="text">
+                                    <string>Vertical</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="3" column="0">
+                            <widget class="QRadioButton" name="free_radio">
+                                <property name="text">
+                                    <string>Free Line</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item row="3" column="1">
+                            <widget class="QPushButton" name="reset_button">
+                                <property name="enabled">
+                                    <bool>false</bool>
+                                </property>
+                                <property name="text">
+                                    <string>Reset Line</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <spacer name="verticalSpacer">
+                    <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                        <size>
+                            <width>20</width>
+                            <height>40</height>
+                        </size>
+                    </property>
+                </spacer>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections>
+        <connection>
+            <sender>free_radio</sender>
+            <signal>toggled(bool)</signal>
+            <receiver>reset_button</receiver>
+            <slot>setEnabled(bool)</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>61</x>
+                    <y>414</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>131</x>
+                    <y>414</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
+</ui>
