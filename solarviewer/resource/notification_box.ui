@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>NotificationBox</class>
+    <widget class="QFrame" name="NotificationBox">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>400</width>
+                <height>38</height>
+            </rect>
+        </property>
+        <property name="palette">
+            <palette>
+                <active>
+                    <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                            <color alpha="255">
+                                <red>255</red>
+                                <green>255</green>
+                                <blue>255</blue>
+                            </color>
+                        </brush>
+                    </colorrole>
+                    <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                            <color alpha="255">
+                                <red>255</red>
+                                <green>255</green>
+                                <blue>0</blue>
+                            </color>
+                        </brush>
+                    </colorrole>
+                </active>
+                <inactive>
+                    <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                            <color alpha="255">
+                                <red>255</red>
+                                <green>255</green>
+                                <blue>255</blue>
+                            </color>
+                        </brush>
+                    </colorrole>
+                    <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                            <color alpha="255">
+                                <red>255</red>
+                                <green>255</green>
+                                <blue>0</blue>
+                            </color>
+                        </brush>
+                    </colorrole>
+                </inactive>
+                <disabled>
+                    <colorrole role="Base">
+                        <brush brushstyle="SolidPattern">
+                            <color alpha="255">
+                                <red>255</red>
+                                <green>255</green>
+                                <blue>0</blue>
+                            </color>
+                        </brush>
+                    </colorrole>
+                    <colorrole role="Window">
+                        <brush brushstyle="SolidPattern">
+                            <color alpha="255">
+                                <red>255</red>
+                                <green>255</green>
+                                <blue>0</blue>
+                            </color>
+                        </brush>
+                    </colorrole>
+                </disabled>
+            </palette>
+        </property>
+        <property name="windowTitle">
+            <string>Frame</string>
+        </property>
+        <property name="autoFillBackground">
+            <bool>true</bool>
+        </property>
+        <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+        </property>
+        <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+                <widget class="QLabel" name="message_label">
+                    <property name="text">
+                        <string>ERROR Message</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QToolButton" name="close_button">
+                    <property name="text">
+                        <string>X</string>
+                    </property>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections>
+        <connection>
+            <sender>close_button</sender>
+            <signal>clicked()</signal>
+            <receiver>NotificationBox</receiver>
+            <slot>hide()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>375</x>
+                    <y>20</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>364</x>
+                    <y>6</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
+</ui>

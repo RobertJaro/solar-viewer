@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_Download(object):
     def setupUi(self, Download):
@@ -14,39 +15,10 @@ class Ui_Download(object):
         Download.resize(562, 733)
         self.verticalLayout = QtWidgets.QVBoxLayout(Download)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.message_box = QtWidgets.QFrame(Download)
-        palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 0, 200))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 0, 200))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 0, 200))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 255, 0, 200))
-        brush.setStyle(QtCore.Qt.SolidPattern)
-        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        self.message_box.setPalette(palette)
-        self.message_box.setAutoFillBackground(True)
-        self.message_box.setFrameShape(QtWidgets.QFrame.Panel)
+        self.message_box = NotificationBox(Download)
+        self.message_box.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.message_box.setFrameShadow(QtWidgets.QFrame.Raised)
         self.message_box.setObjectName("message_box")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.message_box)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.message_label = QtWidgets.QLabel(self.message_box)
-        self.message_label.setObjectName("message_label")
-        self.horizontalLayout_3.addWidget(self.message_label)
-        self.close_button = QtWidgets.QToolButton(self.message_box)
-        self.close_button.setObjectName("close_button")
-        self.horizontalLayout_3.addWidget(self.close_button)
         self.verticalLayout.addWidget(self.message_box)
         self.scrollArea = QtWidgets.QScrollArea(Download)
         self.scrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
@@ -56,7 +28,7 @@ class Ui_Download(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.content = QtWidgets.QWidget()
-        self.content.setGeometry(QtCore.QRect(0, 0, 540, 601))
+        self.content.setGeometry(QtCore.QRect(0, 0, 544, 652))
         self.content.setObjectName("content")
         self.content_layout = QtWidgets.QVBoxLayout(self.content)
         self.content_layout.setObjectName("content_layout")
@@ -92,15 +64,14 @@ class Ui_Download(object):
         self.verticalLayout.addWidget(self.widget)
 
         self.retranslateUi(Download)
-        self.close_button.clicked.connect(self.message_box.hide)
         QtCore.QMetaObject.connectSlotsByName(Download)
 
     def retranslateUi(self, Download):
         _translate = QtCore.QCoreApplication.translate
         Download.setWindowTitle(_translate("Download", "Form"))
-        self.message_label.setText(_translate("Download", "ERROR Message"))
-        self.close_button.setText(_translate("Download", "X"))
         self.groupBox.setTitle(_translate("Download", "Filter"))
         self.add_filter_button.setText(_translate("Download", "Add Filter"))
         self.query_button.setText(_translate("Download", "Query"))
 
+
+from solarviewer.ui.util import NotificationBox

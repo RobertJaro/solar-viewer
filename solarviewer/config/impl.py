@@ -68,13 +68,25 @@ class DataToolController(ToolController):
     def _onApply(self):
         if not self._v_id:
             return
+        self._tool_ui.message_box.hide()
+        self._tool_ui.button_box.setEnabled(False)
         data_model = self.content_ctrl.getDataModel(self._v_id)
-        executeTask(self._apply, [data_model], self.content_ctrl.setDataModel)
+        executeTask(self._apply, [data_model], self._onResult)
 
     def _apply(self, data_model):
-        data_copy = copy.deepcopy(data_model)
-        result = self.modifyData(data_copy)
-        return result if result else data_copy
+        try:
+            data_copy = copy.deepcopy(data_model)
+            result = self.modifyData(data_copy)
+            return result if result else data_copy
+        except Exception as ex:
+            return ex
+
+    def _onResult(self, result):
+        self._tool_ui.button_box.setEnabled(True)
+        if isinstance(result, Exception):
+            self._tool_ui.message_box.showMessage(str(result))
+            return
+        self.content_ctrl.setDataModel(result)
 
     def _onTabChanged(self, viewer_ctrl: ViewerController):
         if self._sub_id is not None:

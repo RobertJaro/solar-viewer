@@ -15,96 +15,13 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-                <widget class="QFrame" name="message_box">
-                    <property name="palette">
-                        <palette>
-                            <active>
-                                <colorrole role="Base">
-                                    <brush brushstyle="SolidPattern">
-                                        <color alpha="255">
-                                            <red>255</red>
-                                            <green>255</green>
-                                            <blue>255</blue>
-                                        </color>
-                                    </brush>
-                                </colorrole>
-                                <colorrole role="Window">
-                                    <brush brushstyle="SolidPattern">
-                                        <color alpha="200">
-                                            <red>255</red>
-                                            <green>255</green>
-                                            <blue>0</blue>
-                                        </color>
-                                    </brush>
-                                </colorrole>
-                            </active>
-                            <inactive>
-                                <colorrole role="Base">
-                                    <brush brushstyle="SolidPattern">
-                                        <color alpha="255">
-                                            <red>255</red>
-                                            <green>255</green>
-                                            <blue>255</blue>
-                                        </color>
-                                    </brush>
-                                </colorrole>
-                                <colorrole role="Window">
-                                    <brush brushstyle="SolidPattern">
-                                        <color alpha="200">
-                                            <red>255</red>
-                                            <green>255</green>
-                                            <blue>0</blue>
-                                        </color>
-                                    </brush>
-                                </colorrole>
-                            </inactive>
-                            <disabled>
-                                <colorrole role="Base">
-                                    <brush brushstyle="SolidPattern">
-                                        <color alpha="200">
-                                            <red>255</red>
-                                            <green>255</green>
-                                            <blue>0</blue>
-                                        </color>
-                                    </brush>
-                                </colorrole>
-                                <colorrole role="Window">
-                                    <brush brushstyle="SolidPattern">
-                                        <color alpha="200">
-                                            <red>255</red>
-                                            <green>255</green>
-                                            <blue>0</blue>
-                                        </color>
-                                    </brush>
-                                </colorrole>
-                            </disabled>
-                        </palette>
-                    </property>
-                    <property name="autoFillBackground">
-                        <bool>true</bool>
-                    </property>
+                <widget class="NotificationBox" name="message_box">
                     <property name="frameShape">
-                        <enum>QFrame::Panel</enum>
+                        <enum>QFrame::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_3">
-                        <item>
-                            <widget class="QLabel" name="message_label">
-                                <property name="text">
-                                    <string>ERROR Message</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QToolButton" name="close_button">
-                                <property name="text">
-                                    <string>X</string>
-                                </property>
-                            </widget>
-                        </item>
-                    </layout>
                 </widget>
             </item>
             <item>
@@ -129,8 +46,8 @@
                             <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>540</width>
-                                <height>601</height>
+                                <width>544</width>
+                                <height>652</height>
                             </rect>
                         </property>
                         <layout class="QVBoxLayout" name="content_layout">
@@ -197,23 +114,14 @@
             </item>
         </layout>
     </widget>
+    <customwidgets>
+        <customwidget>
+            <class>NotificationBox</class>
+            <extends>QFrame</extends>
+            <header>solarviewer.ui.util</header>
+            <container>1</container>
+        </customwidget>
+    </customwidgets>
     <resources/>
-    <connections>
-        <connection>
-            <sender>close_button</sender>
-            <signal>clicked()</signal>
-            <receiver>message_box</receiver>
-            <slot>hide()</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>521</x>
-                    <y>38</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>489</x>
-                    <y>53</y>
-                </hint>
-            </hints>
-        </connection>
-    </connections>
+    <connections/>
 </ui>

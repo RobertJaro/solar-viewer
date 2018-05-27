@@ -29,7 +29,6 @@ class DownloadController(ToolController):
         self._ui.content.resizeEvent = lambda evt: self._ui.scrollArea.setMinimumWidth(
             self._ui.content.sizeHint().width() + self._ui.scrollArea.verticalScrollBar().sizeHint().width())
         self._ui.content_layout.setAlignment(QtCore.Qt.AlignTop)
-        self._ui.message_box.hide()
 
         self.possible_filters = [e.value for e in Filter]
         self.refreshActiveFilters()
@@ -71,8 +70,7 @@ class DownloadController(ToolController):
                 attrs.append(f.value())
             self.result_ctrl.query(attrs)
         except Exception as ex:
-            self._ui.message_label.setText("Invalid Query: " + str(ex))
-            self._ui.message_box.show()
+            self._ui.message_box.showMessage("Invalid Query: " + str(ex))
 
     def onFilterDestroyed(self, filter_panel):
         filter = filter_panel.filter

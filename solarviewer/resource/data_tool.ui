@@ -15,6 +15,16 @@
         </property>
         <layout class="QVBoxLayout">
             <item>
+                <widget class="NotificationBox" name="message_box">
+                    <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                    </property>
+                </widget>
+            </item>
+            <item>
                 <widget class="QScrollArea" name="scrollArea">
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
@@ -36,8 +46,8 @@
                             <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>814</width>
-                                <height>602</height>
+                                <width>818</width>
+                                <height>600</height>
                             </rect>
                         </property>
                     </widget>
@@ -58,6 +68,14 @@
             </item>
         </layout>
     </widget>
+    <customwidgets>
+        <customwidget>
+            <class>NotificationBox</class>
+            <extends>QFrame</extends>
+            <header>solarviewer.ui.util</header>
+            <container>1</container>
+        </customwidget>
+    </customwidgets>
     <resources/>
     <connections/>
 </ui>

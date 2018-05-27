@@ -1,5 +1,20 @@
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QPushButton, QColorDialog
+from PyQt5.QtWidgets import QPushButton, QColorDialog, QFrame
+
+from solarviewer.ui.notification_box import Ui_NotificationBox
+
+
+class NotificationBox(QFrame):
+    def __init__(self, parent):
+        QFrame.__init__(self, parent)
+        self.ui = Ui_NotificationBox()
+        self.ui.setupUi(self)
+
+        self.hide()
+
+    def showMessage(self, message):
+        self.ui.message_label.setText(message)
+        self.show()
 
 
 class QColorButton(QPushButton):

@@ -8,12 +8,18 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+
 class Ui_DataTool(object):
     def setupUi(self, DataTool):
         DataTool.setObjectName("DataTool")
         DataTool.resize(836, 681)
         self.vboxlayout = QtWidgets.QVBoxLayout(DataTool)
         self.vboxlayout.setObjectName("vboxlayout")
+        self.message_box = NotificationBox(DataTool)
+        self.message_box.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.message_box.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.message_box.setObjectName("message_box")
+        self.vboxlayout.addWidget(self.message_box)
         self.scrollArea = QtWidgets.QScrollArea(DataTool)
         self.scrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.scrollArea.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -22,7 +28,7 @@ class Ui_DataTool(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.content = QtWidgets.QWidget()
-        self.content.setGeometry(QtCore.QRect(0, 0, 814, 602))
+        self.content.setGeometry(QtCore.QRect(0, 0, 818, 600))
         self.content.setObjectName("content")
         self.scrollArea.setWidget(self.content)
         self.vboxlayout.addWidget(self.scrollArea)
@@ -43,3 +49,5 @@ class Ui_DataTool(object):
         _translate = QtCore.QCoreApplication.translate
         DataTool.setWindowTitle(_translate("DataTool", "Form"))
 
+
+from solarviewer.ui.util import NotificationBox
