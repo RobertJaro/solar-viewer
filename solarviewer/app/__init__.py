@@ -1,1 +1,1 @@
-__all__ = ["app", "content", "plot", "history", "statusbar", "util"]
+__all__ = ["app", "content", "plot", "history", "statusbar", "util", "error", "connect"]

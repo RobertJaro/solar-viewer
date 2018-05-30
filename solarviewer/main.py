@@ -12,27 +12,11 @@ from solarviewer.config.ioc import features
 from solarviewer.ui.resources_rc import qInitResources
 
 
-def addExceptionHook():
-    # Back up the reference to the exceptionhook
-    sys._excepthook = sys.excepthook
-
-    def my_exception_hook(exctype, value, traceback):
-        # Print the error and traceback
-        print(exctype, value, traceback)
-        # Call the normal Exception hook after
-        sys._excepthook(exctype, value, traceback)
-        sys.exit(1)
-
-    # Set the exception hook to our wrapping function
-    sys.excepthook = my_exception_hook
-
-
 def main():
     # prepare application
     app = QtWidgets.QApplication(sys.argv)
     QLocale.setDefault(QLocale(QLocale.English, QLocale.UnitedStates))
 
-    addExceptionHook()
     prepareImports()
     registerControllers()
     registerViewers()
@@ -53,6 +37,7 @@ def prepareImports():
     __import__("solarviewer.app.content", globals(), locals(), ['*'])
     __import__("solarviewer.app.statusbar", globals(), locals(), ['*'])
     __import__("solarviewer.app.history", globals(), locals(), ['*'])
+    __import__("solarviewer.app.error", globals(), locals(), ['*'])
     __import__("solarviewer.viewer", globals(), locals(), ['*'])
     __import__("solarviewer.tool", globals(), locals(), ['*'])
     __import__("solarviewer.action", globals(), locals(), ['*'])

@@ -134,5 +134,25 @@ class MapViewer(PlotWidget):
             if plot_preferences["draw_grid"]:
                 s_map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
         except Exception as ex:
+            self._drawFallback(model)
+
+    def _drawFallback(self, model):
+        self.figure.clear()
+        try:
+            s_map = model.map
+            ax = self.figure.add_subplot(111, projection=s_map)
+            image = ax.imshow(model.data, cmap=model.cmap, norm=model.norm,
+                              interpolation=model.interpolation, origin=model.origin)
+            plot_preferences = model.plot_preferences
+            if plot_preferences["show_colorbar"]:
+                self.figure.colorbar(image)
+            if plot_preferences["show_limb"]:
+                s_map.draw_limb(axes=ax)
+            if plot_preferences["contours"]:
+                levels = sorted(plot_preferences["contours"])
+                s_map.draw_contours(levels * u.percent, axes=ax)
+            if plot_preferences["draw_grid"]:
+                s_map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
+        except Exception as ex:
             self.figure.clear()
             self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")

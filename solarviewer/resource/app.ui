@@ -181,6 +181,9 @@
    </property>
   </action>
   <action name="actionDownload_Data">
+      <property name="checkable">
+          <bool>true</bool>
+      </property>
    <property name="text">
     <string>Download Data</string>
    </property>
@@ -191,6 +194,9 @@
    </property>
   </action>
   <action name="actionHEK">
+      <property name="checkable">
+          <bool>true</bool>
+      </property>
    <property name="text">
     <string>HEK</string>
    </property>
