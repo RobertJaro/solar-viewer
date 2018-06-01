@@ -44,7 +44,7 @@
      <x>0</x>
      <y>0</y>
      <width>864</width>
-     <height>26</height>
+        <height>21</height>
     </rect>
    </property>
    <property name="locale">
@@ -102,6 +102,7 @@
     <addaction name="actionDownload_Data"/>
     <addaction name="actionHEK"/>
     <addaction name="actionChange_DB"/>
+       <addaction name="actionData_Manager"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -267,6 +268,14 @@
     <string>From Active</string>
    </property>
   </action>
+     <action name="actionData_Manager">
+         <property name="checkable">
+             <bool>true</bool>
+         </property>
+         <property name="text">
+             <string>Data Manager</string>
+         </property>
+     </action>
  </widget>
  <resources/>
  <connections/>
