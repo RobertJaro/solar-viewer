@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Download(object):
     def setupUi(self, Download):
@@ -72,6 +71,5 @@ class Ui_Download(object):
         self.groupBox.setTitle(_translate("Download", "Filter"))
         self.add_filter_button.setText(_translate("Download", "Add Filter"))
         self.query_button.setText(_translate("Download", "Query"))
-
 
 from solarviewer.ui.util import NotificationBox

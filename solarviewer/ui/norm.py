@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Norm(object):
     def setupUi(self, Norm):
@@ -29,3 +28,4 @@ class Ui_Norm(object):
         _translate = QtCore.QCoreApplication.translate
         Norm.setWindowTitle(_translate("Norm", "Form"))
         self.label.setText(_translate("Norm", "Normalization:"))
+

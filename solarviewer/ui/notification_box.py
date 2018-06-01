@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_NotificationBox(object):
     def setupUi(self, NotificationBox):
         NotificationBox.setObjectName("NotificationBox")
@@ -54,3 +53,4 @@ class Ui_NotificationBox(object):
         NotificationBox.setWindowTitle(_translate("NotificationBox", "Frame"))
         self.message_label.setText(_translate("NotificationBox", "ERROR Message"))
         self.close_button.setText(_translate("NotificationBox", "X"))
+

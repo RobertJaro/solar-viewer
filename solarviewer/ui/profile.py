@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Profile(object):
     def setupUi(self, Profile):
@@ -16,8 +15,7 @@ class Ui_Profile(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(Profile)
         self.verticalLayout.setObjectName("verticalLayout")
         self.profile_box = QtWidgets.QFrame(Profile)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.profile_box.sizePolicy().hasHeightForWidth())
@@ -66,3 +64,4 @@ class Ui_Profile(object):
         self.vertical_radio.setText(_translate("Profile", "Vertical"))
         self.free_radio.setText(_translate("Profile", "Free Line"))
         self.reset_button.setText(_translate("Profile", "Reset Line"))
+

@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_DataManagerFilter(object):
     def setupUi(self, DataManagerFilter):
@@ -104,7 +103,7 @@ class Ui_DataManagerFilter(object):
         self.verticalLayout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(DataManagerFilter)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
 
@@ -136,3 +135,4 @@ class Ui_DataManagerFilter(object):
         self.wave_check.setText(_translate("DataManagerFilter", "Wavelength:"))
         self.starred_check.setText(_translate("DataManagerFilter", "Starred:"))
         self.physobs_check.setText(_translate("DataManagerFilter", "Physical Observable:"))
+

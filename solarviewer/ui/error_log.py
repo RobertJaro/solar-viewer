@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_ErrorLog(object):
     def setupUi(self, ErrorLog):
@@ -27,3 +26,4 @@ class Ui_ErrorLog(object):
     def retranslateUi(self, ErrorLog):
         _translate = QtCore.QCoreApplication.translate
         ErrorLog.setWindowTitle(_translate("ErrorLog", "Form"))
+

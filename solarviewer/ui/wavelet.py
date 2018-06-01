@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Wavelet(object):
     def setupUi(self, Wavelet):
@@ -64,3 +63,4 @@ class Ui_Wavelet(object):
         self.label_4.setText(_translate("Wavelet", "Level:"))
         self.groupBox_2.setTitle(_translate("Wavelet", "Denoising"))
         self.label_2.setText(_translate("Wavelet", "Sigma:"))
+

@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_DataTool(object):
     def setupUi(self, DataTool):
@@ -48,6 +47,5 @@ class Ui_DataTool(object):
     def retranslateUi(self, DataTool):
         _translate = QtCore.QCoreApplication.translate
         DataTool.setWindowTitle(_translate("DataTool", "Form"))
-
 
 from solarviewer.ui.util import NotificationBox

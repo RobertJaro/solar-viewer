@@ -19,8 +19,7 @@ class Ui_Contrast(object):
         self.histo_button.setObjectName("histo_button")
         self.verticalLayout.addWidget(self.histo_button)
         self.histo_plot = QtWidgets.QFrame(Contrast)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.histo_plot.sizePolicy().hasHeightForWidth())
