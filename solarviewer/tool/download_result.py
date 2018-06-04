@@ -1,6 +1,7 @@
 import copy
 
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QTableWidgetItem
 from dateutil import parser
 from qtpy import QtWidgets, QtCore
@@ -26,8 +27,11 @@ columns = [
     ["Type", lambda item: getattr(getattr(item, "extent", None), "type", "None")],
     ["Wavelength", lambda item: "{} - {}".format(item.wave.wavemin, item.wave.wavemax)
     if hasattr(item, "wave") and hasattr(item.wave, "wavemin") and hasattr(item.wave, "wavemax") else "None"],
-    ["Physical Observable", lambda item: getattr(item, "physobs", "None")]
+    ["Physical Observable", lambda item: getattr(item, "physobs", "None")],
+    ["File Size", lambda item: str(getattr(item, "size", None))]
 ]
+
+default_hidden = [4, 5, 6, 9]
 
 
 class DownloadResultController(ToolController):
@@ -159,8 +163,13 @@ class ResultTab(QtWidgets.QWidget):
         self.ui.setupUi(self)
         self.ui.table.hide()
         self._addHeader()
+        self._hideDefaultColumns()
 
         self.rows = {}
+
+    def _hideDefaultColumns(self):
+        for i in default_hidden:
+            self.ui.table.hideColumn(i)
 
     def loadQuery(self, model):
         self._addRows(model)
@@ -199,6 +208,8 @@ class ResultTab(QtWidgets.QWidget):
             item = QTableWidgetItem(c[0])
             self.ui.table.setHorizontalHeaderItem(i, item)
             header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)
+        header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        header.customContextMenuRequested.connect(self._onHeaderMenu)
 
     def _addRows(self, rows):
         self.ui.table.setRowCount(len(rows))
@@ -213,3 +224,23 @@ class ResultTab(QtWidgets.QWidget):
                     self.ui.table.setCellWidget(i, j, btn)
                     continue
                 self.ui.table.setItem(i, j, QTableWidgetItem(cell))
+
+    def _onHeaderMenu(self, point):
+        menu = QtWidgets.QMenu(self)
+
+        actions = []
+        table = self.ui.table
+        model = table.model()
+        for column in range(model.columnCount()):
+            if column == 0:
+                continue  # skip first column
+            label = model.headerData(column, QtCore.Qt.Horizontal)
+            action = QtWidgets.QAction(label)
+            action.setCheckable(True)
+            action.setChecked(not table.isColumnHidden(column))
+            event = lambda checked, c=column: table.showColumn(c) if checked else table.hideColumn(c)
+            action.triggered.connect(event)
+            actions.append(action)
+        menu.addActions(actions)
+
+        menu.exec_(QCursor.pos())
