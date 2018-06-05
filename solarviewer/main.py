@@ -1,6 +1,7 @@
 import sys
 from inspect import isabstract
 
+import matplotlib
 import pkg_resources
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QLocale
@@ -10,6 +11,8 @@ from solarviewer.config import viewers_name
 from solarviewer.config.base import ViewerController, Controller
 from solarviewer.config.ioc import features
 from solarviewer.ui.resources_rc import qInitResources
+
+matplotlib.use("Qt5Agg")
 
 
 def main():
