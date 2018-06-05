@@ -1,9 +1,9 @@
 from abc import abstractmethod
 
+from PyQt5 import QtWidgets
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from qtpy import QtWidgets
 
 from solarviewer.config.base import Viewer, DataModel
 from solarviewer.ui.plot import Ui_Plot

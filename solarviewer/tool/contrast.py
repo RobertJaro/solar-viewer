@@ -1,7 +1,7 @@
 import numpy as np
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget
-from qtpy import QtWidgets
 
 from solarviewer.app.plot import PlotWidget
 from solarviewer.config.base import ItemConfig, ViewerType, DataType, DataModel

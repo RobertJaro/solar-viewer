@@ -1,5 +1,5 @@
+from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QAction
-from qtpy import QtWidgets, QtCore, QtGui
 
 from solarviewer.app.connect import ViewerLock, ViewerConnectionController
 from solarviewer.config.base import ItemConfig, ToolbarConfig, ViewerController, ViewerType, DataType

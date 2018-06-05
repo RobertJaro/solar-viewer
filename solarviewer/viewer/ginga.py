@@ -1,4 +1,4 @@
-from qtpy import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore
 from sunpy.map import Map
 
 from solarviewer.config.base import DataType, ViewerType, ViewerController, Viewer, DataModel, ViewerConfig

@@ -5,8 +5,8 @@ from enum import Enum
 from threading import Event
 from typing import List, Dict
 
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QWidget
-from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.config import content_ctrl_name
 from solarviewer.config.ioc import RequiredFeature

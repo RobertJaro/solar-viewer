@@ -1,7 +1,7 @@
 import copy
 
 import numpy as np
-from qtpy import QtWidgets
+from PyQt5 import QtWidgets
 
 from solarviewer.app.content import ContentController
 from solarviewer.config.base import ItemConfig, ViewerType, DataType, ActionController

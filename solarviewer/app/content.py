@@ -1,7 +1,7 @@
 from typing import Callable, List, Dict
 
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QTabWidget
-from qtpy import QtWidgets, QtCore
 
 from solarviewer.config.base import ViewerController, Controller, DataModel, Viewer
 from solarviewer.util import executeWaitTask

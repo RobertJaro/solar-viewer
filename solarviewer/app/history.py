@@ -1,6 +1,6 @@
 import copy
 
-from qtpy import QtGui
+from PyQt5 import QtGui
 
 from solarviewer.app.content import ContentController
 from solarviewer.config.base import ItemConfig, Controller, ActionController, DataType, ViewerType

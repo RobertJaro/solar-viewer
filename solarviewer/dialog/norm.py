@@ -1,7 +1,7 @@
+from PyQt5 import QtWidgets
 from astropy.visualization import mpl_normalize
 from astropy.visualization.stretch import *
 from astropy.visualization.stretch import InvertedPowerDistStretch, InvertedLogStretch, InvertedContrastBiasStretch
-from qtpy import QtWidgets
 
 from solarviewer.config.base import DialogController, ViewerController, ItemConfig, ViewerType, DataType
 from solarviewer.ui.norm import Ui_Norm

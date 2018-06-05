@@ -1,4 +1,4 @@
-from qtpy import QtWidgets
+from PyQt5 import QtWidgets
 
 from solarviewer.config.base import Controller
 

@@ -1,5 +1,5 @@
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QDateTime
-from qtpy import QtWidgets, QtCore
 from sunpy.net import hek
 from sunpy.net.hek import HEKClient
 from sunpy.net.hek2vso import hek2vso

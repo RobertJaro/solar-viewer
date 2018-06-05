@@ -1,8 +1,8 @@
 import glob
 import subprocess
 
+from PyQt5.uic import compileUi
 from os.path import basename
-from qtpy.uic import compileUi
 
 if __name__ == '__main__':
     for file in glob.glob("**/*.ui", recursive=True):

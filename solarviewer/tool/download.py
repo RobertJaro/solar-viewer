@@ -1,9 +1,9 @@
 from enum import Enum
 
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QDateTime
 from PyQt5.QtWidgets import QFrame
 from astropy import units as u
-from qtpy import QtWidgets, QtCore
 from sunpy.net import attr, attrs
 
 from solarviewer.config.base import ToolController, ItemConfig

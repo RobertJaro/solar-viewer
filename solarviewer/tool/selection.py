@@ -2,11 +2,11 @@ import sip
 
 import astropy.units as u
 import numpy as np
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QFileDialog
 from matplotlib.widgets import Cursor
-from qtpy import QtWidgets, QtGui
 
 from solarviewer.config.base import ItemConfig, ViewerController, DataType, ViewerType
 from solarviewer.config.impl import ViewerToolController

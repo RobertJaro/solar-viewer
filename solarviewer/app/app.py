@@ -1,7 +1,7 @@
 from typing import List
 
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QShortcut, QFileDialog
-from qtpy import QtWidgets, QtGui, QtCore
 
 from solarviewer.app.content import ContentController
 from solarviewer.app.statusbar import StatusBarController

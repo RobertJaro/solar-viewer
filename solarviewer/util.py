@@ -2,8 +2,8 @@ import pkgutil
 from threading import Event, Thread
 from typing import Callable, List
 
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
-from qtpy import QtCore, QtWidgets
 
 
 class classproperty(object):
@@ -44,7 +44,8 @@ def executeTask(execution: Callable, args=[], call_after: Callable = None, call_
     """
     thread = _Thread(execution, args)
     if call_after:
-        thread.finished.connect(lambda x: call_after(x, *call_after_args) if x is not None else call_after(*call_after_args))
+        thread.finished.connect(
+            lambda x: call_after(x, *call_after_args) if x is not None else call_after(*call_after_args))
     thread.start()
 
 

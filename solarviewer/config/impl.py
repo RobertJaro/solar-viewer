@@ -1,8 +1,8 @@
 import copy
 from abc import abstractmethod
 
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget, QDialogButtonBox
-from qtpy import QtWidgets
 
 from solarviewer.app.connect import ViewerConnectionController, ConnectionMixin
 from solarviewer.app.content import ContentController

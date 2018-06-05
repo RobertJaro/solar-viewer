@@ -1,9 +1,9 @@
 import datetime
 
 import sunpy
+from PyQt5 import QtWidgets, QtSql, QtCore
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QWidget, QMenu, QStyle
-from qtpy import QtWidgets, QtSql, QtCore
 from sunpy.database import Database
 
 from solarviewer.app.content import ContentController

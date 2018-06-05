@@ -1,10 +1,10 @@
 import copy
 
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QTableWidgetItem
 from dateutil import parser
-from qtpy import QtWidgets, QtCore
 from sunpy.database import Database, tables
 from sunpy.net import Fido
 
@@ -19,7 +19,8 @@ from solarviewer.viewer.map import MapViewerController
 
 columns = [
     ["", lambda item: item.fileid if hasattr(item, "fileid") else None],
-    ["Start Time", lambda item: parser.parse(item.time.start).isoformat(" ") if hasattr(item.time, "start") else "None"],
+    ["Start Time",
+     lambda item: parser.parse(item.time.start).isoformat(" ") if hasattr(item.time, "start") else "None"],
     ["End Time", lambda item: parser.parse(item.time.end).isoformat(" ") if hasattr(item.time, "end") else "None"],
     ["Instrument", lambda item: getattr(item, "instrument", "None")],
     ["Source", lambda item: getattr(item, "source", "None")],

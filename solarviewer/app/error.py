@@ -1,8 +1,8 @@
 import datetime
 import sys
 
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QWidget
-from qtpy import QtWidgets, QtCore
 
 from solarviewer.app.app import AppController
 from solarviewer.config.base import ToolController, ItemConfig

@@ -1,6 +1,6 @@
 import sunpy
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
-from qtpy import QtWidgets
 
 from solarviewer.config.base import ActionController, ItemConfig
 from solarviewer.ui.db_settings import Ui_DBSettings

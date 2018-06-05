@@ -1,5 +1,5 @@
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget
-from qtpy import QtWidgets
 
 from solarviewer.config.base import ItemConfig, DataModel, DataType, ViewerType
 from solarviewer.config.impl import DataToolController

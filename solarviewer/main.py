@@ -2,8 +2,8 @@ import sys
 from inspect import isabstract
 
 import pkg_resources
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QLocale
-from qtpy import QtWidgets
 
 from solarviewer.app.app import AppController
 from solarviewer.config import viewers_name

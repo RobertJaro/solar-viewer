@@ -1,5 +1,5 @@
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from qtpy import QtWidgets, QtCore
 from sunpy.image.coalignment import mapcube_coalign_by_match_template
 from sunpy.map import Map
 from sunpy.physics.solar_rotation import mapcube_solar_derotate

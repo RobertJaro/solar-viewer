@@ -2,8 +2,8 @@ import os
 import pickle
 
 import matplotlib
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
-from qtpy import QtWidgets
 from sunpy.map import GenericMap
 
 from solarviewer.app.content import ContentController
