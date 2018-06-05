@@ -1,7 +1,9 @@
 import os
+from copy import copy
 
 from astropy.io import fits
 from astropy.wcs import WCS
+from matplotlib import cm
 from matplotlib.colors import Normalize
 
 from solarviewer.app.plot import PlotWidget
@@ -13,8 +15,10 @@ from solarviewer.viewer.util import MPLCoordinatesMixin
 class Plain2DModel(DataModel):
     def __init__(self, data):
         self._data = data
-        self.plot_settings = {"norm": Normalize(vmin=data.min(), vmax=data.max()), "cmap": "gray"}
         self.wcs = None
+        self._cmap = cm.get_cmap("gray")
+        self.cmap_preferences = {"over": None, "under": None}
+        self.norm = Normalize(vmin=data.min(), vmax=data.max())
 
     @property
     def data(self):
@@ -22,6 +26,20 @@ class Plain2DModel(DataModel):
 
     def setData(self, data):
         self._data = data
+
+    @property
+    def cmap(self):
+        cmap = copy(self._cmap)
+        over = self.cmap_preferences["over"]
+        under = self.cmap_preferences["under"]
+        if over:
+            cmap.set_over(over)
+        if under:
+            cmap.set_under(under)
+        return cmap
+
+    def setCMap(self, cmap):
+        self._cmap = cmap
 
 
 class AstroPyViewer(PlotWidget):
@@ -32,9 +50,8 @@ class AstroPyViewer(PlotWidget):
     def draw(self, model):
         try:
             self.figure.clear()
-            plot_settings = model.plot_settings
             self.ax = self.figure.add_subplot(111, projection=model.wcs)
-            image = self.ax.imshow(model.data, **plot_settings)
+            image = self.ax.imshow(model.data, cmap=model.cmap, norm=model.norm)
         except Exception as ex:
             self.figure.clear()
             self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")

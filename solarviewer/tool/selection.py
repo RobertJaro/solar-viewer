@@ -103,7 +103,10 @@ class SelectionController(ViewerToolController):
     def onClear(self):
         self.model.points.clear()
         for point in self.model.fig_points:
-            point.remove()
+            try:
+                point.remove()
+            except:
+                pass  # points are already removed
         self.model.fig_points = []
         self.table.setRowCount(0)
         if self.model.isEnabled():

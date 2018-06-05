@@ -184,6 +184,7 @@ class ViewerConnectionController(Controller):
         self._disconnectActive()
         self.active_id = viewer_ctrl.v_id if viewer_ctrl else -1
         if self.active_id != -1:
+            self.sub_vc_id = self.content_ctrl.subscribeDataChanged(viewer_ctrl.v_id, self._connect)
             self.active_sub = self._getFirstSupported(viewer_ctrl)
             if self.active_sub:
                 self.active_sub.connect(viewer_ctrl)
@@ -199,10 +200,12 @@ class ViewerConnectionController(Controller):
             sub.enabled(sub is self.active_sub)
 
     def _disconnectActive(self):
-        if self.active_sub is None:
-            return
-        self.active_sub.disconnect(self.content_ctrl.getViewerController(self.active_id))
-        self.active_sub = None
+        if self.sub_vc_id:
+            self.content_ctrl.unsubscribe(self.sub_vc_id)
+            self.sub_vc_id = None
+        if self.active_sub:
+            self.active_sub.disconnect(self.content_ctrl.getViewerController(self.active_id))
+            self.active_sub = None
 
     def _getFirstSupported(self, viewer_ctrl):
         if self.lock and self.lock.supports(viewer_ctrl):

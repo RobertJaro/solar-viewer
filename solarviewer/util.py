@@ -44,7 +44,7 @@ def executeTask(execution: Callable, args=[], call_after: Callable = None, call_
     """
     thread = _Thread(execution, args)
     if call_after:
-        thread.finished.connect(lambda x: call_after(x, *call_after_args) if x else call_after(*call_after_args))
+        thread.finished.connect(lambda x: call_after(x, *call_after_args) if x is not None else call_after(*call_after_args))
     thread.start()
 
 

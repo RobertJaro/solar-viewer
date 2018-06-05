@@ -58,6 +58,8 @@ class NormController(DialogController):
         if type is float:
             input_w = QtWidgets.QDoubleSpinBox()
             input_w.setRange(-10 ** 10, 10 ** 10)
+            input_w.setDecimals(5)
+            input_w.setSingleStep(0.00001)
             input_w.setValue(default)
         return input_w
 

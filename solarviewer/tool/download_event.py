@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QDateTime
 from qtpy import QtWidgets, QtCore
 from sunpy.net import hek
+from sunpy.net.hek import HEKClient
 from sunpy.net.hek2vso import hek2vso
 
 from solarviewer.config.base import ToolController, ItemConfig
@@ -15,6 +16,8 @@ class EventController(ToolController):  #
     result_ctrl: DownloadResultController = RequiredFeature(DownloadResultController.name)
 
     def __init__(self):
+        self.client = HEKClient()
+
         self.query_id = 0
 
         ToolController.__init__(self)

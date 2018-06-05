@@ -19,8 +19,8 @@ from solarviewer.viewer.map import MapViewerController
 
 columns = [
     ["", lambda item: item.fileid if hasattr(item, "fileid") else None],
-    ["Start Time", lambda item: parser.parse(item.time.start).isoformat() if hasattr(item.time, "start") else "None"],
-    ["End Time", lambda item: parser.parse(item.time.end).isoformat() if hasattr(item.time, "end") else "None"],
+    ["Start Time", lambda item: parser.parse(item.time.start).isoformat(" ") if hasattr(item.time, "start") else "None"],
+    ["End Time", lambda item: parser.parse(item.time.end).isoformat(" ") if hasattr(item.time, "end") else "None"],
     ["Instrument", lambda item: getattr(item, "instrument", "None")],
     ["Source", lambda item: getattr(item, "source", "None")],
     ["Provider", lambda item: getattr(item, "provider", "None")],
@@ -91,7 +91,7 @@ class DownloadResultController(ToolController):
             resp[:] = [item for item in resp if item.fileid == f_id]
 
         self._addLoading([f_id])
-        executeTask(Fido.fetch, [req], self._onDownloadResult, [f_id, req])
+        executeTask(lambda x: Fido.fetch(x, progress=False), [req], self._onDownloadResult, [f_id, req])
 
     def _onDownloadResult(self, paths, f_id, request):
         path = paths[0]
