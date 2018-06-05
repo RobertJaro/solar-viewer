@@ -1,17 +1,17 @@
 # Solar Viewer
 
-This is the first draft of a python viewer application for solar physics.
-It features data downloading and manipulation, primarily using functionalities from sunpy and matplotlib.
+This is a Python based viewer application for solar physics.
+It features downloading, manipulating and analyzing data. The application is primarily build upon functionalities from SunPy and Matplotlib.
 
 Installation
 ------------
 Start by installing PyQt5 and SunPy.
 
-Using anconda:
+Using anaconda:
 ```
 conda install -c conda-forge sunpy
 ```
-PyQt5 should be already installed in the anaconda distribution, if not use: `conda install pyqt`
+PyQt5 should be already installed in the anaconda distribution, if not use: `conda install pyqt`.
 
 Using pip:
 ``` 
@@ -19,14 +19,20 @@ pip install sunpy[all]
 pip install pyqt5
 ```
 
-Full instructions can be found here: [http://docs.sunpy.org/en/stable/guide/installation/index.html].
+Next download the project (or clone the repository).
+In the project root directory execute:
+```
+python setup.py install
+```
 
-Next download this code (or clone the repository).
-Execute `python setup.py install` in the project root.
-Afterwards the executable can be found in the scripts or bin folder of your python installation(e.g.: ...\Anaconda3\Scripts\solarviewer.exe)
+Afterwards the executable can be found in the scripts or bin folder of your Python installation (e.g.: ...\Anaconda3\Scripts\solarviewer.exe).
+
+For additional installation information see:
+SunPy: [http://docs.sunpy.org/en/stable/guide/installation/index.html]
+PyQt: [http://pyqt.sourceforge.net/Docs/PyQt5/installation.html]
 
 Usage
 ------------
 
-Start the application either by using the executable in the scripts folder or execute main.py in the root directory.
-Mac OS users need to use pythonw to start the GUI from an anaconda distribution.
+Start the application either by using the executable in the scripts folder or execute main.py located in the solarviewer directory.
+(Note: Mac OS users need to use pythonw to start the GUI from an anaconda distribution.)
