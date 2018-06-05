@@ -12,6 +12,7 @@ Using anaconda:
 conda install -c conda-forge sunpy
 ```
 PyQt5 should be already installed in the anaconda distribution, if not use: `conda install pyqt`.
+Make sure that the PyQt version is at least 5.10. To ensure that the newest version is installed execute: 'pip install pyqt5 --upgrade'.
 
 Using pip:
 ``` 
