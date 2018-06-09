@@ -143,8 +143,14 @@
                                     </property>
                                     <item>
                                         <widget class="QDateTimeEdit" name="from_date">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
                                             <property name="displayFormat">
-                                                <string>yyyy-MM-dd hh:mm</string>
+                                                <string>yyyy-MM-ddThh:mm</string>
                                             </property>
                                         </widget>
                                     </item>
@@ -157,8 +163,14 @@
                                     </item>
                                     <item>
                                         <widget class="QDateTimeEdit" name="to_date">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
                                             <property name="displayFormat">
-                                                <string>yyyy-MM-dd hh:mm</string>
+                                                <string>yyyy-MM-ddThh:mm</string>
                                             </property>
                                         </widget>
                                     </item>

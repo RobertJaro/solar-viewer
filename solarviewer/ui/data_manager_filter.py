@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 class Ui_DataManagerFilter(object):
     def setupUi(self, DataManagerFilter):
@@ -124,9 +124,9 @@ class Ui_DataManagerFilter(object):
     def retranslateUi(self, DataManagerFilter):
         _translate = QtCore.QCoreApplication.translate
         DataManagerFilter.setWindowTitle(_translate("DataManagerFilter", "Dialog"))
-        self.from_time.setDisplayFormat(_translate("DataManagerFilter", "yyyy-MM-dd hh:mm"))
+        self.from_time.setDisplayFormat(_translate("DataManagerFilter", "yyyy-MM-ddThh:mm"))
         self.label_5.setText(_translate("DataManagerFilter", "-"))
-        self.to_time.setDisplayFormat(_translate("DataManagerFilter", "yyyy-MM-dd hh:mm"))
+        self.to_time.setDisplayFormat(_translate("DataManagerFilter", "yyyy-MM-ddThh:mm"))
         self.label_7.setText(_translate("DataManagerFilter", "-"))
         self.instrument_check.setText(_translate("DataManagerFilter", "Instrument:"))
         self.source_check.setText(_translate("DataManagerFilter", "Source:"))
