@@ -1,4 +1,5 @@
 import copy
+from datetime import datetime
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -18,9 +19,11 @@ from solarviewer.util import executeTask
 from solarviewer.viewer.map import MapViewerController
 
 columns = [
-    ["", lambda item: item.fileid if hasattr(item, "fileid") else None],
-    ["Start Time", lambda item: parser.parse(item.time.start).isoformat() if hasattr(item.time, "start") else "None"],
-    ["End Time", lambda item: parser.parse(item.time.end).isoformat() if hasattr(item.time, "end") else "None"],
+    ["", lambda item: item.fileid],
+    ["Start Time", lambda item: item.time.start.isoformat() if isinstance(item.time.start, datetime) else parser.parse(
+        item.time.start).isoformat() if hasattr(item.time, "start") else "None"],
+    ["End Time", lambda item: item.time.end.isoformat() if isinstance(item.time.end, datetime) else parser.parse(
+        item.time.end).isoformat() if hasattr(item.time, "end") else "None"],
     ["Instrument", lambda item: getattr(item, "instrument", "None")],
     ["Source", lambda item: getattr(item, "source", "None")],
     ["Provider", lambda item: getattr(item, "provider", "None")],
@@ -127,7 +130,11 @@ class DownloadResultController(ToolController):
             self._onOpen(f_id)
 
     def _convertQuery(self, query):
+        # fix fileid
         items = [item for response in query for item in response]
+        for item in items:
+            if not hasattr(item, "fileid"):
+                item.fileid = item.url
         return [[c[1](item) for c in columns] for item in items]
 
     def _addLoading(self, f_ids):
