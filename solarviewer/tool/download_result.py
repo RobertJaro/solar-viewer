@@ -39,7 +39,7 @@ default_hidden = [4, 5, 6, 9]
 
 class DownloadResultController(ToolController):
     queries = {}
-    app_ctrl: AppController = RequiredFeature(AppController.__name__)
+    app_ctrl: AppController = RequiredFeature(AppController.name)
     content_ctrl: ContentController = RequiredFeature(ContentController.name)
 
     def __init__(self):

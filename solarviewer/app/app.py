@@ -11,7 +11,7 @@ from solarviewer.config.base import ToolController, DialogController, ActionCont
 from solarviewer.config.impl import ToolbarController
 from solarviewer.config.ioc import RequiredFeature, MatchingFeatures, IsInstanceOf
 from solarviewer.ui.app import Ui_MainWindow
-from solarviewer.util import installMissingAndExecute
+from solarviewer.util import installMissingAndExecute, classproperty
 
 
 class AppController(QtWidgets.QMainWindow):
@@ -43,6 +43,11 @@ class AppController(QtWidgets.QMainWindow):
 
         self.ui.default_toolbar.trigger()
         self.ui.actionQuit.triggered.connect(lambda evt: self.close())
+
+    @classproperty
+    def name(cls) -> str:
+        """Unique identifier for app controller in IoC container."""
+        return cls.__name__
 
     def openController(self, controller_name: str):
         """

@@ -11,7 +11,7 @@ from solarviewer.ui.error_log import Ui_ErrorLog
 
 
 class ErrorLogTool(ToolController):
-    app_ctrl: AppController = RequiredFeature(AppController.__name__)
+    app_ctrl: AppController = RequiredFeature(AppController.name)
 
     def __init__(self):
         ToolController.__init__(self)
