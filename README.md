@@ -3,6 +3,8 @@
 This is a Python based viewer application for solar physics.
 It features downloading, manipulating and analyzing data. The application is primarily build upon functionalities from SunPy and Matplotlib.
 
+Check out the [wiki](/wiki) page for the full documentation.
+
 Installation
 ------------
 Start by installing PyQt5 and SunPy.
