@@ -77,6 +77,7 @@ class DownloadController(ToolController):
         self.possible_filters.append(filter)
         self.active_filters.remove(filter)
         self.refreshActiveFilters()
+        filter_panel.deleteLater()
 
     @property
     def item_config(self) -> ItemConfig:
