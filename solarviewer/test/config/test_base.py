@@ -57,6 +57,7 @@ class TestDialogController(unittest.TestCase):
 
     def setUp(self):
         self.app = QApplication(sys.argv)
+        features.allowReplace = True
         features.Provide(ContentController.name, Mock())
 
         class TestDlg(DialogController):
