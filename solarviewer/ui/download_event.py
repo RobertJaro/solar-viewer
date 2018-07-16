@@ -89,6 +89,7 @@ class Ui_DownloadEvent(object):
         self.label_3.setObjectName("label_3")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_3)
         self.event_type = QtWidgets.QComboBox(self.groupBox)
+        self.event_type.setEditable(True)
         self.event_type.setObjectName("event_type")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.event_type)
         self.verticalLayout.addWidget(self.groupBox)
