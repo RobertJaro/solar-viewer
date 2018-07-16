@@ -1,42 +1,31 @@
-import os
-import pickle
-import re
-
-# parses entries from the txt-file and generates the keys used for VSO attributes
-import solarviewer.resource.vso
-
-resources_dir = os.path.dirname(solarviewer.resource.vso.__file__)
-filepath = os.path.join(resources_dir, "VSO_keywords.txt")
-store_file = os.path.join(resources_dir, "vso_key_value.pkl")
-
-
-def parseEntries():
-    data = open(filepath).readlines()
-    dict = {}
-    for line in data:
-        pair = re.split(r'\t+', line.strip())
-
-        key, value, desc = [None, None, None]
-        if len(pair) == 2:
-            key, value = pair
-        elif len(pair) == 3:
-            key, value, desc = pair
-        else:
-            continue
-
-        if key not in dict:
-            dict[key] = []
-        dict[key].append((value, desc))
-
-    file = open(store_file, "wb")
-    pickle.dump(dict, file, pickle.HIGHEST_PROTOCOL)
+entries = {}
+entries["INSTRUMENT"] = sorted(
+    ['AIA', 'HMI', 'chp', 'dpm', 'mk4', 'BCS', 'HXT', 'WBS', 'SXT', 'Spectroheliograph', 'Spectromagnetograph',
+     '512-channel Magnetograph', 'Solar FTS Spectrometer', 'VSM', 'OVSA', 'CDS', 'CELIAS', 'COSTEP', 'EIT', 'ERNE',
+     'GOLF', 'LASCO', 'MDI', 'SUMER', 'SWAN', 'UVCS', 'VIRGO', 'Big Bear', 'Udaipur', 'Mauna Loa', 'Learmonth',
+     'El Teide', 'Cerro Tololo', 'MOTH', 'MOF/60', 'Tenerife', 'SXI-0', 'RHESSI'])
+entries["PROVIDER"] = sorted(['HANET', 'HAO', 'JSOC', 'KIS', 'KSO', 'LASP', 'LMSAL', 'MSFC', 'MWSPADP' 'MSU', 'NSO',
+                              'OVRO', 'SDAC', 'SHA', 'OBSPM', 'NGDC', 'LSSP', 'SDAC_2', 'OMP', 'ROB', 'SAO', 'SSC'])
+entries["SOURCE"] = sorted(
+    ['BBSO', 'KANZ', 'OACT', 'OBSPM', 'YNAO', 'MLSO', 'SDO', 'YOHKOH', 'Evans', 'KPVT', 'McMath', 'SOLIS', 'OVRO',
+     'SOHO', 'GONG', 'JSPO', 'MtWilson', 'TON', 'Nancay', 'Pic du Midi', 'GOES-12', 'RHESSI', 'TRACE'])
+entries["PHYSOBS"] = sorted(
+    ['intensity', 'equivalent_width', 'polarization_vector', 'LOS_magnetic_field', 'vector_magnetic_field',
+     'LOS_velocity', 'vector_velocity', 'wave_power', 'wave_phase', 'oscillation_mode_parameters', 'number_density',
+     'particle_flux', 'particle_velocity', 'thermal_velocity', 'composition'])
 
 
-def loadEntries():
-    file = open(store_file, "rb")
-    return pickle.load(file)
+def instruments():
+    return entries["INSTRUMENT"]
 
 
-if __name__ == '__main__':
-    parseEntries()
-    print(loadEntries())
+def providers():
+    return entries["PROVIDER"]
+
+
+def sources():
+    return entries["SOURCE"]
+
+
+def phys_obs():
+    return entries["PHYSOBS"]

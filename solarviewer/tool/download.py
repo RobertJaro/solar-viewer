@@ -205,7 +205,7 @@ class TimeRangeComponent(QtWidgets.QWidget):
 
 class _InstrumentComponent(QtWidgets.QComboBox):
     def __init__(self):
-        choices = sorted([entry[0] for entry in vso_keys.loadEntries()["INSTRUMENT"]], key=lambda s: s.lower())
+        choices = vso_keys.instruments()
         QtWidgets.QComboBox.__init__(self)
         self.addItems(choices)
         self.setEditable(True)
@@ -216,7 +216,7 @@ class _InstrumentComponent(QtWidgets.QComboBox):
 
 class _ProviderComponent(QtWidgets.QComboBox):
     def __init__(self):
-        choices = sorted([entry[0] for entry in vso_keys.loadEntries()["PROVIDER"]], key=lambda s: s.lower())
+        choices = vso_keys.providers()
         QtWidgets.QComboBox.__init__(self)
         self.addItems(choices)
         self.setEditable(True)
@@ -227,7 +227,7 @@ class _ProviderComponent(QtWidgets.QComboBox):
 
 class _SourceComponent(QtWidgets.QComboBox):
     def __init__(self):
-        choices = sorted([entry[0] for entry in vso_keys.loadEntries()["SOURCE"]], key=lambda s: s.lower())
+        choices = vso_keys.sources()
         QtWidgets.QComboBox.__init__(self)
         self.addItems(choices)
         self.setEditable(True)
@@ -238,7 +238,7 @@ class _SourceComponent(QtWidgets.QComboBox):
 
 class _PhysObsComponent(QtWidgets.QComboBox):
     def __init__(self):
-        choices = sorted([entry[0] for entry in vso_keys.loadEntries()["PHYSOBS"]], key=lambda s: s.lower())
+        choices = vso_keys.phys_obs()
         QtWidgets.QComboBox.__init__(self)
         self.addItems(choices)
         self.setEditable(True)
