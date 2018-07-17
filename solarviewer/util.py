@@ -15,7 +15,7 @@ class classproperty(object):
         return self.fget(owner_cls)
 
 
-def executeWaitTask(event: Event, call_after, call_after_args=[]):
+def executeWaitTask(event: Event, call_after: Callable, call_after_args=[]):
     """
     Waits for the event to finish and executes the call after function afterwards.
     Prevents long thread executions outside the main thread.
@@ -100,7 +100,7 @@ def installMissingAndExecute(package_names: List[str], execution: Callable, args
             executeLongRunningTask(_install, [pkg_name], "Installing Packages", execution, args)
 
 
-def checkPackages(package_names):
+def checkPackages(package_names: List[str]) -> bool:
     """
     Checks if the required python packages are installed.
 

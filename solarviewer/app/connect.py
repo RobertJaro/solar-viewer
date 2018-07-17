@@ -129,7 +129,7 @@ class ViewerConnectionController(Controller):
         self.content_ctrl.subscribeViewerChanged(self._connect)
         self.content_ctrl.subscribeViewerClosed(self._closed)
 
-    def subscribe(self, sub: ConnectionMixin):
+    def subscribe(self, sub: ConnectionMixin) -> int:
         """
         Subscribe a controller to the connection managing
 

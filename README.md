@@ -14,7 +14,7 @@ Using anaconda:
 conda install -c conda-forge sunpy
 ```
 PyQt5 should be already installed in the anaconda distribution, if not use: `conda install pyqt`.
-Make sure that the PyQt version is at least 5.10. To ensure that the newest version is installed execute: 'pip install pyqt5 --upgrade'.
+Make sure that the PyQt version is at least **5.10**. To ensure that the newest version is installed execute: `pip install pyqt5 --upgrade`.
 
 Using pip:
 ``` 
@@ -31,8 +31,8 @@ python setup.py install
 Afterwards the executable can be found in the scripts or bin folder of your Python installation (e.g.: ...\Anaconda3\Scripts\solarviewer.exe).
 
 For additional installation information see:
-SunPy: [http://docs.sunpy.org/en/stable/guide/installation/index.html]
-PyQt: [http://pyqt.sourceforge.net/Docs/PyQt5/installation.html]
+* SunPy: [http://docs.sunpy.org/en/stable/guide/installation/index.html]
+* PyQt: [http://pyqt.sourceforge.net/Docs/PyQt5/installation.html]
 
 Usage
 ------------
