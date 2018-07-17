@@ -130,8 +130,9 @@ def _packagesInstalled(package_names):
 
 
 def _install(pkg_name):
-    import pip
-    pip.main(['install', pkg_name])
+    import subprocess
+    import sys
+    subprocess.call([sys.executable, "-m", "pip", "install", pkg_name])
 
 
 class _Thread(QtCore.QObject, Thread):
