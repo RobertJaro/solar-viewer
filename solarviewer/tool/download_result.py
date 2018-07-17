@@ -188,10 +188,20 @@ class ResultTab(QtWidgets.QWidget):
             if f_id not in self.rows:
                 continue
             index = self.rows[f_id]
-            progress = QtWidgets.QProgressBar()
-            progress.setRange(0, 0)
-            progress.setStyleSheet(''' QProgressBar{max-height: 15px;text-align: center;}''')
-            self.ui.table.setCellWidget(index, 0, progress)
+            progress_widget = self.createProgressWidget()
+            self.ui.table.setCellWidget(index, 0, progress_widget)
+
+    def createProgressWidget(self):
+        progress = QtWidgets.QProgressBar()
+        progress.setRange(0, 0)
+        progress.setTextVisible(False)
+        progress.setMaximumHeight(12)
+        progress_layout = QtWidgets.QVBoxLayout()
+        progress_layout.setContentsMargins(0, 0, 0, 0)
+        progress_layout.addWidget(progress)
+        progress_widget = QtWidgets.QWidget()
+        progress_widget.setLayout(progress_layout)
+        return progress_widget
 
     def setLoaded(self, f_ids):
         for f_id in f_ids:
