@@ -262,6 +262,7 @@ class _WaveComponent(QtWidgets.QWidget):
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.ui = Ui_WaveSelect()
+        self.ui.setupUi(self)
         choices = [str(u.AA), str(u.kHz), str(u.GHz), str(u.keV)]
         self.ui.unit_combo.addItems(choices)
 

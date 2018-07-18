@@ -43,6 +43,7 @@ def executeTask(execution: Callable, args=[], call_after: Callable = None, call_
     :return: None
     """
     thread = _Thread(execution, args)
+    thread.error.connect(_raise)
     if call_after:
         thread.finished.connect(
             lambda x: call_after(x, *call_after_args) if x is not None else call_after(*call_after_args))
@@ -68,6 +69,8 @@ def executeLongRunningTask(execution: Callable, args=[], message="", call_after:
     bar.setRange(0, 0)
     bar.setTextVisible(False)
     progress.setBar(bar)
+
+    thread.error.connect(_raise)
     if call_after:
         thread.finished.connect(lambda x: call_after(x, *call_after_args) if x else call_after(*call_after_args))
     close_progress = lambda x, p=progress: p.close()
@@ -137,6 +140,7 @@ def _install(pkg_name):
 
 class _Thread(QtCore.QObject, Thread):
     finished = pyqtSignal(object)
+    error = pyqtSignal(object)
 
     def __init__(self, execution, args):
         self.execution = execution
@@ -146,8 +150,11 @@ class _Thread(QtCore.QObject, Thread):
         Thread.__init__(self)
 
     def run(self):
-        result = self.execution(*self.args)
-        self.finished.emit(result)
+        try:
+            result = self.execution(*self.args)
+            self.finished.emit(result)
+        except Exception as ex:
+            self.error.emit(ex)
 
 
 class _WaitingThread(QtCore.QObject, Thread):
@@ -162,3 +169,7 @@ class _WaitingThread(QtCore.QObject, Thread):
     def run(self):
         self.event.wait()
         self.finished.emit()
+
+
+def _raise(ex: Exception):
+    raise ex
