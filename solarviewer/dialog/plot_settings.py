@@ -23,6 +23,8 @@ class PlotSettingsController(DialogController):
         self._ui.limb.setChecked(plot_settings["show_limb"])
         self._ui.grid.setChecked(plot_settings["draw_grid"])
         self._ui.mask.setChecked(plot_settings["mask"])
+        self._ui.wcs_grid.setChecked(plot_settings["wcs_grid"])
+        self._ui.annotate.setChecked(plot_settings["annotate"])
         if plot_settings["contours"]:
             self._ui.contours.setChecked(True)
             self._ui.contours_list.setText(" ".join(map(str, plot_settings["contours"])))
@@ -36,6 +38,8 @@ class PlotSettingsController(DialogController):
         plot_settings["show_limb"] = self._ui.limb.isChecked()
         plot_settings["draw_grid"] = self._ui.grid.isChecked()
         plot_settings["mask"] = self._ui.mask.isChecked()
+        plot_settings["wcs_grid"] = self._ui.wcs_grid.isChecked()
+        plot_settings["annotate"] = self._ui.annotate.isChecked()
 
         if self._ui.mask.isChecked():
             s_map = data_model.map

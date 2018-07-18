@@ -48,6 +48,20 @@
                  </property>
              </widget>
          </item>
+         <item>
+             <widget class="QCheckBox" name="wcs_grid">
+                 <property name="text">
+                     <string>WCS Grid</string>
+                 </property>
+             </widget>
+         </item>
+         <item>
+             <widget class="QCheckBox" name="annotate">
+                 <property name="text">
+                     <string>Annotate</string>
+                 </property>
+             </widget>
+         </item>
      </layout>
     </widget>
    </item>

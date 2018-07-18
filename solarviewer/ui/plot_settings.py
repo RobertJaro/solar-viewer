@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 class Ui_PlotSettings(object):
     def setupUi(self, PlotSettings):
@@ -30,6 +30,12 @@ class Ui_PlotSettings(object):
         self.mask = QtWidgets.QCheckBox(self.groupBox)
         self.mask.setObjectName("mask")
         self.verticalLayout_2.addWidget(self.mask)
+        self.wcs_grid = QtWidgets.QCheckBox(self.groupBox)
+        self.wcs_grid.setObjectName("wcs_grid")
+        self.verticalLayout_2.addWidget(self.wcs_grid)
+        self.annotate = QtWidgets.QCheckBox(self.groupBox)
+        self.annotate.setObjectName("annotate")
+        self.verticalLayout_2.addWidget(self.annotate)
         self.verticalLayout.addWidget(self.groupBox)
         self.contours = QtWidgets.QGroupBox(PlotSettings)
         self.contours.setCheckable(True)
@@ -53,6 +59,8 @@ class Ui_PlotSettings(object):
         self.grid.setText(_translate("PlotSettings", "Grid"))
         self.limb.setText(_translate("PlotSettings", "Limb"))
         self.mask.setText(_translate("PlotSettings", "Mask Solar Disk"))
+        self.wcs_grid.setText(_translate("PlotSettings", "WCS Grid"))
+        self.annotate.setText(_translate("PlotSettings", "Annotate"))
         self.contours.setTitle(_translate("PlotSettings", "Contours"))
         self.contours_list.setInputMask(_translate("PlotSettings", "00 00 00 00 00 00 00 00 00 00 00 00"))
         self.contours_list.setText(_translate("PlotSettings", "10 20 30 40 50 60 70 80 90   "))

@@ -2,6 +2,7 @@ from copy import copy
 
 from astropy import units as u
 from sunpy.map import Map
+from sunpy.visualization import wcsaxes_compat
 
 from solarviewer.app.plot import PlotWidget
 from solarviewer.config.base import ViewerController, DataType, ViewerType, ViewerConfig, DataModel, Viewer
@@ -12,7 +13,7 @@ from solarviewer.viewer.util import MPLCoordinatesMixin
 class MapModel(DataModel):
     def __init__(self, s_map):
         self.plot_preferences = {"show_colorbar": False, "show_limb": False, "contours": False,
-                                 "draw_grid": False, "mask": False}
+                                 "draw_grid": False, "mask": False, "wcs_grid": True, "annotate": True}
         self.map = s_map
 
         self._cmap = s_map.plot_settings.get("cmap", None)
@@ -120,10 +121,13 @@ class MapViewer(PlotWidget):
         self.figure.clear()
         try:
             s_map = model.map
+            plot_preferences = model.plot_preferences
+
             ax = self.figure.add_subplot(111, projection=s_map)
             image = s_map.plot(axes=ax, title=False, cmap=model.cmap, norm=model.norm,
-                               interpolation=model.interpolation, origin=model.origin)
-            plot_preferences = model.plot_preferences
+                               interpolation=model.interpolation, origin=model.origin,
+                               annotate=plot_preferences["annotate"])
+
             if plot_preferences["show_colorbar"]:
                 self.figure.colorbar(image)
             if plot_preferences["show_limb"]:
@@ -133,6 +137,8 @@ class MapViewer(PlotWidget):
                 s_map.draw_contours(levels * u.percent, axes=ax)
             if plot_preferences["draw_grid"]:
                 s_map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
+            if not plot_preferences["wcs_grid"]:
+                ax.coords.grid(alpha=0)
         except Exception as ex:
             self._drawFallback(model)
 
@@ -140,10 +146,12 @@ class MapViewer(PlotWidget):
         self.figure.clear()
         try:
             s_map = model.map
+            plot_preferences = model.plot_preferences
+
             ax = self.figure.add_subplot(111, projection=s_map)
             image = ax.imshow(model.data, cmap=model.cmap, norm=model.norm,
                               interpolation=model.interpolation, origin=model.origin)
-            plot_preferences = model.plot_preferences
+
             if plot_preferences["show_colorbar"]:
                 self.figure.colorbar(image)
             if plot_preferences["show_limb"]:
@@ -153,6 +161,8 @@ class MapViewer(PlotWidget):
                 s_map.draw_contours(levels * u.percent, axes=ax)
             if plot_preferences["draw_grid"]:
                 s_map.draw_grid(grid_spacing=10 * u.deg, axes=ax)
+            if plot_preferences["wcs_grid"] and wcsaxes_compat.is_wcsaxes(ax):
+                wcsaxes_compat.default_wcs_grid(ax, units=s_map.spatial_units, ctypes=s_map.wcs.wcs.ctype)
         except Exception as ex:
             self.figure.clear()
             self.figure.text(0.5, 0.5, s="Error during rendering data: " + str(ex), ha="center", va="center")
