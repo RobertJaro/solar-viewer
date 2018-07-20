@@ -29,6 +29,7 @@ class DataType(Enum):
     MAP_COMPOSITE = "SunPy Composite Map"
     SERIES = "SunPy Series"
     PLAIN_2D = "2D FITS"
+    SPECTROGRAM = "SunPy Spectrogram"
     ANY = "Any"
     NONE = ""
 

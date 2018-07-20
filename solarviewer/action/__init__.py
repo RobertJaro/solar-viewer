@@ -1,1 +1,1 @@
-__all__ = ["save", "settings", "composite", "common"]
+__all__ = ["save", "settings", "composite", "common", "query_spectra"]

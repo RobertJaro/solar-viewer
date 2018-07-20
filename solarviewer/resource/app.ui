@@ -44,7 +44,7 @@
      <x>0</x>
      <y>0</y>
      <width>864</width>
-        <height>21</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="locale">
@@ -88,6 +88,19 @@
      <addaction name="actionFrom_File"/>
      <addaction name="actionFrom_Active"/>
     </widget>
+    <widget class="QMenu" name="menuOpen_Spectrogram">
+     <property name="title">
+      <string>Open Spectrogram</string>
+     </property>
+     <widget class="QMenu" name="menuCallisto">
+      <property name="title">
+       <string>Callisto</string>
+      </property>
+      <addaction name="actionFrom_File_2"/>
+      <addaction name="actionQuery"/>
+     </widget>
+     <addaction name="menuCallisto"/>
+    </widget>
     <addaction name="actionOpen_SV_Project"/>
     <addaction name="actionSave_2"/>
     <addaction name="actionSave_As"/>
@@ -95,6 +108,7 @@
     <addaction name="openMap"/>
     <addaction name="menuOpen_SunPy_Composite_Map"/>
     <addaction name="openSeries"/>
+    <addaction name="menuOpen_Spectrogram"/>
     <addaction name="open2D"/>
     <addaction name="separator"/>
     <addaction name="menuExport"/>
@@ -102,7 +116,7 @@
     <addaction name="actionDownload_Data"/>
     <addaction name="actionHEK"/>
     <addaction name="actionChange_DB"/>
-       <addaction name="actionData_Manager"/>
+    <addaction name="actionData_Manager"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -182,9 +196,9 @@
    </property>
   </action>
   <action name="actionDownload_Data">
-      <property name="checkable">
-          <bool>true</bool>
-      </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Download Data</string>
    </property>
@@ -195,9 +209,9 @@
    </property>
   </action>
   <action name="actionHEK">
-      <property name="checkable">
-          <bool>true</bool>
-      </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>HEK</string>
    </property>
@@ -268,14 +282,24 @@
     <string>From Active</string>
    </property>
   </action>
-     <action name="actionData_Manager">
-         <property name="checkable">
-             <bool>true</bool>
-         </property>
-         <property name="text">
-             <string>Data Manager</string>
-         </property>
-     </action>
+  <action name="actionData_Manager">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Data Manager</string>
+   </property>
+  </action>
+  <action name="actionFrom_File_2">
+   <property name="text">
+    <string>From File</string>
+   </property>
+  </action>
+  <action name="actionQuery">
+   <property name="text">
+    <string>Query</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
