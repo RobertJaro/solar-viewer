@@ -6,7 +6,7 @@ from solarviewer.viewer.spectra import CallistoModel
 
 
 class SpectraSettingsController(DialogController):
-    item_config = ItemConfig().setMenuPath("View/Spectra Settings").setTitle("Spectrogram Settings").addSupportedData(
+    item_config = ItemConfig().setMenuPath("View/Plot Settings").setTitle("Spectrogram Settings").addSupportedData(
         DataType.SPECTROGRAM).addSupportedViewer(ViewerType.MPL)
 
     def setupContent(self, content_widget: QWidget):
