@@ -33,7 +33,8 @@ class CallistoViewerController(ViewerController, MPLCoordinatesMixin):
 
     @classmethod
     def fromFile(cls, files) -> 'ViewerController':
-        spectrogram = CallistoSpectrogram.from_files(files)
+        list = [CallistoSpectrogram.read(file) for file in files]
+        spectrogram = CallistoSpectrogram.join_many(list)
         model = CallistoModel(spectrogram)
         return cls(model)
 
