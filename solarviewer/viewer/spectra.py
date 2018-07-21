@@ -8,15 +8,25 @@ from solarviewer.viewer.util import MPLCoordinatesMixin
 
 
 class CallistoModel(DataModel):
+
     def __init__(self, spectrogram: CallistoSpectrogram):
         self.spectrogram = spectrogram
+        self.vmin = None
+        self.vmax = None
+        self.colorbar = True
+        self.linear = True
+        self.substract_background = False
 
 
 class CallistoViewer(PlotWidget):
 
     def draw(self, data_model: CallistoModel):
-        plt.figure(self.figure.number)
-        data_model.spectrogram.plot()
+        plt.figure(self.figure.number)  # TODO: replace workaround
+        img = data_model.spectrogram
+        if data_model.substract_background:
+            img = img.subtract_bg()
+        img.plot(colorbar=data_model.colorbar, vmin=data_model.vmin, vmax=data_model.vmax,
+                 linear=data_model.linear, showz=True)
 
 
 class CallistoViewerController(ViewerController, MPLCoordinatesMixin):
