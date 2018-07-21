@@ -30,6 +30,7 @@ class AppController(QtWidgets.QMainWindow):
 
         self.active_tools = {}
         self.active_toolbars = {}
+        self.action_managers = {}
 
         self.ui.horizontalLayout.addWidget(self.content_ctrl.view)
 
@@ -148,22 +149,18 @@ class AppController(QtWidgets.QMainWindow):
             tree = ctrl.item_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
-            action = InitUtil.getAction(tree, self.ui.menubar)
-            action.triggered.connect(lambda evt, c=ctrl: self._openDialog(c))
-            self._subscribeItemSupportCheck(action, ctrl)
-            if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, lambda a=action: a.trigger() if action.isEnabled() else None)
+
+            action_manager = self._getActionManager(ctrl, tree)
+            action_manager.register(ctrl, lambda c=ctrl: self._openDialog(c), self)
 
     def _initActions(self):
         for ctrl in self.action_ctrls:
             tree = ctrl.item_config.menu_path.split("/")
             if len(tree) == 1:
                 continue
-            action = InitUtil.getAction(tree, self.ui.menubar)
-            action.triggered.connect(ctrl.onAction)
-            self._subscribeItemSupportCheck(action, ctrl)
-            if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, lambda a=action: a.trigger() if action.isEnabled() else None)
+
+            action_manager = self._getActionManager(ctrl, tree)
+            action_manager.register(ctrl, ctrl.onAction, self)
 
     def _initToolbars(self):
         for ctrl in self.toolbar_ctrls:
@@ -182,3 +179,11 @@ class AppController(QtWidgets.QMainWindow):
 
         self.content_ctrl.subscribeViewerChanged(f)
         f(None)  # initial
+
+    def _getActionManager(self, ctrl, tree):
+        if ctrl.item_config.menu_path in self.action_managers:
+            action_manager = self.action_managers[ctrl.item_config.menu_path]
+        else:
+            action_manager = InitUtil.createActionManager(tree, self.ui.menubar)
+            self.action_managers[ctrl.item_config.menu_path] = action_manager
+        return action_manager
