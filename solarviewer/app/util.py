@@ -26,12 +26,13 @@ class ActionManager:
 
     def _registerShortcut(self, ctrl, parent):
         if self._shortcut is not False:
-            assert ctrl.item_config.shortcut is self._shortcut, \
+            assert ctrl.item_config.shortcut == self._shortcut, \
                 "invalid configuration. different shortcuts for same action encountered."
             return
         if not ctrl.item_config.shortcut:
             self._shortcut = None
         else:
+            self._shortcut = ctrl.item_config.shortcut
             QShortcut(ctrl.item_config.shortcut, parent,
                       lambda: self.action.trigger() if self.action.isEnabled() else None)
 

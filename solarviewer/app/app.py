@@ -142,7 +142,7 @@ class AppController(QtWidgets.QMainWindow):
             action = InitUtil.getAction(tree, self.ui.menubar, True)
             action.triggered.connect(lambda evt, c=ctrl, a=action: self._toggleTool(c, a))
             if ctrl.item_config.shortcut:
-                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger if action.isEnabled() else None)
+                QShortcut(ctrl.item_config.shortcut, self, lambda: action.trigger() if action.isEnabled() else None)
 
     def _initDialogs(self):
         for ctrl in self.dlg_ctrls:
