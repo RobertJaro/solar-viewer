@@ -2,8 +2,10 @@ from matplotlib import pyplot as plt
 from radiospectra.sources import CallistoSpectrogram
 from sunpy.time import get_day
 
+from solarviewer.app.app import AppController
 from solarviewer.app.plot import PlotWidget
 from solarviewer.config.base import DataModel, ViewerController, Viewer, ViewerConfig, DataType, ViewerType
+from solarviewer.config.ioc import RequiredFeature
 from solarviewer.viewer.util import MPLCoordinatesMixin
 
 
@@ -31,6 +33,7 @@ class CallistoViewer(PlotWidget):
 
 class CallistoViewerController(ViewerController, MPLCoordinatesMixin):
     viewer_config = ViewerConfig().setMenuPath("File/Open Spectrogram/Callisto/From File").setMultiFile(True)
+    app_ctrl: AppController = RequiredFeature(AppController.name)
 
     def __init__(self, model):
         ViewerController.__init__(self)
@@ -40,6 +43,8 @@ class CallistoViewerController(ViewerController, MPLCoordinatesMixin):
         self._view.updateModel(model)
 
         MPLCoordinatesMixin.__init__(self)
+
+        self.app_ctrl.openController("SpectraToolbarController")
 
     @classmethod
     def fromFile(cls, files) -> 'ViewerController':

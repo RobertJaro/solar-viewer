@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SpectraSettings(object):
     def setupUi(self, SpectraSettings):
         SpectraSettings.setObjectName("SpectraSettings")
-        SpectraSettings.resize(375, 215)
+        SpectraSettings.resize(294, 199)
         self.verticalLayout = QtWidgets.QVBoxLayout(SpectraSettings)
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox_2 = QtWidgets.QGroupBox(SpectraSettings)
@@ -51,8 +51,6 @@ class Ui_SpectraSettings(object):
         self.color_bar_check.setObjectName("color_bar_check")
         self.verticalLayout_2.addWidget(self.color_bar_check)
         self.verticalLayout.addWidget(self.groupBox)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
 
         self.retranslateUi(SpectraSettings)
         self.vmin_check.toggled['bool'].connect(self.vmin_spin.setEnabled)

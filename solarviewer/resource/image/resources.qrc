@@ -4,5 +4,9 @@
         <file>icon.png</file>
         <file>pan.png</file>
         <file>zoom.png</file>
+        <file>double_left.png</file>
+        <file>double_right.png</file>
+        <file>range.png</file>
+        <file>add.png</file>
     </qresource>
 </RCC>

@@ -1,6 +1,6 @@
 from typing import List
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QShortcut, QFileDialog
 
 from solarviewer.app.content import ContentController
@@ -111,7 +111,7 @@ class AppController(QtWidgets.QMainWindow):
     def _toggleToolbar(self, ctrl: ToolbarController):
         if ctrl.name not in self.active_toolbars:
             tool_bar = ctrl.view
-            self.addToolBar(QtCore.Qt.RightToolBarArea, tool_bar)
+            self.addToolBar(ctrl.item_config.orientation, tool_bar)
             self.active_toolbars[ctrl.name] = tool_bar
         else:
             self.active_toolbars.pop(ctrl.name).close()

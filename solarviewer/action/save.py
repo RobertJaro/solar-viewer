@@ -4,11 +4,12 @@ import pickle
 import matplotlib
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+from radiospectra.sources import CallistoSpectrogram
 from sunpy.map import GenericMap
 
 from solarviewer.app.content import ContentController
-from solarviewer.app.util import saveFits
-from solarviewer.config.base import ActionController, ItemConfig, DataType, ViewerType
+from solarviewer.app.util import saveFits, getExtensionString
+from solarviewer.config.base import ActionController, ItemConfig, DataType, ViewerType, FileType
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.save_image import Ui_SaveImage
 
@@ -99,6 +100,21 @@ class SaveFitsAction(ActionController):
     def onAction(self):
         map: GenericMap = self.content_ctrl.getDataModel().map
         saveFits(map)
+
+
+class SaveSpectraFitsAction(ActionController):
+    content_ctrl: ContentController = RequiredFeature(ContentController.name)
+
+    @property
+    def item_config(self) -> ItemConfig:
+        return ItemConfig().setMenuPath("File/Export/FITS").addSupportedData(DataType.SPECTROGRAM).addSupportedViewer(
+            ViewerType.ANY)
+
+    def onAction(self):
+        spec: CallistoSpectrogram = self.content_ctrl.getDataModel().spectrogram
+        name, _ = QtWidgets.QFileDialog.getSaveFileName(filter=getExtensionString(FileType.FITS.value))
+        if name:
+            spec.save(name)
 
 
 class SaveImageController(ActionController):

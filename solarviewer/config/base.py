@@ -161,6 +161,7 @@ class ToolbarConfig:
         self.menu_path = ""
         self.supported_data_types = []
         self.supported_viewer_types = []
+        self.orientation = QtCore.Qt.RightToolBarArea
 
     def setMenuPath(self, path: str) -> "ToolbarConfig":
         """
@@ -220,6 +221,18 @@ class ToolbarConfig:
         :rtype: ToolbarConfig
         """
         self.supported_viewer_types.append(viewer_type)
+        return self
+
+    def setOrientation(self, orientation: QtCore.Qt.ToolBarArea) -> "ToolbarConfig":
+        """
+        Set the alignment in the main window.
+
+        :param orientation: The Qt dock position
+        :type orientation: ToolBarArea
+        :return: self
+        :rtype: ItemConfig
+        """
+        self.orientation = orientation
         return self
 
 

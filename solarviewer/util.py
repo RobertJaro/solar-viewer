@@ -75,6 +75,7 @@ def executeLongRunningTask(execution: Callable, args=[], message="", call_after:
         thread.finished.connect(lambda x: call_after(x, *call_after_args) if x else call_after(*call_after_args))
     close_progress = lambda x, p=progress: p.close()
     thread.finished.connect(close_progress)
+    thread.error.connect(close_progress)
     progress.show()
     thread.start()
 

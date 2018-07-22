@@ -1,1 +1,1 @@
-__all__ = ["mpl"]
+__all__ = ["mpl", "spectra"]
