@@ -7,6 +7,7 @@ from solarviewer.app.content import ContentController
 from solarviewer.config.base import ActionController, ItemConfig
 from solarviewer.config.ioc import RequiredFeature
 from solarviewer.ui.query_callisto import Ui_QueryCallisto
+from solarviewer.util import executeLongRunningTask
 from solarviewer.viewer.spectra import CallistoViewerController
 
 
@@ -26,7 +27,10 @@ class QueryCallistoActionController(ActionController):
         if dlg.exec_():
             start_time = ui.start_time.dateTime().toString(QtCore.Qt.ISODate).replace("T", " ")
             end_time = ui.end_time.dateTime().toString(QtCore.Qt.ISODate).replace("T", " ")
-            spectrogram = CallistoSpectrogram.from_range(ui.instrument.currentText(), start_time, end_time)
 
-            viewer_ctrl = CallistoViewerController.fromSpectrogram(spectrogram)
-            self.content_ctrl.addViewerController(viewer_ctrl)
+            executeLongRunningTask(CallistoSpectrogram.from_range, [ui.instrument.currentText(), start_time, end_time],
+                                   "Downloading", self._openSpectrogram)
+
+    def _openSpectrogram(self, spectrogram):
+        viewer_ctrl = CallistoViewerController.fromSpectrogram(spectrogram)
+        self.content_ctrl.addViewerController(viewer_ctrl)
