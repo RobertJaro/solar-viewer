@@ -30,6 +30,7 @@ class DataType(Enum):
     SERIES = "SunPy Series"
     PLAIN_2D = "2D FITS"
     SPECTROGRAM = "SunPy Spectrogram"
+    NDCUBE = "NDCube"
     ANY = "Any"
     NONE = ""
 
@@ -38,6 +39,7 @@ class ViewerType(Enum):
     """Default viewer types."""
     MPL = "Matplotlib"
     GINGA = "Ginga"
+    NDCUBE = "NDCUBE"
     ANY = "Any"
 
 
