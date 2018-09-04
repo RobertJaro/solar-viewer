@@ -14,6 +14,7 @@ class NDCubeModel(DataModel):
     def __init__(self, cube, files):
         self._cmap = None
         self.cmap_preferences = {"over": None, "under": None}
+        self.image_axes = [-1, -2]
 
         self.cube = cube
         if len(files) == 1:
@@ -39,7 +40,8 @@ class NDCubeModel(DataModel):
 class NDCubeView(PlotWidget):
 
     def draw(self, data_model: NDCubeModel):
-        data_model.cube.plot(fig=self.figure, cmap=data_model.cmap)
+        self.figure.clear()
+        data_model.cube.plot(fig=self.figure, cmap=data_model.cmap, image_axes=data_model.image_axes)
 
 
 class NDCubeViewerController(ViewerController, MPLCoordinatesMixin):
