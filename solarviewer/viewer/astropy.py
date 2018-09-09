@@ -1,7 +1,7 @@
 import os
 from copy import copy
 
-from astropy.io import fits
+from astropy.io.fits import getdata, getheader
 from astropy.wcs import WCS
 from matplotlib import cm
 from matplotlib.colors import Normalize
@@ -76,9 +76,10 @@ class AstroPyViewerController(ViewerController, MPLCoordinatesMixin):
 
     @classmethod
     def fromFile(cls, file):
-        hdu = cls._getFitsHDU(file)
-        model = Plain2DModel(hdu.data)
-        model.wcs = WCS(hdu.header)
+        data = getdata(file)
+        header = getheader(file)
+        model = Plain2DModel(data)
+        model.wcs = WCS(header)
         model.title = os.path.basename(file)
 
         return cls(model)
@@ -111,11 +112,3 @@ class AstroPyViewerController(ViewerController, MPLCoordinatesMixin):
     def updateModel(self, model):
         self._model = model
         self._view.updateModel(model)
-
-    @classmethod
-    def _getFitsHDU(cls, path):
-        hdu_list = fits.open(path)
-        hdu_list.verify("silentfix")
-        for hdu in hdu_list:
-            if hdu.data is not None:
-                return hdu

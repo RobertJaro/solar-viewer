@@ -122,6 +122,8 @@ class Ui_MainWindow(object):
         self.actionFrom_File_2.setObjectName("actionFrom_File_2")
         self.actionQuery = QtWidgets.QAction(MainWindow)
         self.actionQuery.setObjectName("actionQuery")
+        self.actionOpen_NDCube = QtWidgets.QAction(MainWindow)
+        self.actionOpen_NDCube.setObjectName("actionOpen_NDCube")
         self.openMap.addAction(self.openMapMPL)
         self.openMap.addAction(self.openMapGinga)
         self.open2D.addAction(self.open2DMPL)
@@ -141,6 +143,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.menuOpen_SunPy_Composite_Map.menuAction())
         self.menuFile.addAction(self.openSeries)
         self.menuFile.addAction(self.menuOpen_Spectrogram.menuAction())
+        self.menuFile.addAction(self.actionOpen_NDCube)
         self.menuFile.addAction(self.open2D.menuAction())
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.menuExport.menuAction())
@@ -190,4 +193,5 @@ class Ui_MainWindow(object):
         self.actionData_Manager.setText(_translate("MainWindow", "Data Manager"))
         self.actionFrom_File_2.setText(_translate("MainWindow", "From File"))
         self.actionQuery.setText(_translate("MainWindow", "Query"))
+        self.actionOpen_NDCube.setText(_translate("MainWindow", "Open NDCube"))
 

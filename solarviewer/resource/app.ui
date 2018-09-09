@@ -109,6 +109,7 @@
     <addaction name="menuOpen_SunPy_Composite_Map"/>
     <addaction name="openSeries"/>
     <addaction name="menuOpen_Spectrogram"/>
+    <addaction name="actionOpen_NDCube"/>
     <addaction name="open2D"/>
     <addaction name="separator"/>
     <addaction name="menuExport"/>
@@ -298,6 +299,11 @@
   <action name="actionQuery">
    <property name="text">
     <string>Query</string>
+   </property>
+  </action>
+  <action name="actionOpen_NDCube">
+   <property name="text">
+    <string>Open NDCube</string>
    </property>
   </action>
  </widget>
