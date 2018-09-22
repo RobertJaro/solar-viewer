@@ -39,7 +39,6 @@ class ViewerType(Enum):
     """Default viewer types."""
     MPL = "Matplotlib"
     GINGA = "Ginga"
-    NDCUBE = "NDCUBE"
     ANY = "Any"
 
 

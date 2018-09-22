@@ -9,7 +9,7 @@ class NDCubePlotSettingsController(DialogController):
 
     @property
     def item_config(self) -> ItemConfig:
-        return ItemConfig().addSupportedData(DataType.ANY).addSupportedViewer(ViewerType.NDCUBE).setMenuPath(
+        return ItemConfig().addSupportedData(DataType.ANY).addSupportedViewer(ViewerType.MPL).setMenuPath(
             "View/Plot Settings").setTitle("NDCube Plot Settings")
 
     def setupContent(self, content_widget):

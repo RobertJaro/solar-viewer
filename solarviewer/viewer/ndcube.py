@@ -91,4 +91,4 @@ class NDCubeViewerController(ViewerController, MPLCoordinatesMixin):
 
     @property
     def viewer_type(self) -> str:
-        return ViewerType.NDCUBE
+        return ViewerType.MPL
