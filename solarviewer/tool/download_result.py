@@ -20,10 +20,8 @@ from solarviewer.viewer.map import MapViewerController
 
 columns = [
     ["", lambda item: item.fileid],
-    ["Start Time", lambda item: item.time.start.isoformat() if isinstance(item.time.start, datetime) else parser.parse(
-        item.time.start).isoformat() if hasattr(item.time, "start") else "None"],
-    ["End Time", lambda item: item.time.end.isoformat() if isinstance(item.time.end, datetime) else parser.parse(
-        item.time.end).isoformat() if hasattr(item.time, "end") else "None"],
+    ["Start Time", lambda item: _parseTime(item.time.start) if hasattr(item.time, "start") else "None"],
+    ["End Time", lambda item: _parseTime(item.time.end) if hasattr(item.time, "end") else "None"],
     ["Instrument", lambda item: getattr(item, "instrument", "None")],
     ["Source", lambda item: getattr(item, "source", "None")],
     ["Provider", lambda item: getattr(item, "provider", "None")],
@@ -35,6 +33,14 @@ columns = [
 ]
 
 default_hidden = [4, 5, 6, 9]
+
+
+def _parseTime(item_time):
+    try:
+        # try to parse in iso format
+        return item_time.isoformat() if isinstance(item_time, datetime) else parser.parse(item_time).isoformat()
+    except:
+        return item_time
 
 
 class DownloadResultController(ToolController):
