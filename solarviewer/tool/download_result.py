@@ -1,4 +1,7 @@
 import copy
+import gzip
+import os
+import shutil
 from datetime import datetime
 
 from PyQt5 import QtWidgets, QtCore
@@ -103,12 +106,22 @@ class DownloadResultController(ToolController):
         executeTask(lambda x: Fido.fetch(x, progress=False), [req], self._onDownloadResult, [f_id, req])
 
     def _onDownloadResult(self, paths, f_id, request):
-        path = paths[0]
+        path = self._unzipResult(paths[0])
         entry = list(tables.entries_from_fido_search_result(request, self.database.default_waveunit))[0]
         entry.path = path
         self.database.add(entry)
         self.database.commit()
         self._addLoaded({f_id: path})
+
+    def _unzipResult(self, path: str):
+        if path.endswith(".gz"):
+            with gzip.open(path, 'rb') as f_in:
+                unzip_path = path.replace(".gz", ".fits")
+                with open(unzip_path, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+            os.remove(path)
+            return unzip_path
+        return path
 
     def _onOpen(self, f_id):
         viewer = MapViewerController.fromFile(self.loaded[f_id])
