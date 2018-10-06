@@ -26,7 +26,7 @@ class CmapController(DialogController):
         choices.extend(matplotlib.cm.cmap_d.values())
         self.cmaps = {cmap.name: cmap for cmap in choices}
         items = list(self.cmaps.keys())
-        items.sort()
+        items = sorted(items, key=lambda s: s.casefold())
         self._ui.cmap_combo.addItems(items)
 
     def onDataChanged(self, viewer_ctrl: ViewerController):
