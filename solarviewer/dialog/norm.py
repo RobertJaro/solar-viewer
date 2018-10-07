@@ -11,6 +11,7 @@ from solarviewer.viewer.map import MapModel
 
 class NormController(DialogController):
     norms = {
+        colors.Normalize: [],
         colors.NoNorm: [],
         colors.LogNorm: [],
         colors.SymLogNorm: [("linthresh", float, 0)],
