@@ -34,7 +34,10 @@ class MapModel(DataModel):
         try:
             return self.map.name
         except:
-            return "Map"
+            # fallback title
+            meta = self.map.meta
+            return "{} {} {} {}".format(meta.get("telescop"), meta.get("wavelnth", ""), meta.get("waveunit", ""),
+                                        meta.get("date-obs", ""))
 
     def setCMap(self, cmap):
         self._cmap = cmap
