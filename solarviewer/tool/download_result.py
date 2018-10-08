@@ -229,7 +229,7 @@ class ResultTab(QtWidgets.QWidget):
             index = self.rows[f_id]
             btn = QtWidgets.QToolButton()
             btn.setText("Open")
-            btn.clicked.connect(lambda evt: self.open.emit(f_id))
+            btn.clicked.connect(lambda evt, f=f_id: self.open.emit(f))
             self.ui.table.setCellWidget(index, 0, btn)
 
     def getSelectedFIds(self):
