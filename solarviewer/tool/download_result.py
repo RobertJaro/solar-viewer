@@ -4,6 +4,7 @@ import os
 import shutil
 from datetime import datetime
 
+import sunpy
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QCursor
@@ -59,6 +60,7 @@ class DownloadResultController(ToolController):
         self._ui.tabs.clear()
         self._ui.tabs.tabCloseRequested.connect(self._onRemoveTab)
 
+        os.makedirs(sunpy.config.get("general", "working_dir"), exist_ok=True)
         self.database = Database()
 
         self.tabs = {}
