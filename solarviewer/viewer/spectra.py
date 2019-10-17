@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from radiospectra.sources import CallistoSpectrogram
-from sunpy.time import get_day
+from radiospectra.util import get_day
 
 from solarviewer.app.app import AppController
 from solarviewer.app.plot import PlotWidget

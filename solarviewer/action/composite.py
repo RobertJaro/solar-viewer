@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from sunpy.image.coalignment import mapcube_coalign_by_match_template
+from sunpy.image.coalignment import mapsequence_coalign_by_match_template
 from sunpy.map import Map
-from sunpy.physics.solar_rotation import mapcube_solar_derotate
+from sunpy.physics.solar_rotation import mapsequence_solar_derotate
 
 from solarviewer.app.content import ContentController
 from solarviewer.config.base import ItemConfig, ActionController, DataType, DataModel, ViewerType
@@ -16,7 +16,7 @@ class DerotateController(DataActionController):
 
     def modifyData(self, data_model: CompositeMapModel) -> DataModel:
         mc = Map(data_model.getMaps(), cube=True)
-        derotated = mapcube_solar_derotate(mc)
+        derotated = mapsequence_solar_derotate(mc)
         data_model.updateMaps(derotated.maps)
         return data_model
 
@@ -35,7 +35,7 @@ class CoalignController(DataActionController):
 
     def modifyData(self, data_model: CompositeMapModel) -> DataModel:
         mc = Map(data_model.getMaps(), cube=True)
-        coaligned = mapcube_coalign_by_match_template(mc)
+        coaligned = mapsequence_coalign_by_match_template(mc)
         data_model.updateMaps(coaligned.maps)
         return data_model
 

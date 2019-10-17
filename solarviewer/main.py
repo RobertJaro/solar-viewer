@@ -1,8 +1,10 @@
+import os
 import sys
 from inspect import isabstract
 
 import matplotlib
 import pkg_resources
+import sunpy
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QLocale
 
@@ -16,6 +18,8 @@ matplotlib.use("Qt5Agg")
 
 
 def main():
+    # check sunpy download directory exists
+    os.makedirs(sunpy.config.get("downloads", "download_dir"), exist_ok=True)
     # prepare application
     app = QtWidgets.QApplication(sys.argv)
     QLocale.setDefault(QLocale(QLocale.English, QLocale.UnitedStates))
